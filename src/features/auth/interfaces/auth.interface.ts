@@ -6,7 +6,7 @@ declare global {
     interface Request {
       currentUser?: AuthUserPayload;
       headers: {
-        'x-auth-token'?: string | null;
+        authorization: string;
       };
     }
   }
