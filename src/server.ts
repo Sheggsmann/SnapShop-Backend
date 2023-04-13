@@ -2,9 +2,9 @@ import { Request, Response, NextFunction, Application, json, urlencoded } from '
 import { Server } from 'socket.io';
 import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
-import { config } from './config';
-import { CustomError, IErrorResponse } from './shared/globals/helpers/error-handler';
-import applicationRoutes from './routes';
+import { config } from '@root/config';
+import { CustomError, IErrorResponse } from '@global/helpers/error-handler';
+import applicationRoutes from '@root/routes';
 import http from 'http';
 import hpp from 'hpp';
 import helmet from 'helmet';
@@ -16,7 +16,7 @@ import 'express-async-errors';
 
 const SERVER_PORT = 5000;
 
-const logger: Logger = config.createLogger('server');
+const log: Logger = config.createLogger('server');
 
 export class SnapShopServer {
   private app: Application;
@@ -60,7 +60,7 @@ export class SnapShopServer {
     });
 
     app.use((err: IErrorResponse, req: Request, res: Response, next: NextFunction) => {
-      logger.error(err);
+      log.error(err);
       if (err instanceof CustomError) {
         return res.status(err.statusCode).json(err.serializeErrors());
       }
@@ -69,13 +69,16 @@ export class SnapShopServer {
   }
 
   private async startServer(app: Application): Promise<void> {
+    if (!config.JWT_TOKEN) throw new Error('JWT_TOKEN must be provided');
     try {
       const httpServer: http.Server = http.createServer(app);
       const socketIo: Server = await this.createSocketIO(httpServer);
 
       this.startHttpServer(httpServer);
       this.socketIOConnections(socketIo);
-    } catch (err) {}
+    } catch (err) {
+      log.error(err);
+    }
   }
 
   private async createSocketIO(httpServer: http.Server): Promise<Server> {
@@ -95,12 +98,14 @@ export class SnapShopServer {
     return io;
   }
 
-  private socketIOConnections(io: Server): void {}
+  private socketIOConnections(io: Server): void {
+    log.info('IO connection');
+  }
 
   private startHttpServer(httpServer: http.Server): void {
-    logger.info(`Server has started with ${process.pid}`);
+    log.info(`Server has started with ${process.pid}`);
     httpServer.listen(SERVER_PORT, () => {
-      logger.info(`Server running on PORT: ${SERVER_PORT}`);
+      log.info(`Server running on PORT: ${SERVER_PORT}`);
     });
   }
 }

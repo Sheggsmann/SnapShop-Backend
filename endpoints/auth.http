@@ -1,0 +1,76 @@
+@baseUrl = http://localhost:5000
+@urlPath = api/v1
+
+###
+POST {{baseUrl}}/{{urlPath}}/signup
+Content-Type: application/json
+Accept: application/json
+
+{
+  "mobileNumber": "+2348088866150",
+  "password": "obumneme",
+  "firstname": "Promise",
+  "lastname": "Sheggsmann",
+  "otpProvider": "sms"
+}
+
+###
+POST {{baseUrl}}/{{urlPath}}/signin
+Content-Type: application/json
+Accept: application/json
+
+{
+  "mobileNumber": "+2348088866150",
+  "password": "promise"
+}
+
+###
+POST {{baseUrl}}/{{urlPath}}/forgot-password
+Content-Type: application/json
+Accept: application/json
+
+{
+  "mobileNumber": "+2348088866150",
+  "otpProvider": "sms"
+}
+
+###
+POST {{baseUrl}}/{{urlPath}}/reset-password
+Content-Type: application/json
+Accept: application/json
+
+{
+  "mobileNumber": "+2348088866150",
+  "otp": "5356",
+  "password": "promise",
+  "confirmPassword": "promise"
+}
+
+###
+POST {{baseUrl}}/{{urlPath}}/validate-number
+Content-Type: application/json
+Accept: application/json
+
+{
+  "mobileNumber": "+2348088866150"
+}
+
+###
+PUT {{baseUrl}}/{{urlPath}}/verify-account
+Content-Type: application/json
+Accept: application/json
+
+{
+  "mobileNumber": "+2348088866150",
+  "otp": "7786"
+}
+
+###
+POST {{baseUrl}}/{{urlPath}}/resend-otp
+Content-Type: application/json
+Accept: application/json
+
+{
+  "mobileNumber": "+2348088866150",
+  "otpProvider": "sms"
+}
