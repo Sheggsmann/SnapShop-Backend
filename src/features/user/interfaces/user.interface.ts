@@ -9,6 +9,7 @@ export enum Role {
 
 export interface IUserDocument extends Document {
   _id: string | ObjectId;
+  email?: string;
   authId: string | ObjectId;
   password?: string;
   uId?: string;

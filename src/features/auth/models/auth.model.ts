@@ -2,7 +2,7 @@ import { IAuthDocument } from '@auth/interfaces/auth.interface';
 import { compare, hash } from 'bcryptjs';
 import { Model, Schema, model } from 'mongoose';
 
-const SALT_ROUND = 10;
+const SALT_ROUND = 11;
 
 const authSchema = new Schema(
   {
@@ -27,8 +27,10 @@ const authSchema = new Schema(
 );
 
 authSchema.pre('save', async function (this: IAuthDocument, next: () => void) {
-  const hashedPassword: string = await hash(this.password as string, SALT_ROUND);
-  this.password = hashedPassword;
+  if (this.isModified('password')) {
+    const hashedPassword: string = await hash(this.password as string, SALT_ROUND);
+    this.password = hashedPassword;
+  }
   next();
 });
 

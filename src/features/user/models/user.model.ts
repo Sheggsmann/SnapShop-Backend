@@ -5,6 +5,7 @@ const userSchema: Schema = new Schema({
   authId: { type: Types.ObjectId, ref: 'Auth', index: true },
   firstname: String,
   lastname: String,
+  email: String,
   role: { type: [], default: [Role.User] },
   savedStores: [{ type: Types.ObjectId, ref: 'Store' }],
   likedStores: [{ type: Types.ObjectId, ref: 'Store' }],
