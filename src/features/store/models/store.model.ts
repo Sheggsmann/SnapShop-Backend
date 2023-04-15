@@ -20,7 +20,8 @@ const storeSchema: Schema = new Schema(
       }
     ],
     verified: { type: Boolean, default: false },
-    badges: [String]
+    badges: [String],
+    productsCount: { type: Number, default: 0 }
   },
   { timestamps: true }
 );

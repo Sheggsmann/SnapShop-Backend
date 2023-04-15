@@ -8,8 +8,8 @@ const log: Logger = config.createLogger('Product Worker');
 class ProductWorker {
   public async addProductToDB(job: Job, done: DoneCallback): Promise<void> {
     try {
-      const { value } = job.data;
-      productService.addProductToDB(value);
+      const { value, key } = job.data;
+      productService.addProductToDB(value, key);
 
       job.progress(100);
       done(null, job.data);

@@ -19,6 +19,7 @@ export interface IStoreDocument extends Document {
   description: string;
   locations: ILocation[];
   badges: string[];
+  productsCount: number;
 }
 
 export interface IStoreJob {

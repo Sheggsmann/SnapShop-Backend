@@ -63,7 +63,7 @@ class Create {
       quantity: quantity ?? 0
     };
 
-    productQueue.addProductJob('addProductToDB', { value: product });
+    productQueue.addProductJob('addProductToDB', { value: product, key: storeId });
 
     res.status(HTTP_STATUS.OK).json({ message: 'Product created successfully', product });
   }
