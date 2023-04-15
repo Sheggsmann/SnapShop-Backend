@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { validator } from '@global/helpers/joi-validation-decorator';
 import { productSchema } from '../schemes/product.scheme';
 import { IProductDocument } from '../interfaces/product.interface';
-import { uploadFile } from '@global/helpers/cloudinary_upload';
+import { uploadMultiple } from '@global/helpers/cloudinary_upload';
 import { UploadApiResponse } from 'cloudinary';
 import { BadRequestError } from '@global/helpers/error-handler';
 import { productQueue } from '@service/queues/product.queue';
@@ -18,8 +18,12 @@ class Create {
     // Images upload
     const uploadedImages: string[] = [];
 
-    const imageUploads = images.map((image: string) => uploadFile(image, true, true, 'product_images'));
-    const imageResponses: UploadApiResponse[] = await Promise.all(imageUploads);
+    const imageResponses: UploadApiResponse[] = (await uploadMultiple(
+      images,
+      true,
+      true,
+      'product_images'
+    )) as UploadApiResponse[];
 
     imageResponses.forEach((imgRes) => {
       if (!imgRes.secure_url) {
@@ -32,8 +36,12 @@ class Create {
     const uploadedVideos: string[] = [];
 
     if (videos && videos.length) {
-      const videoUploads = videos.map((video: string) => uploadFile(video, true, true, 'product_videos'));
-      const videoResponses: UploadApiResponse[] = await Promise.all(videoUploads);
+      const videoResponses: UploadApiResponse[] = (await uploadMultiple(
+        videos,
+        true,
+        true,
+        'product_videos'
+      )) as UploadApiResponse[];
 
       videoResponses.forEach((videoResponse) => {
         if (!videoResponse.secure_url) throw new BadRequestError('an error occurred while uploading videos');
