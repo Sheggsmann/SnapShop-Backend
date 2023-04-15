@@ -6,11 +6,13 @@ import { config } from '@root/config';
 import { IAuthJob } from '@auth/interfaces/auth.interface';
 import { IUserJob } from '@user/interfaces/user.interface';
 import Logger from 'bunyan';
+import { IStoreJob } from '@store/interfaces/store.interface';
+import { IProductJob } from '@product/interfaces/product.interface';
 
 export let bullAdapters: BullAdapter[] = [];
 export const serverAdapter: ExpressAdapter = new ExpressAdapter().setBasePath('/queues');
 
-type IBaseJobData = IAuthJob | IUserJob;
+type IBaseJobData = IAuthJob | IUserJob | IStoreJob | IProductJob;
 
 export abstract class BaseQueue {
   protected queue: Queue.Queue;

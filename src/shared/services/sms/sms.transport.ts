@@ -1,33 +1,38 @@
-import { BadRequestError } from '@global/helpers/error-handler';
 import { config } from '@root/config';
 import Logger from 'bunyan';
 
 const client = config.twilioConfig();
 const log: Logger = config.createLogger('SMS');
 
+type MsgResponse = 'error' | 'success';
+
 class SmsTransport {
-  private async devSmsSender(receiverMobileNumber: string, body: string, type: string): Promise<void> {
-    client.messages
-      .create({
+  private async devSmsSender(receiverMobileNumber: string, body: string, type: string): Promise<MsgResponse> {
+    try {
+      const message = await client.messages.create({
         body,
         from: type === 'sms' ? `${config.TWILIO_NUMBER}` : `whatsapp:${config.TWILIO_WHATSAPP}`,
         to: type === 'sms' ? `${receiverMobileNumber}` : `whatsapp:${receiverMobileNumber}`
-      })
-      .then((message) => console.log(message))
-      .catch((err) => {
-        log.error(err);
-        throw new BadRequestError('Error sending sms');
       });
+
+      console.log(message);
+      return Promise.resolve('success');
+    } catch (err) {
+      log.error(err);
+      return Promise.resolve('error');
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private async prodSmsSender(): Promise<void> {}
+  private async prodSmsSender(): Promise<MsgResponse> {
+    return 'error';
+  }
 
-  public async sendSms(receiverMobileNumber: string, body: string, type = 'sms'): Promise<void> {
+  public async sendSms(receiverMobileNumber: string, body: string, type = 'sms'): Promise<MsgResponse> {
     if (config.NODE_ENV === 'development') {
-      this.devSmsSender(receiverMobileNumber, body, type);
+      return this.devSmsSender(receiverMobileNumber, body, type);
     } else {
-      this.prodSmsSender();
+      return this.prodSmsSender();
     }
   }
 }

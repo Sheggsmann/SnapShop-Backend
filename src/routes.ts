@@ -1,6 +1,9 @@
 import { Application } from 'express';
 import { authRoutes } from '@auth/routes/authRoutes';
 import { serverAdapter } from '@service/queues/base.queue';
+import { storeRoutes } from '@store/routes/storeRoutes';
+import { authMiddleware } from '@global/middlewares/auth-middleware';
+import { productRoutes } from '@product/routes/productRoutes';
 
 const BASE_PATH = '/api/v1';
 
@@ -9,6 +12,10 @@ export default (app: Application) => {
     app.use('/queues', serverAdapter.getRouter());
 
     app.use(BASE_PATH, authRoutes.routes());
+    app.use(BASE_PATH, authMiddleware.protect, storeRoutes.routes());
+
+    // Store owner routes
+    app.use(BASE_PATH, authMiddleware.protect, productRoutes.routes());
   };
 
   routes();

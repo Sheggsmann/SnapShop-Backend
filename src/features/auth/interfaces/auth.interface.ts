@@ -16,6 +16,7 @@ export interface AuthUserPayload {
   uId: string;
   userId: string;
   mobileNumber: string;
+  roles: string[];
   iat?: number;
 }
 

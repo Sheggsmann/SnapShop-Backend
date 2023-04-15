@@ -17,8 +17,8 @@ export interface IUserDocument extends Document {
   firstname: string;
   lastname: string;
   profilePicture: string;
-  role: (keyof typeof Role)[];
-  store?: ObjectId;
+  roles: (keyof typeof Role)[];
+  storeCount: number;
   createdAt?: Date;
   savedStores: mongoose.Types.ObjectId[];
   likedStores: mongoose.Types.ObjectId[];

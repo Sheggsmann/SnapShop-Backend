@@ -69,11 +69,18 @@ class SignUp {
     userQueue.addUserToDB('addUserToDB', { value: userData });
 
     // TODO: Send OTP to user via otp method
-    await smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
+    const msg = await smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
+    if (msg === 'error') throw new BadRequestError('Error sending sms');
 
-    const authDataClone = { ...authData };
-    delete authDataClone.password;
-    const authToken: string = JWT.sign({ authDataClone }, config.JWT_TOKEN!);
+    const jwtPayload = {
+      mobileNumber,
+      uId,
+      userId: userObjectId,
+      roles: [Role.User],
+      profilePicture: ''
+    };
+
+    const authToken: string = JWT.sign(jwtPayload, config.JWT_TOKEN!);
 
     res.status(HTTP_STATUS.CREATED).json({ message: 'Account created', token: authToken });
   }
@@ -120,7 +127,9 @@ class SignUp {
     user.verificationExpiersIn = Date.now() + OTP_EXPIRES_IN;
     await user.save();
 
-    await smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
+    const msg = await smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
+    if (msg === 'error') throw new BadRequestError('Error sending sms');
+
     res.status(HTTP_STATUS.OK).json({ message: 'Otp resent successfully' });
   }
 }
