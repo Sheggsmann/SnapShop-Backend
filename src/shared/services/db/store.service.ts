@@ -1,3 +1,5 @@
+import { IProductDocument } from '@product/interfaces/product.interface';
+import { ProductModel } from '@product/models/product.model';
 import { IStoreDocument } from '@store/interfaces/store.interface';
 import { StoreModel } from '@store/models/store.model';
 import { Role } from '@user/interfaces/user.interface';
@@ -23,12 +25,28 @@ class StoreService {
     return await StoreModel.findOne({ owner: userId });
   }
 
-  // public async getNearbyStores(
-  //   latitude: number,
-  //   longitude: number,
-  //   radius: number,
-  //   searchParam: string
-  // ): Promise<IStoreDocument[]> {}
+  public async getNearbyStores(
+    searchParam: RegExp,
+    latitude: number,
+    longitude: number,
+    radius: number,
+    minPrice: number,
+    maxPrice: number
+  ): Promise<IProductDocument[]> {
+    const products: IProductDocument[] = await ProductModel.aggregate([
+      { $match: { name: searchParam } },
+      { $match: { $and: [{ price: { $gte: minPrice } }, { price: { $lte: maxPrice } }] } },
+      { $lookup: { from: 'Store', localField: 'store', foreignField: '_id', as: 'store' } },
+      { $unwind: '$store' },
+      {
+        $match: {
+          'store.locations.location': { $geoWithin: { $centerSphere: [[longitude, latitude], radius] } }
+        }
+      },
+      { $limit: 1000 }
+    ]);
+    return products;
+  }
 }
 
 export const storeService: StoreService = new StoreService();

@@ -28,4 +28,8 @@ export class Helpers {
       return prop;
     }
   }
+
+  static escapeRegExp(text: string) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+  }
 }
