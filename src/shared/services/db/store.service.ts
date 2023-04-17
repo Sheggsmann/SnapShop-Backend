@@ -1,9 +1,10 @@
 import { IProductDocument } from '@product/interfaces/product.interface';
 import { ProductModel } from '@product/models/product.model';
-import { IStoreDocument } from '@store/interfaces/store.interface';
+import { IStoreDocument, IStoreWithCategories } from '@store/interfaces/store.interface';
 import { StoreModel } from '@store/models/store.model';
 import { Role } from '@user/interfaces/user.interface';
 import { UserModel } from '@user/models/user.model';
+import { ObjectId } from 'mongodb';
 import { UpdateQuery } from 'mongoose';
 
 class StoreService {
@@ -17,12 +18,21 @@ class StoreService {
     await Promise.all([createdStore, user]);
   }
 
+  public async getStores(skip: number, limit: number): Promise<IStoreDocument[]> {
+    const stores: IStoreDocument[] = await StoreModel.find({}).skip(skip).limit(limit);
+    return stores;
+  }
+
   public async getStoreByName(name: string): Promise<IStoreDocument | null> {
     return await StoreModel.findOne({ name });
   }
 
   public async getStoreByUserId(userId: string): Promise<IStoreDocument | null> {
     return await StoreModel.findOne({ owner: userId });
+  }
+
+  public async getStoreByStoreId(storeId: string): Promise<IStoreDocument | null> {
+    return await StoreModel.findOne({ _id: storeId });
   }
 
   public async getNearbyStores(
@@ -46,6 +56,18 @@ class StoreService {
       { $limit: 1000 }
     ]);
     return products;
+  }
+
+  public async getStoreProductsByCategory(storeId: string): Promise<IStoreWithCategories[]> {
+    const products = await ProductModel.aggregate([
+      { $match: { store: new ObjectId(storeId) } },
+      { $group: { _id: '$category', products: { $push: '$$ROOT' } } }
+    ]);
+    return products as IStoreWithCategories[];
+  }
+
+  public async updateStore(storeId: string, updatedStore: IStoreDocument): Promise<void> {
+    await StoreModel.updateOne({ _id: storeId }, { $set: updatedStore });
   }
 }
 

@@ -6,6 +6,7 @@ class StoreQueue extends BaseQueue {
   constructor() {
     super('Store');
     this.processJob('addStoreToDB', 5, storeWorker.addStoreToDB);
+    this.processJob('updateStoreInDB', 5, storeWorker.updateStoreInDB);
   }
 
   public addStoreJob(name: string, data: IStoreJob): void {

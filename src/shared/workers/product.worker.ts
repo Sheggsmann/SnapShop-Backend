@@ -9,7 +9,7 @@ class ProductWorker {
   public async addProductToDB(job: Job, done: DoneCallback): Promise<void> {
     try {
       const { value, key } = job.data;
-      productService.addProductToDB(value, key);
+      await productService.addProductToDB(value, key);
 
       job.progress(100);
       done(null, job.data);

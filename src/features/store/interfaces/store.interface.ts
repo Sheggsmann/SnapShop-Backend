@@ -1,5 +1,6 @@
 import { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import { IProductDocument } from '@product/interfaces/product.interface';
 
 export interface ILocation {
   type: string;
@@ -20,9 +21,16 @@ export interface IStoreDocument extends Document {
   locations: ILocation[];
   badges: string[];
   productsCount: number;
+  isOwner(userId: string): boolean;
 }
 
 export interface IStoreJob {
   value?: IStoreDocument;
   userId?: string;
+  key?: string;
+}
+
+export interface IStoreWithCategories {
+  _id: string;
+  products: IProductDocument[];
 }

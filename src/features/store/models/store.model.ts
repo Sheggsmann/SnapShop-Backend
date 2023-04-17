@@ -28,5 +28,9 @@ const storeSchema: Schema = new Schema(
 
 storeSchema.index({ 'locations.location': '2dsphere' });
 
+storeSchema.methods.isOwner = function (userId: string): boolean {
+  return String(this.owner) === String(userId);
+};
+
 const StoreModel: Model<IStoreDocument> = model<IStoreDocument>('Store', storeSchema, 'Store');
 export { StoreModel };

@@ -1,6 +1,8 @@
 import express, { Router } from 'express';
 import { createStore } from '@store/controllers/create-store';
 import { authMiddleware } from '@global/middlewares/auth-middleware';
+import { getStores } from '@store/controllers/get-store';
+import { updateStore } from '@store/controllers/update-store';
 
 class StoreRoutes {
   private router: Router;
@@ -10,6 +12,12 @@ class StoreRoutes {
   }
 
   public routes(): Router {
+    this.router.get('/stores/all/:page', authMiddleware.checkAuth, getStores.all);
+    this.router.get('/stores/:storeId', authMiddleware.checkAuth, getStores.storeByStoreId);
+
+    this.router.put('/stores/verify/:storeId', authMiddleware.checkAuth, updateStore.verify);
+    this.router.put('/stores/:storeId', authMiddleware.checkAuth, updateStore.store);
+
     this.router.post('/store/signup', authMiddleware.checkAuth, createStore.store);
 
     return this.router;

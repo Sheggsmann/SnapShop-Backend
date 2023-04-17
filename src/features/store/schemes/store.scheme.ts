@@ -12,7 +12,7 @@ const storeSchema: ObjectSchema = Joi.object().keys({
     'string.empty': 'image is not allowed to be empty'
   }),
   bgImage: Joi.string().optional().allow(null, ''),
-  description: Joi.string().min(2).max(1000).messages({
+  description: Joi.string().required().min(2).max(1000).messages({
     'string.base': 'description must be of type string',
     'string.min': 'invalid store description',
     'string.max': 'invalid store description',
@@ -30,4 +30,21 @@ const storeSchema: ObjectSchema = Joi.object().keys({
   })
 });
 
-export { storeSchema };
+const storeUpdateSchema: ObjectSchema = Joi.object().keys({
+  name: Joi.string().required().min(2).max(100).messages({
+    'string.base': 'name must be of type string',
+    'string.min': 'invalid store name',
+    'string.max': 'invalid store name',
+    'string.empty': 'name is a required field'
+  }),
+  image: Joi.string().optional().allow(null, ''),
+  bgImage: Joi.string().optional().allow(null, ''),
+  description: Joi.string().required().min(2).max(1000).messages({
+    'string.base': 'description must be of type string',
+    'string.min': 'invalid store description',
+    'string.max': 'invalid store description',
+    'string.empty': 'description is a required field'
+  })
+});
+
+export { storeSchema, storeUpdateSchema };

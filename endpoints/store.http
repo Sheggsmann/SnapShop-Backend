@@ -15,3 +15,35 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5Z
   "address": "Lead City University Staff Quarters II",
   "latlng": "7.331381125114031,3.886752370474088"
 }
+
+###
+GET {{baseUrl}}/{{urlPath}}/stores/all/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZDYyOGYyZTdmMTYwZmYyNzIzNjQiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MDg4ODY2MTUwIiwiaWF0IjoxNjgxNjg3MTQ4fQ.nS6heDw_rjoF-U9esdXSjBOUHYSy39MaEhTRuUvRWtE
+
+
+###
+GET {{baseUrl}}/{{urlPath}}/stores/6439d65df2e7f160ff27236c
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZDYyOGYyZTdmMTYwZmYyNzIzNjQiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MDg4ODY2MTUwIiwiaWF0IjoxNjgxNjg3MTQ4fQ.nS6heDw_rjoF-U9esdXSjBOUHYSy39MaEhTRuUvRWtE
+
+###
+PUT {{baseUrl}}/{{urlPath}}/stores/6439d65df2e7f160ff27236c
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZDYyOGYyZTdmMTYwZmYyNzIzNjQiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MDg4ODY2MTUwIiwiaWF0IjoxNjgxNjg3MTQ4fQ.nS6heDw_rjoF-U9esdXSjBOUHYSy39MaEhTRuUvRWtE
+
+{
+  "name": "Sheggs Store",
+  "description": "Latest game store in Ibadan. Filled with 3D VR games and all"
+}
+
+###
+PUT {{baseUrl}}/{{urlPath}}/stores/verify/6439d65df2e7f160ff27236c
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZDYyOGYyZTdmMTYwZmYyNzIzNjQiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MDg4ODY2MTUwIiwiaWF0IjoxNjgxNjg3MTQ4fQ.nS6heDw_rjoF-U9esdXSjBOUHYSy39MaEhTRuUvRWtE
+
+{}
