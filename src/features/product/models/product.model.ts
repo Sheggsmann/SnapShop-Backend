@@ -8,8 +8,8 @@ const productSchema: Schema = new Schema(
     price: { type: Number, min: 0, default: 0, required: true },
     description: String,
     category: String,
-    images: [String],
-    videos: [String],
+    images: [{ url: String, public_id: String }],
+    videos: [{ url: String, public_id: String }],
     priceDiscount: Number,
     quantity: Number
   },

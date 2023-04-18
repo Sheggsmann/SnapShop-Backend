@@ -2,54 +2,57 @@ import { Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { validator } from '@global/helpers/joi-validation-decorator';
 import { productSchema } from '../schemes/product.scheme';
-import { IProductDocument } from '../interfaces/product.interface';
+import { IProductDocument, IProductFile } from '../interfaces/product.interface';
 import { uploadMultiple } from '@global/helpers/cloudinary_upload';
 import { UploadApiResponse } from 'cloudinary';
 import { BadRequestError } from '@global/helpers/error-handler';
 import { productQueue } from '@service/queues/product.queue';
+import { productConstants } from '@product/constants/product.constants';
 import HTTP_STATUS from 'http-status-codes';
 
 class Create {
   @validator(productSchema)
   public async product(req: Request, res: Response): Promise<void> {
-    const { storeId } = req.params;
-    const { name, description, images, videos, price, priceDiscount, quantity, category } = req.body;
+    const { storeId, name, description, images, videos, price, priceDiscount, quantity, category } = req.body;
+
+    const productObjectId: ObjectId = new ObjectId();
 
     // Images upload
-    const uploadedImages: string[] = [];
+    const uploadedImages: IProductFile[] = [];
 
     const imageResponses: UploadApiResponse[] = (await uploadMultiple(
       images,
+      'image',
       true,
       true,
-      'product_images'
+      productConstants.PRODUCT_IMAGE_FOLDER
     )) as UploadApiResponse[];
 
     imageResponses.forEach((imgRes) => {
-      if (!imgRes.secure_url) {
-        throw new BadRequestError('an error occurred while uploading the images');
+      if (!imgRes.public_id) {
+        throw new BadRequestError('An error occurred while uploading the images');
       }
-      uploadedImages.push(imgRes.secure_url);
+      uploadedImages.push({ url: imgRes.secure_url, public_id: imgRes.public_id });
     });
 
     // Videos Upload
-    const uploadedVideos: string[] = [];
+    const uploadedVideos: IProductFile[] = [];
 
     if (videos && videos.length) {
       const videoResponses: UploadApiResponse[] = (await uploadMultiple(
         videos,
+        'video',
         true,
         true,
-        'product_videos'
+        productConstants.PRODUCT_VIDEO_FOLDER
       )) as UploadApiResponse[];
 
-      videoResponses.forEach((videoResponse) => {
-        if (!videoResponse.secure_url) throw new BadRequestError('an error occurred while uploading videos');
-        uploadedVideos.push(videoResponse.secure_url);
+      videoResponses.forEach((videoRes) => {
+        if (!videoRes.public_id) throw new BadRequestError('An error occurred while uploading videos');
+        uploadedVideos.push({ url: videoRes.secure_url, public_id: videoRes.public_id });
       });
     }
 
-    const productObjectId: ObjectId = new ObjectId();
     const product: IProductDocument = {
       _id: productObjectId,
       name,

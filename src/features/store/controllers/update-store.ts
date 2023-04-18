@@ -10,7 +10,6 @@ import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
 class Update {
-  // TODO: validate the incoming data from request body.
   @validator(storeUpdateSchema)
   public async store(req: Request, res: Response): Promise<void> {
     const { storeId } = req.params;
@@ -42,7 +41,6 @@ class Update {
       bgImage: bgImage ? bgImageResult.secure_url : store.bgImage
     } as IStoreDocument;
 
-    // TODO: update and save the store data in the database
     storeQueue.addStoreJob('updateStoreInDB', { value: updatedStore, key: storeId });
 
     res.status(HTTP_STATUS.OK).json({ message: 'Store updated successfully.', updatedStore });

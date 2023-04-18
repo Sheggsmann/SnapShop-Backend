@@ -24,26 +24,35 @@ class Create {
     const ownsStore = await storeService.getStoreByUserId(req.currentUser!.userId);
     if (ownsStore) throw new BadRequestError('User already owns a store');
 
+    const storeObjectId: ObjectId = new ObjectId();
+
     // TODO: Upload images to cloudinary
     const imageResult: UploadApiResponse = (await uploadFile(
       image,
       true,
       true,
-      'store'
+      'store',
+      `store_img_${storeObjectId}`
     )) as UploadApiResponse;
     if (!imageResult.public_id) throw new BadRequestError(imageResult.message);
 
     let bgImgResult: UploadApiResponse = {} as UploadApiResponse;
 
     if (bgImage) {
-      bgImgResult = (await uploadFile(image, true, true, 'storeBg')) as UploadApiResponse;
+      bgImgResult = (await uploadFile(
+        image,
+        true,
+        true,
+        'storeBg',
+        `store_bg_${storeObjectId}`
+      )) as UploadApiResponse;
       if (!bgImgResult.public_id) throw new BadRequestError(bgImgResult.message);
     }
 
     // Store Latitude and Longitude in reverse order because of the way
     // mongodb geospatial queries
     const store: IStoreDocument = {
-      _id: new ObjectId(),
+      _id: storeObjectId,
       name,
       description,
       owner: req.currentUser!.userId,

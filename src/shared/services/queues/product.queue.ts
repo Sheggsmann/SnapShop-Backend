@@ -6,6 +6,7 @@ class ProductQueue extends BaseQueue {
   constructor() {
     super('Product');
     this.processJob('addProductToDB', 5, productWorker.addProductToDB);
+    this.processJob('updateProductInDB', 5, productWorker.updateProductInDB);
   }
 
   public addProductJob(name: string, data: IProductJob): void {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AuthUserPayload } from '@auth/interfaces/auth.interface';
-import { BadRequestError, NotAuthorizedError } from '@global/helpers/error-handler';
+import { NotAuthorizedError } from '@global/helpers/error-handler';
 import { config } from '@root/config';
 import { Role } from '@user/interfaces/user.interface';
 import { Request, Response, NextFunction } from 'express';

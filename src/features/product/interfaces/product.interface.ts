@@ -6,8 +6,8 @@ export interface IProductDocument extends Document {
   _id: string | ObjectId;
   store: string | ObjectId;
   name: string;
-  images: string[];
-  videos: string[];
+  images: IProductFile[];
+  videos: IProductFile[];
   price: number;
   priceDiscount: number;
   description: string;
@@ -19,6 +19,16 @@ export interface IProductDocument extends Document {
 export interface IProductJob {
   value?: IProductDocument;
   key?: string;
+}
+
+export interface IProductFile {
+  url: string;
+  public_id?: string;
+}
+
+export interface IUpdateProductFile {
+  uploaded?: { content: string }[];
+  deleted?: string[];
 }
 
 /**
