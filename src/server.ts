@@ -9,9 +9,11 @@ import http from 'http';
 import hpp from 'hpp';
 import helmet from 'helmet';
 import cors from 'cors';
+import mongosanitize from 'express-mongo-sanitize';
 import compression from 'compression';
 import Logger from 'bunyan';
 import HTTP_STATUS from 'http-status-codes';
+
 import 'express-async-errors';
 
 const SERVER_PORT = 5000;
@@ -36,6 +38,7 @@ export class SnapShopServer {
   private securityMiddleware(app: Application): void {
     app.use(hpp());
     app.use(helmet());
+    app.use(mongosanitize());
     app.use(
       cors({
         origin: '*',

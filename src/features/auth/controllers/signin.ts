@@ -28,6 +28,7 @@ class SignIn {
       {
         uId: user.uId,
         userId: user._id,
+        roles: user.roles,
         profilePicture: user.profilePicture,
         mobileNumber: existingUser.mobileNumber
       },

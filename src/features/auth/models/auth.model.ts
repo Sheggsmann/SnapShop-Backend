@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IAuthDocument } from '@auth/interfaces/auth.interface';
 import { compare, hash } from 'bcryptjs';
 import { Model, Schema, model } from 'mongoose';
@@ -18,7 +19,7 @@ const authSchema = new Schema(
   {
     timestamps: true,
     toJSON: {
-      transform(doc, ret) {
+      transform(doc: any, ret: { password: any }) {
         delete ret.password;
         return ret;
       }

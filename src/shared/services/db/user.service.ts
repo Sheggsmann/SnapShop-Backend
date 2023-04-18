@@ -7,7 +7,10 @@ class UserService {
   }
 
   public async getUserByAuthId(authId: string): Promise<IUserDocument> {
-    return (await UserModel.findOne({ authId }).populate('authId')) as IUserDocument;
+    return (await UserModel.findOne({ authId }).populate(
+      'authId',
+      'mobileNumber verified uId'
+    )) as IUserDocument;
   }
 }
 

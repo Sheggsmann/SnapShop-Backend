@@ -18,7 +18,7 @@ class Password {
     if (!existingUser) throw new BadRequestError('Invalid credentials');
 
     const otp = `${Helpers.generateOtp(4)}`;
-    await authService.updatePasswordToken(`${existingUser._id}`, otp, Date.now() * OTP_EXPIRES_IN);
+    await authService.updatePasswordToken(`${existingUser._id}`, otp, Date.now() + OTP_EXPIRES_IN);
 
     await smsTransport.sendSms(mobileNumber, `Here is your password reset token: ${otp}`, otpProvider);
 

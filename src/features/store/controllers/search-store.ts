@@ -1,0 +1,56 @@
+import { BadRequestError } from '@global/helpers/error-handler';
+import { Helpers } from '@global/helpers/helpers';
+import { IProductDocument } from '@product/interfaces/product.interface';
+import { storeService } from '@service/db/store.service';
+import { Request, Response } from 'express';
+import HTTP_STATUS from 'http-status-codes';
+
+class SearchStore {
+  private MAX_DISTANCE = 120; // km
+  private DEFAULT_DISTANCE = 5; // km
+  private MIN_PRICE = 0;
+  private MAX_PRICE = 10000000;
+  private UNIT: 'km' | 'm' = 'km';
+
+  public store = async (req: Request, res: Response): Promise<void> => {
+    const { center } = req.params;
+
+    if (!req.query.searchParam) throw new BadRequestError('Search param is required');
+
+    const searchParam = new RegExp(Helpers.escapeRegExp(`${req.query.searchParam}`), 'i');
+    const maxPrice = req.query.maxPrice ?? this.MAX_PRICE;
+    const minPrice = req.query.minPrice ?? this.MIN_PRICE;
+    const unit = req.query.unit ?? this.UNIT;
+    const distance = req.query.distance
+      ? this.clampDistance(parseInt(req.query.distance as string), unit as string)
+      : this.DEFAULT_DISTANCE;
+    const [lat, lng] = center.split(',');
+
+    if (!lat || !lng) throw new BadRequestError('Please provide latitude and longitude in format lat,lng');
+    if (!unit || !['km', 'm'].includes(unit as string))
+      throw new BadRequestError('Unit must be km(kilometers) or m(meters)');
+
+    const radius = unit === 'km' ? distance / 6378.1 : distance / 1000 / 6378.1;
+    console.log('\nKILOMETER:', distance);
+    console.log('RADIUS', radius);
+
+    const products: IProductDocument[] = await storeService.getNearbyStores(
+      searchParam,
+      parseFloat(lat),
+      parseFloat(lng),
+      radius,
+      (minPrice as number) * 1,
+      (maxPrice as number) * 1
+    );
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Search results', products });
+  };
+
+  private clampDistance = (distance: number, unit = 'km'): number => {
+    // using 1 for kilometers and 1000 for meters
+    const d = Math.min(Math.max(distance, unit === 'km' ? 1 : 1000), this.MAX_DISTANCE);
+    return d;
+  };
+}
+
+export const searchStore: SearchStore = new SearchStore();

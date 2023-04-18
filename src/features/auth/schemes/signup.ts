@@ -3,8 +3,7 @@ import Joi, { ObjectSchema } from 'joi';
 const signupSchema: ObjectSchema = Joi.object().keys({
   mobileNumber: Joi.string().required().length(14).messages({
     'string.base': 'mobile number must be of type string',
-    'string.min': 'invalid number',
-    'string.max': 'invalid number',
+    'string.length': 'invalid number',
     'string.empty': 'mobile number is required'
   }),
   password: Joi.string().min(4).max(10).messages({
@@ -30,6 +29,7 @@ const signupSchema: ObjectSchema = Joi.object().keys({
 const verifyAccountSchema: ObjectSchema = Joi.object().keys({
   mobileNumber: Joi.string().required().length(14).messages({
     'string.base': 'mobile number must be of type string',
+    'string.length': 'invalid mobile number',
     'string.empty': 'mobile number is required'
   }),
   otp: Joi.string().required().length(4).messages({
@@ -41,6 +41,7 @@ const verifyAccountSchema: ObjectSchema = Joi.object().keys({
 const resendOtpSchema: ObjectSchema = Joi.object().keys({
   mobileNumber: Joi.string().required().length(14).messages({
     'string.base': 'mobile number must be of type string',
+    'string.length': 'invalid mobile number',
     'string.empty': 'mobile number is required'
   }),
   otpProvider: Joi.string().required().messages({

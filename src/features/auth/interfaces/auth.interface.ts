@@ -6,7 +6,7 @@ declare global {
     interface Request {
       currentUser?: AuthUserPayload;
       headers: {
-        'x-auth-token'?: string | null;
+        authorization: string;
       };
     }
   }
@@ -16,6 +16,7 @@ export interface AuthUserPayload {
   uId: string;
   userId: string;
   mobileNumber: string;
+  roles: string[];
   iat?: number;
 }
 
