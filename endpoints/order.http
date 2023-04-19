@@ -1,0 +1,32 @@
+@baseUrl = http://localhost:5000
+@urlPath = api/v1
+
+
+###
+GET {{baseUrl}}/{{urlPath}}/order/my-orders
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZGYzYTEwZDk0NjI3MTU1ZWM0MmYiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MTQ3NjYzNTYzIiwiaWF0IjoxNjgxNTY3MTg4fQ.XdwukPuTk6UB3wdFlWHu0kyOaIosp1BLEW0tr9XVQD4
+
+{}
+
+###
+GET {{baseUrl}}/{{urlPath}}/order/643f5e65d80e1f602ac672a7
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZGYzYTEwZDk0NjI3MTU1ZWM0MmYiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MTQ3NjYzNTYzIiwiaWF0IjoxNjgxNTY3MTg4fQ.XdwukPuTk6UB3wdFlWHu0kyOaIosp1BLEW0tr9XVQD4
+
+{}
+
+###
+POST {{baseUrl}}/{{urlPath}}/order/store/6439e1b12d63486915e3a3f3
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZGYzYTEwZDk0NjI3MTU1ZWM0MmYiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MTQ3NjYzNTYzIiwiaWF0IjoxNjgxNTY3MTg4fQ.XdwukPuTk6UB3wdFlWHu0kyOaIosp1BLEW0tr9XVQD4
+
+{
+  "products": [
+  {"product": "643aae72531ec40cc6b3a1dc", "quantity": 3},
+  { "product": "643aaffbaadc7897ef24bf99", "quantity": 10 }
+  ]
+}
