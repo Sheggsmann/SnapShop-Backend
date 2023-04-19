@@ -8,11 +8,12 @@ import { IUserJob } from '@user/interfaces/user.interface';
 import Logger from 'bunyan';
 import { IStoreJob } from '@store/interfaces/store.interface';
 import { IProductJob } from '@product/interfaces/product.interface';
+import { IOrderJob } from '@order/interfaces/order.interface';
 
 export let bullAdapters: BullAdapter[] = [];
 export const serverAdapter: ExpressAdapter = new ExpressAdapter().setBasePath('/queues');
 
-type IBaseJobData = IAuthJob | IUserJob | IStoreJob | IProductJob;
+type IBaseJobData = IAuthJob | IUserJob | IStoreJob | IProductJob | IOrderJob;
 
 export abstract class BaseQueue {
   protected queue: Queue.Queue;
