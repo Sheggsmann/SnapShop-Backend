@@ -2,7 +2,7 @@
 @urlPath = api/v1
 
 ###
-GET {{baseUrl}}/{{urlPath}}/nearby-stores/7.327625240687687,3.877030777699489?distance=200&unit=m&searchParam=ball
+GET {{baseUrl}}/{{urlPath}}/nearby-stores/7.327625240687687,3.877030777699489?distance=2&unit=km&searchParam=wisdom
 Content-Type: application/json
 Accept: application/json
 

@@ -2,6 +2,7 @@ import { BadRequestError } from '@global/helpers/error-handler';
 import { Helpers } from '@global/helpers/helpers';
 import { IProductDocument } from '@product/interfaces/product.interface';
 import { storeService } from '@service/db/store.service';
+import { searchesQueue } from '@service/queues/searches.queue';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
@@ -31,8 +32,11 @@ class SearchStore {
       throw new BadRequestError('Unit must be km(kilometers) or m(meters)');
 
     const radius = unit === 'km' ? distance / 6378.1 : distance / 1000 / 6378.1;
-    console.log('\nKILOMETER:', distance);
-    console.log('RADIUS', radius);
+
+    searchesQueue.addSearchTermJob('addSearchTermToDB', {
+      searchParam: `${req.query.searchParam}`,
+      location: [parseFloat(lat), parseFloat(lng)]
+    });
 
     const products: IProductDocument[] = await storeService.getNearbyStores(
       searchParam,

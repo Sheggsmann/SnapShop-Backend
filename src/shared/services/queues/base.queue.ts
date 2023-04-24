@@ -5,15 +5,25 @@ import { BullAdapter } from '@bull-board/api/bullAdapter';
 import { config } from '@root/config';
 import { IAuthJob } from '@auth/interfaces/auth.interface';
 import { IUserJob } from '@user/interfaces/user.interface';
-import Logger from 'bunyan';
 import { IStoreJob } from '@store/interfaces/store.interface';
 import { IProductJob } from '@product/interfaces/product.interface';
 import { IOrderJob } from '@order/interfaces/order.interface';
+import { IChatJobData, IMessageData } from '@chat/interfaces/chat.interface';
+import Logger from 'bunyan';
+import { ISearchesJob } from '@searches/interfaces/searches.interfaces';
 
 export let bullAdapters: BullAdapter[] = [];
 export const serverAdapter: ExpressAdapter = new ExpressAdapter().setBasePath('/queues');
 
-type IBaseJobData = IAuthJob | IUserJob | IStoreJob | IProductJob | IOrderJob;
+type IBaseJobData =
+  | IAuthJob
+  | IUserJob
+  | IStoreJob
+  | IProductJob
+  | IOrderJob
+  | IChatJobData
+  | IMessageData
+  | ISearchesJob;
 
 export abstract class BaseQueue {
   protected queue: Queue.Queue;

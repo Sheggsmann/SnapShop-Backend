@@ -32,7 +32,8 @@ class SignUp {
     const uId = `${Helpers.genrateRandomIntegers(12)}`;
 
     // TODO: Generate 4 digit OTP
-    const otp = `${Helpers.generateOtp(4)}`;
+    // const otp = `${Helpers.generateOtp(4)}`;
+    const otp = '1111';
 
     const authData: IAuthDocument = {
       _id: authObjectId,

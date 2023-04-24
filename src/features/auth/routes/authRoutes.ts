@@ -13,6 +13,7 @@ class AuthRoutes {
   public routes(): Router {
     this.router.post('/signup', signup.create);
     this.router.post('/signin', siginin.read);
+    this.router.post('/store-signin', siginin.readStore);
     this.router.post('/validate-number', signup.exists);
     this.router.put('/verify-account', signup.verifyAccount);
 

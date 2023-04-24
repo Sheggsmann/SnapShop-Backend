@@ -109,6 +109,8 @@
       "@store/*": ["./src/features/store/*"],
       "@product/*": ["./src/features/product/*"],
       "@order/*": ["./src/features/order/*"],
+      "@chat/*": ["./src/features/chat/*"],
+      "@searches/*": ["./src/features/searches/*"],
       "@global/*": ["./src/shared/globals/*"],
       "@service/*": ["./src/shared/services/*"],
       "@socket/*": ["./src/shared/sockets/*"],

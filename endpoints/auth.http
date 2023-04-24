@@ -27,6 +27,19 @@ Accept: application/json
   "otpProvider": "sms"
 }
 
+###
+POST {{baseUrl}}/{{urlPath}}/signup
+Content-Type: application/json
+Accept: application/json
+
+{
+  "mobileNumber": "+2348147663564",
+  "password": "promise",
+  "firstname": "Tristan",
+  "lastname": "Tate",
+  "otpProvider": "sms"
+}
+
 
 ###
 PUT {{baseUrl}}/{{urlPath}}/verify-account
@@ -44,10 +57,9 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "mobileNumber": "+2348147663563",
-  "otp": "0089"
+  "mobileNumber": "+2348147663564",
+  "otp": "4370"
 }
-
 
 
 ###
@@ -84,7 +96,7 @@ Accept: application/json
 
 
 ###
-POST {{baseUrl}}/{{urlPath}}/signin
+POST {{baseUrl}}/{{urlPath}}/store-signin
 Content-Type: application/json
 Accept: application/json
 
@@ -100,6 +112,16 @@ Accept: application/json
 
 {
   "mobileNumber": "+2348147663563",
+  "password": "promise"
+}
+
+###
+POST {{baseUrl}}/{{urlPath}}/signin
+Content-Type: application/json
+Accept: application/json
+
+{
+  "mobileNumber": "+2348147663564",
   "password": "promise"
 }
 
