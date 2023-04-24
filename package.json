@@ -4,8 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start:dev": "pm2 start ./build/app.js -i 2 --attach --watch | bunyan",
-    "start:staging": "NODE_ENV=staging pm2 start ./build/app.js -i 2 --attach --watch | bunyan",
+    "start:dev": "tspc && pm2 start ./build/app.js -i 2 --attach --watch | bunyan",
+    "start:staging": "set NODE_ENV=staging && tspc && pm2 start ./build/app.js -i 2 --attach --watch | bunyan",
     "dev": "nodemon -r tsconfig-paths/register src/app.ts | bunyan",
     "stop": "pm2 stop all",
     "delete": "pm2 delete all",
