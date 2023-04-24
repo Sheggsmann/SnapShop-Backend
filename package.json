@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start:dev": "tspc && pm2 start ./build/app.js -i 2 --attach --watch | bunyan",
-    "start:staging": "node ./build/app.js",
+    "start:staging": "node build/app.js | bunyan",
     "dev": "nodemon -r tsconfig-paths/register src/app.ts | bunyan",
     "stop": "pm2 stop all",
     "delete": "pm2 delete all",
