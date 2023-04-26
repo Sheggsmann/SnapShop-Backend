@@ -34,8 +34,7 @@ class AuthService {
   ): Promise<IAuthDocument | null> {
     return await AuthModel.findOne({
       mobileNumber,
-      passwordResetToken: passwordToken,
-      passwordResetExpiresIn: { $gte: Date.now() }
+      passwordResetToken: passwordToken
     });
   }
 }
