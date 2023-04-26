@@ -43,8 +43,7 @@ class AuthService {
         return __awaiter(this, void 0, void 0, function* () {
             return yield auth_model_1.AuthModel.findOne({
                 mobileNumber,
-                passwordResetToken: passwordToken,
-                passwordResetExpiresIn: { $gte: Date.now() }
+                passwordResetToken: passwordToken
             });
         });
     }
