@@ -49,7 +49,7 @@ class Password {
             const existingUser = yield auth_service_1.authService.getAuthUserByPasswordToken(mobileNumber, otp);
             if (!existingUser)
                 throw new error_handler_1.BadRequestError('Invalid token.');
-            if (parseInt(existingUser.passwordResetExpiresIn) >= Date.now())
+            if (new Date(existingUser.passwordResetExpiresIn).getTime() <= Date.now())
                 throw new error_handler_1.BadRequestError('Reset token has expired.');
             existingUser.password = password;
             existingUser.passwordResetExpiresIn = undefined;

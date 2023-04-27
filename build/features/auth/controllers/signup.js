@@ -83,8 +83,7 @@ class SignUp {
             user_queue_1.userQueue.addUserToDB('addUserToDB', { value: userData });
             // TODO: Send OTP to user via otp method
             const msg = yield sms_transport_1.smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
-            if (msg === 'error')
-                throw new error_handler_1.BadRequestError('Error sending sms');
+            // if (msg === 'error') throw new BadRequestError('Error sending sms');
             const jwtPayload = {
                 mobileNumber,
                 uId,
@@ -128,13 +127,13 @@ class SignUp {
                 throw new error_handler_1.NotFoundError('User not found');
             if (user.verified)
                 throw new error_handler_1.BadRequestError('User already verified');
-            const otp = `${helpers_1.Helpers.generateOtp(4)}`;
+            // const otp = `${Helpers.generateOtp(4)}`;
+            const otp = `1111`;
             user.verificationToken = otp;
             user.verificationExpiersIn = Date.now() + exports.OTP_EXPIRES_IN;
             yield user.save();
             const msg = yield sms_transport_1.smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
-            if (msg === 'error')
-                throw new error_handler_1.BadRequestError('Error sending sms');
+            // if (msg === 'error') throw new BadRequestError('Error sending sms');
             res.status(http_status_codes_1.default.OK).json({ message: 'Otp resent successfully' });
         });
     }

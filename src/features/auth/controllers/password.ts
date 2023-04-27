@@ -36,7 +36,8 @@ class Password {
     );
 
     if (!existingUser) throw new BadRequestError('Invalid token.');
-    if (parseInt(existingUser.passwordResetExpiresIn as string) >= Date.now())
+
+    if (new Date(existingUser.passwordResetExpiresIn as number).getTime() <= Date.now())
       throw new BadRequestError('Reset token has expired.');
 
     existingUser.password = password;

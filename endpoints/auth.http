@@ -146,7 +146,7 @@ Accept: application/json
 
 {
   "mobileNumber": "+2348088866150",
-  "otp": "5356",
+  "otp": "1111",
   "password": "promise",
   "confirmPassword": "promise"
 }
