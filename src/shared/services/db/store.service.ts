@@ -2,7 +2,7 @@ import { IProductDocument } from '@product/interfaces/product.interface';
 import { ProductModel } from '@product/models/product.model';
 import { IStoreDocument, IStoreWithCategories } from '@store/interfaces/store.interface';
 import { StoreModel } from '@store/models/store.model';
-import { Role } from '@user/interfaces/user.interface';
+import { IUserDocument, Role } from '@user/interfaces/user.interface';
 import { UserModel } from '@user/models/user.model';
 import { ObjectId } from 'mongodb';
 import { UpdateQuery } from 'mongoose';
@@ -10,7 +10,7 @@ import { UpdateQuery } from 'mongoose';
 class StoreService {
   public async addStoreToDB(userId: string, store: IStoreDocument): Promise<void> {
     const createdStore: Promise<IStoreDocument> = StoreModel.create(store);
-    const user: UpdateQuery<IStoreDocument> = UserModel.updateOne(
+    const user: UpdateQuery<IUserDocument> = UserModel.updateOne(
       { _id: userId },
       { $inc: { storeCount: 1 }, $push: { roles: Role.StoreOwner } }
     );

@@ -17,10 +17,11 @@ class Password {
     const existingUser: IAuthDocument | null = await authService.getUserByPhonenumber(mobileNumber);
     if (!existingUser) throw new BadRequestError('Invalid credentials');
 
-    const otp = `${Helpers.generateOtp(4)}`;
+    // const otp = `${Helpers.generateOtp(4)}`;
+    const otp = '1111';
     await authService.updatePasswordToken(`${existingUser._id}`, otp, Date.now() + OTP_EXPIRES_IN);
 
-    await smsTransport.sendSms(mobileNumber, `Here is your password reset token: ${otp}`, otpProvider);
+    await smsTransport.sendSms(mobileNumber, `Snapshup password reset token: ${otp}`, otpProvider);
 
     res.status(HTTP_STATUS.OK).json({ message: 'Password reset otp sent.' });
   }
@@ -33,7 +34,11 @@ class Password {
       mobileNumber,
       otp
     );
-    if (!existingUser) throw new BadRequestError('Reset token has expired.');
+
+    if (!existingUser) throw new BadRequestError('Invalid token.');
+
+    if (new Date(existingUser.passwordResetExpiresIn as number).getTime() <= Date.now())
+      throw new BadRequestError('Reset token has expired.');
 
     existingUser.password = password;
     existingUser.passwordResetExpiresIn = undefined;

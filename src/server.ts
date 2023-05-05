@@ -5,6 +5,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { config } from '@root/config';
 import { CustomError, IErrorResponse } from '@global/helpers/error-handler';
 import applicationRoutes from '@root/routes';
+import apiStats from 'swagger-stats';
 import http from 'http';
 import hpp from 'hpp';
 import helmet from 'helmet';
@@ -31,6 +32,7 @@ export class SnapShopServer {
     this.securityMiddleware(this.app);
     this.standardMiddleware(this.app);
     this.routeMiddleware(this.app);
+    this.apiMonitoring(this.app);
     this.globalErrorHandler(this.app);
     this.startServer(this.app);
   }
@@ -55,6 +57,10 @@ export class SnapShopServer {
 
   private routeMiddleware(app: Application): void {
     applicationRoutes(app);
+  }
+
+  private apiMonitoring(app: Application): void {
+    app.use(apiStats.getMiddleware({ uriPath: '/api-monitoring' }));
   }
 
   private globalErrorHandler(app: Application): void {
@@ -106,6 +112,7 @@ export class SnapShopServer {
   }
 
   private startHttpServer(httpServer: http.Server): void {
+    log.info(`Worker with process id of ${process.pid} has started...`);
     log.info(`Server has started with ${process.pid}`);
     httpServer.listen(SERVER_PORT, () => {
       log.info(`Server running on PORT: ${SERVER_PORT}`);

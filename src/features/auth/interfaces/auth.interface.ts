@@ -15,6 +15,7 @@ declare global {
 export interface AuthUserPayload {
   uId: string;
   userId: string;
+  storeId?: string;
   mobileNumber: string;
   roles: string[];
   iat?: number;

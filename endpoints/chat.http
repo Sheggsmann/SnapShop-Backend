@@ -1,0 +1,77 @@
+@baseUrl = http://localhost:5000
+@urlPath = api/v1
+
+###
+GET {{baseUrl}}/{{urlPath}}/chat/messages/conversation-list
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZDYyOGYyZTdmMTYwZmYyNzIzNjQiLCJzdG9yZUlkIjoiNjQzOWQ2NWRmMmU3ZjE2MGZmMjcyMzZjIiwicm9sZXMiOlsiVXNlciIsIlN0b3JlT3duZXIiXSwicHJvZmlsZVBpY3R1cmUiOiIiLCJtb2JpbGVOdW1iZXIiOiIrMjM0ODA4ODg2NjE1MCIsImlhdCI6MTY4MjI5NzIwMH0.TeGx41k8EQZ1XcQyxkPjS1R4qt43BXR-4PYdWAXCukg
+
+###
+GET {{baseUrl}}/{{urlPath}}/chat/messages/conversation/6439df3a10d94627155ec42f/6439d65df2e7f160ff27236c
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZGYzYTEwZDk0NjI3MTU1ZWM0MmYiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MTQ3NjYzNTYzIiwiaWF0IjoxNjgyMjk1NTAwfQ.gmzN7zSPhkmB4RL3WwO6304Ih_WZ9Rf-t6EZxj5Xeeg
+
+###
+# Store owner and User Nwokerji
+POST {{baseUrl}}/{{urlPath}}/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZGYzYTEwZDk0NjI3MTU1ZWM0MmYiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MTQ3NjYzNTYzIiwibmFtZSI6Ik53b2tlamkiLCJpYXQiOjE2ODIyMTE0NDZ9.VhftgYKO_qF7hQdeqpaXLTcp6OTi0vkRIiZLnLMdHDc
+
+{
+  "userId": "6439df3a10d94627155ec42f",
+  "storeId": "6439d65df2e7f160ff27236c",
+  "userName": "Nwokeji",
+  "storeName": "Sheggs Store",
+  "body": "Alright, tell me about the product you want.",
+  "conversationId": "64447b7453b36e2f81eaff00"
+}
+
+###
+# Store owner and User Tristan
+POST {{baseUrl}}/{{urlPath}}/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZGYzYTEwZDk0NjI3MTU1ZWM0MmYiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MTQ3NjYzNTYzIiwibmFtZSI6Ik53b2tlamkiLCJpYXQiOjE2ODIyMTE0NDZ9.VhftgYKO_qF7hQdeqpaXLTcp6OTi0vkRIiZLnLMdHDc
+
+{
+  "userId": "6445cddf0599bf8e65419a4a",
+  "storeId": "6439d65df2e7f160ff27236c",
+  "userName": "Tristan",
+  "storeName": "Sheggs Store",
+  "body": "Hey man, that's nice to hear. Tell me what product it is?",
+  "conversationId": "6445d1d369c4759aaf37280c"
+}
+
+###
+# User Nwokeji and SheggsStore
+POST {{baseUrl}}/{{urlPath}}/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZGYzYTEwZDk0NjI3MTU1ZWM0MmYiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MTQ3NjYzNTYzIiwiaWF0IjoxNjgyMjk1NTAwfQ.gmzN7zSPhkmB4RL3WwO6304Ih_WZ9Rf-t6EZxj5Xeeg
+
+{
+  "userId": "6439df3a10d94627155ec42f",
+  "storeId": "6439d65df2e7f160ff27236c",
+  "userName": "Nwokeji",
+  "storeName": "Sheggs Store",
+  "body": "I am talking about the teeth whitener.",
+  "conversationId": "64447b7453b36e2f81eaff00"
+}
+
+###
+# User Tristan and SheggsStore
+POST {{baseUrl}}/{{urlPath}}/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDQ1Y2RkZjA1OTliZjhlNjU0MTlhNGEiLCJyb2xlcyI6WyJVc2VyIl0sInByb2ZpbGVQaWN0dXJlIjoiIiwibW9iaWxlTnVtYmVyIjoiKzIzNDgxNDc2NjM1NjQiLCJpYXQiOjE2ODIyOTcxNzh9._XRsKaWNS7HUZRz0T9x5Dn0NL0WL-cZff5UGBsDLIVo
+
+{
+  "userId": "6445cddf0599bf8e65419a4a",
+  "storeId": "6439d65df2e7f160ff27236c",
+  "userName": "Tristan",
+  "storeName": "Sheggs Store",
+  "body": "Hi SheggsStore, I am Tristan and I am interested in one of your products."
+}
