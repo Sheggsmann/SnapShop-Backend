@@ -1,4 +1,4 @@
-import { BadRequestError } from '@global/helpers/error-handler';
+import { BadRequestError, NotFoundError } from '@global/helpers/error-handler';
 import { storeService } from '@service/db/store.service';
 import { Request, Response } from 'express';
 import { UploadApiResponse } from 'cloudinary';
@@ -67,6 +67,23 @@ class Create {
     storeQueue.addStoreJob('addStoreToDB', { value: store, userId: req.currentUser!.userId });
 
     res.status(HTTP_STATUS.CREATED).json({ message: 'Store created successfully', store });
+  }
+
+  // Add Joi validation
+  public async productCategory(req: Request, res: Response): Promise<void> {
+    const { storeId } = req.params;
+    const { category } = req.body;
+
+    const store: IStoreDocument | null = await storeService.getStoreByStoreId(storeId);
+    if (!store) throw new NotFoundError('Store not found');
+
+    if (store.productCategories.includes(category.toLowerCase()))
+      throw new BadRequestError('Category already exists');
+
+    const categories: string[] = [...store.productCategories, category.toLowerCase()];
+    await storeService.updateStore(storeId, { productCategories: categories });
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Product category created successfully' });
   }
 }
 

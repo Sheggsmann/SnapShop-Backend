@@ -1,5 +1,5 @@
 import { ILocation } from '@store/interfaces/store.interface';
-import { Document } from 'mongodb';
+import { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
 
 export interface IProductDocument extends Document {

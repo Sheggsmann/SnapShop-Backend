@@ -66,7 +66,7 @@ class StoreService {
     return products as IStoreWithCategories[];
   }
 
-  public async updateStore(storeId: string, updatedStore: IStoreDocument): Promise<void> {
+  public async updateStore(storeId: string, updatedStore: Partial<IStoreDocument>): Promise<void> {
     await StoreModel.updateOne({ _id: storeId }, { $set: updatedStore });
   }
 }

@@ -1,4 +1,4 @@
-import { NotAuthorizedError, NotFoundError } from '@global/helpers/error-handler';
+import { BadRequestError, NotAuthorizedError, NotFoundError } from '@global/helpers/error-handler';
 import { storeService } from '@service/db/store.service';
 import { IStoreDocument } from '@store/interfaces/store.interface';
 import { Request, Response } from 'express';
@@ -38,6 +38,15 @@ class Get {
     };
 
     res.status(HTTP_STATUS.OK).json({ message: 'Store details', store: queryResult });
+  };
+
+  public productCategories = async (req: Request, res: Response): Promise<void> => {
+    const { storeId } = req.params;
+
+    const store = await storeService.getStoreByStoreId(storeId);
+    if (!store) throw new BadRequestError('Store not found');
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Product Categories', categories: store.productCategories });
   };
 }
 

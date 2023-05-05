@@ -21,6 +21,7 @@ export interface IStoreDocument extends Document {
   locations: ILocation[];
   badges: string[];
   productsCount: number;
+  productCategories: string[]
   isOwner(userId: string): boolean;
 }
 

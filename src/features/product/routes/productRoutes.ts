@@ -2,6 +2,7 @@ import express, { Router } from 'express';
 import { authMiddleware } from '@global/middlewares/auth-middleware';
 import { createProduct } from '@product/controllers/create-product';
 import { updateProduct } from '@product/controllers/update-product';
+import { getProduct } from '@product/controllers/get-product';
 
 class ProductRoutes {
   private router: Router;
@@ -11,6 +12,10 @@ class ProductRoutes {
   }
 
   public routes(): Router {
+    this.router.get('/products/:skip', authMiddleware.checkAuth, getProduct.all);
+    this.router.get('/products/by-store/:storeId', authMiddleware.checkAuth, getProduct.productsByStoreId);
+    this.router.get('/product/:productId', authMiddleware.checkAuth, getProduct.productByProductId);
+
     this.router.post(
       '/product',
       authMiddleware.checkAuth,

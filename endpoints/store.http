@@ -47,3 +47,13 @@ Accept: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZDYyOGYyZTdmMTYwZmYyNzIzNjQiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MDg4ODY2MTUwIiwiaWF0IjoxNjgxNjg3MTQ4fQ.nS6heDw_rjoF-U9esdXSjBOUHYSy39MaEhTRuUvRWtE
 
 {}
+
+###
+POST {{baseUrl}}/{{urlPath}}/stores/product-category
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZDYyOGYyZTdmMTYwZmYyNzIzNjQiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MDg4ODY2MTUwIiwiaWF0IjoxNjgxNjg3MTQ4fQ.nS6heDw_rjoF-U9esdXSjBOUHYSy39MaEhTRuUvRWtE
+
+{
+  storeId: ""
+}

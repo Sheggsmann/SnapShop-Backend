@@ -5,7 +5,7 @@ import { productSchema } from '../schemes/product.scheme';
 import { IProductDocument, IProductFile } from '../interfaces/product.interface';
 import { uploadMultiple } from '@global/helpers/cloudinary_upload';
 import { UploadApiResponse } from 'cloudinary';
-import { BadRequestError } from '@global/helpers/error-handler';
+import { BadRequestError, NotFoundError } from '@global/helpers/error-handler';
 import { productQueue } from '@service/queues/product.queue';
 import { productConstants } from '@product/constants/product.constants';
 import HTTP_STATUS from 'http-status-codes';
@@ -64,7 +64,7 @@ class Create {
       videos: uploadedVideos.length ? uploadedVideos : [],
       priceDiscount: priceDiscount ?? 0,
       quantity: quantity ?? 0
-    };
+    } as IProductDocument;
 
     productQueue.addProductJob('addProductToDB', { value: product, key: storeId });
 
