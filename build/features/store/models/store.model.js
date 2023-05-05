@@ -21,7 +21,8 @@ const storeSchema = new mongoose_1.Schema({
     ],
     verified: { type: Boolean, default: false },
     badges: [String],
-    productsCount: { type: Number, default: 0 }
+    productsCount: { type: Number, default: 0 },
+    productCategories: [String]
 }, { timestamps: true });
 storeSchema.index({ 'locations.location': '2dsphere' });
 storeSchema.methods.isOwner = function (userId) {

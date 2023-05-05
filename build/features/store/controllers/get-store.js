@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getStores = void 0;
 const error_handler_1 = require("../../../shared/globals/helpers/error-handler");
+const product_service_1 = require("../../../shared/services/db/product.service");
 const store_service_1 = require("../../../shared/services/db/store.service");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const PAGE_SIZE = 30;
@@ -40,6 +41,18 @@ class Get {
             const categorizedProducts = yield store_service_1.storeService.getStoreProductsByCategory(storeId);
             const queryResult = Object.assign(Object.assign({}, store.toJSON()), { categories: [...categorizedProducts] });
             res.status(http_status_codes_1.default.OK).json({ message: 'Store details', store: queryResult });
+        });
+        this.productCategories = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const storeId = req.currentUser.storeId;
+            const store = yield store_service_1.storeService.getStoreByStoreId(`${storeId}`);
+            if (!store)
+                throw new error_handler_1.BadRequestError('Store not found');
+            res.status(http_status_codes_1.default.OK).json({ message: 'Product Categories', categories: store.productCategories });
+        });
+        this.products = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const storeId = req.currentUser.storeId;
+            const products = yield product_service_1.productService.getProductsByStoreId(`${storeId}`);
+            res.status(http_status_codes_1.default.OK).json({ message: 'Product Categories', products });
         });
     }
 }

@@ -72,6 +72,20 @@ class Create {
             res.status(http_status_codes_1.default.CREATED).json({ message: 'Store created successfully', store });
         });
     }
+    // Add Joi validation
+    productCategory(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { category } = req.body;
+            const store = yield store_service_1.storeService.getStoreByStoreId(`${req.currentUser.storeId}`);
+            if (!store)
+                throw new error_handler_1.NotFoundError('Store not found');
+            if (store.productCategories.includes(category.toLowerCase()))
+                throw new error_handler_1.BadRequestError('Category already exists');
+            const categories = [...store.productCategories, category.toLowerCase()];
+            yield store_service_1.storeService.updateStore(`${req.currentUser.storeId}`, { productCategories: categories });
+            res.status(http_status_codes_1.default.OK).json({ message: 'Product category created successfully', category });
+        });
+    }
 }
 __decorate([
     (0, joi_validation_decorator_1.validator)(store_scheme_1.storeSchema),

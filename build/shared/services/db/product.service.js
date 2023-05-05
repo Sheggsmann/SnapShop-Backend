@@ -19,9 +19,19 @@ class ProductService {
             yield store_model_1.StoreModel.updateOne({ _id: storeId }, { $inc: { productsCount: 1 } });
         });
     }
+    getProducts(skip, limit) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return (yield product_model_1.ProductModel.find({}).skip(skip).limit(limit));
+        });
+    }
     getProductById(productId) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield product_model_1.ProductModel.findOne({ _id: productId }).populate('store');
+        });
+    }
+    getProductsByStoreId(storeId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield product_model_1.ProductModel.find({ store: storeId });
         });
     }
     updateProduct(productId, updatedProduct) {
