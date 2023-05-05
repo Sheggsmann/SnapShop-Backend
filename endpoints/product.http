@@ -2,6 +2,14 @@
 @urlPath = api/v1
 
 
+
+###
+GET {{baseUrl}}/{{urlPath}}/products/by-store/6439d65df2e7f160ff27236c
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZGYzYTEwZDk0NjI3MTU1ZWM0MmYiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MTQ3NjYzNTYzIiwiaWF0IjoxNjgxNTY3MTg4fQ.XdwukPuTk6UB3wdFlWHu0kyOaIosp1BLEW0tr9XVQD4
+
+
 ###
 POST {{baseUrl}}/{{urlPath}}/product
 Content-Type: application/json

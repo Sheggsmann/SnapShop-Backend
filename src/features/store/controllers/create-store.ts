@@ -71,19 +71,18 @@ class Create {
 
   // Add Joi validation
   public async productCategory(req: Request, res: Response): Promise<void> {
-    const { storeId } = req.params;
     const { category } = req.body;
 
-    const store: IStoreDocument | null = await storeService.getStoreByStoreId(storeId);
+    const store: IStoreDocument | null = await storeService.getStoreByStoreId(`${req.currentUser!.storeId}`);
     if (!store) throw new NotFoundError('Store not found');
 
     if (store.productCategories.includes(category.toLowerCase()))
       throw new BadRequestError('Category already exists');
 
     const categories: string[] = [...store.productCategories, category.toLowerCase()];
-    await storeService.updateStore(storeId, { productCategories: categories });
+    await storeService.updateStore(`${req.currentUser!.storeId}`, { productCategories: categories });
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Product category created successfully' });
+    res.status(HTTP_STATUS.OK).json({ message: 'Product category created successfully', category });
   }
 }
 

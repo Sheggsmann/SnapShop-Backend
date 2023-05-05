@@ -1,4 +1,4 @@
-@baseUrl = https://snapshup-backend.onrender.com
+@baseUrl = http://localhost:5000
 @urlPath = api/v1
 
 ###
@@ -17,6 +17,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5Z
 }
 
 ###
+POST {{baseUrl}}/{{urlPath}}/store/product-categories
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZDYyOGYyZTdmMTYwZmYyNzIzNjQiLCJzdG9yZUlkIjoiNjQzOWQ2NWRmMmU3ZjE2MGZmMjcyMzZjIiwicm9sZXMiOlsiVXNlciIsIlN0b3JlT3duZXIiXSwicHJvZmlsZVBpY3R1cmUiOiIiLCJtb2JpbGVOdW1iZXIiOiIrMjM0ODA4ODg2NjE1MCIsImlhdCI6MTY4MzMwNjI3M30.iV29GyEPFRaYwVYLw9tk8s6xEi6UaJdMKIPJnQfaQ1Q
+
+{
+  "category": "wears"
+}
+
+
+###
 GET {{baseUrl}}/{{urlPath}}/stores/all/1
 Content-Type: application/json
 Accept: application/json
@@ -24,10 +35,23 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5Z
 
 
 ###
+GET {{baseUrl}}/{{urlPath}}/store/products
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZDYyOGYyZTdmMTYwZmYyNzIzNjQiLCJzdG9yZUlkIjoiNjQzOWQ2NWRmMmU3ZjE2MGZmMjcyMzZjIiwicm9sZXMiOlsiVXNlciIsIlN0b3JlT3duZXIiXSwicHJvZmlsZVBpY3R1cmUiOiIiLCJtb2JpbGVOdW1iZXIiOiIrMjM0ODA4ODg2NjE1MCIsImlhdCI6MTY4MzMwNjI3M30.iV29GyEPFRaYwVYLw9tk8s6xEi6UaJdMKIPJnQfaQ1Q
+
+
+###
 GET {{baseUrl}}/{{urlPath}}/stores/6439d65df2e7f160ff27236c
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZDYyOGYyZTdmMTYwZmYyNzIzNjQiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MDg4ODY2MTUwIiwiaWF0IjoxNjgxNjg3MTQ4fQ.nS6heDw_rjoF-U9esdXSjBOUHYSy39MaEhTRuUvRWtE
+
+###
+GET {{baseUrl}}/{{urlPath}}/store/product-categories
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZDYyOGYyZTdmMTYwZmYyNzIzNjQiLCJzdG9yZUlkIjoiNjQzOWQ2NWRmMmU3ZjE2MGZmMjcyMzZjIiwicm9sZXMiOlsiVXNlciIsIlN0b3JlT3duZXIiXSwicHJvZmlsZVBpY3R1cmUiOiIiLCJtb2JpbGVOdW1iZXIiOiIrMjM0ODA4ODg2NjE1MCIsImlhdCI6MTY4MzMwNjI3M30.iV29GyEPFRaYwVYLw9tk8s6xEi6UaJdMKIPJnQfaQ1Q
 
 ###
 PUT {{baseUrl}}/{{urlPath}}/stores/6439d65df2e7f160ff27236c
@@ -48,12 +72,3 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5Z
 
 {}
 
-###
-POST {{baseUrl}}/{{urlPath}}/stores/product-category
-Content-Type: application/json
-Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM5ZDYyOGYyZTdmMTYwZmYyNzIzNjQiLCJyb2xlcyI6WyJVc2VyIiwiU3RvcmVPd25lciJdLCJwcm9maWxlUGljdHVyZSI6IiIsIm1vYmlsZU51bWJlciI6IisyMzQ4MDg4ODY2MTUwIiwiaWF0IjoxNjgxNjg3MTQ4fQ.nS6heDw_rjoF-U9esdXSjBOUHYSy39MaEhTRuUvRWtE
-
-{
-  storeId: ""
-}

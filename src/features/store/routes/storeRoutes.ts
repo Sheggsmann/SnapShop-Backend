@@ -19,6 +19,12 @@ class StoreRoutes {
       authMiddleware.restrictTo(['StoreOwner']),
       getStores.productCategories
     );
+    this.router.get(
+      '/store/products',
+      authMiddleware.checkAuth,
+      authMiddleware.restrictTo(['StoreOwner']),
+      getStores.products
+    );
     this.router.get('/stores/:storeId', authMiddleware.checkAuth, getStores.storeByStoreId);
 
     this.router.put('/stores/verify/:storeId', authMiddleware.checkAuth, updateStore.verify);
@@ -26,7 +32,7 @@ class StoreRoutes {
 
     this.router.post('/store/signup', authMiddleware.checkAuth, createStore.store);
     this.router.post(
-      '/store/product-category',
+      '/store/product-categories',
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),
       createStore.productCategory
