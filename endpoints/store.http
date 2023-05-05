@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:5000
+@baseUrl = https://snapshup-backend.onrender.com
 @urlPath = api/v1
 
 ###
