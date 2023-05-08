@@ -9,28 +9,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userService = void 0;
-const user_model_1 = require("../../../features/user/models/user.model");
-class UserService {
-    createUser(data) {
+exports.reviewService = void 0;
+const review_model_1 = require("../../../features/review/models/review.model");
+class ReviewService {
+    addReviewToDB(data) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield user_model_1.UserModel.create(data);
+            yield review_model_1.ReviewModel.create(data);
         });
     }
-    getUserById(userId) {
+    getSingleReview(query) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (yield user_model_1.UserModel.findOne({ _id: userId }).populate('authId', 'mobileNumber verified uId'));
+            const review = yield review_model_1.ReviewModel.findOne(query);
+            return review;
         });
     }
-    getUserByAuthId(authId) {
+    getProductReviews(productId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (yield user_model_1.UserModel.findOne({ authId }).populate('authId', 'mobileNumber verified uId'));
-        });
-    }
-    updateUser(userId, updatedUser) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield user_model_1.UserModel.updateOne({ _id: userId }, { $set: updatedUser });
+            return (yield review_model_1.ReviewModel.find({ product: productId }).limit(50));
         });
     }
 }
-exports.userService = new UserService();
+exports.reviewService = new ReviewService();

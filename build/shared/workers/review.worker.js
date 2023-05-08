@@ -9,16 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userWorker = void 0;
+exports.reviewWorker = void 0;
 const config_1 = require("../../config");
-const user_service_1 = require("../services/db/user.service");
-const log = config_1.config.createLogger('User Worker');
-class UserWorker {
-    addUserToDB(job, done) {
+const review_service_1 = require("../services/db/review.service");
+const log = config_1.config.createLogger('Review Worker');
+class ReviewWorker {
+    addReviewToDB(job, done) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { value } = job.data;
-                yield user_service_1.userService.createUser(value);
+                yield review_service_1.reviewService.addReviewToDB(value);
                 job.progress(100);
                 done(null, job.data);
             }
@@ -28,18 +28,5 @@ class UserWorker {
             }
         });
     }
-    updateUserInDB(job, done) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { key, value } = job.data;
-                yield user_service_1.userService.updateUser(key, value);
-                job.progress(100);
-                done(null, job.data);
-            }
-            catch (err) {
-                done(err);
-            }
-        });
-    }
 }
-exports.userWorker = new UserWorker();
+exports.reviewWorker = new ReviewWorker();
