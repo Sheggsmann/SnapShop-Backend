@@ -19,6 +19,22 @@ class Get {
 
     res.status(HTTP_STATUS.OK).json({ message: 'User Profile', user });
   }
+
+  public async savedStores(req: Request, res: Response): Promise<void> {
+    const user: IUserDocument = await (
+      await userService.getUserById(req.currentUser!.userId)
+    ).populate('savedStores', '-owner');
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Saved stores', savedStores: user.savedStores });
+  }
+
+  public async likedProducts(req: Request, res: Response): Promise<void> {
+    const user: IUserDocument = await (
+      await userService.getUserById(req.currentUser!.userId)
+    ).populate('likedProducts', '-locations');
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Liked products', likedProducts: user.likedProducts });
+  }
 }
 
 export const getUser: Get = new Get();

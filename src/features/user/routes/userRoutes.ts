@@ -12,10 +12,13 @@ class UserRoutes {
 
   public routes(): Router {
     this.router.get('/me', authMiddleware.checkAuth, getUser.me);
+    this.router.get('/user/saved-stores', authMiddleware.checkAuth, getUser.savedStores);
+    this.router.get('/user/liked-products', authMiddleware.checkAuth, getUser.likedProducts);
     this.router.get('/profile/:userId', authMiddleware.checkAuth, getUser.profile);
 
     this.router.put('/user', authMiddleware.checkAuth, updateUser.user);
-
+    this.router.post('/user/like-product', authMiddleware.checkAuth, updateUser.likeProduct);
+    this.router.post('/user/save-store', authMiddleware.checkAuth, updateUser.saveStore);
     return this.router;
   }
 }

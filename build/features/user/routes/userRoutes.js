@@ -14,8 +14,12 @@ class UserRoutes {
     }
     routes() {
         this.router.get('/me', auth_middleware_1.authMiddleware.checkAuth, get_user_1.getUser.me);
+        this.router.get('/user/saved-stores', auth_middleware_1.authMiddleware.checkAuth, get_user_1.getUser.savedStores);
+        this.router.get('/user/liked-products', auth_middleware_1.authMiddleware.checkAuth, get_user_1.getUser.likedProducts);
         this.router.get('/profile/:userId', auth_middleware_1.authMiddleware.checkAuth, get_user_1.getUser.profile);
         this.router.put('/user', auth_middleware_1.authMiddleware.checkAuth, update_user_1.updateUser.user);
+        this.router.post('/user/like-product', auth_middleware_1.authMiddleware.checkAuth, update_user_1.updateUser.likeProduct);
+        this.router.post('/user/save-store', auth_middleware_1.authMiddleware.checkAuth, update_user_1.updateUser.saveStore);
         return this.router;
     }
 }

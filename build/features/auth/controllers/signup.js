@@ -80,7 +80,7 @@ class SignUp {
             // TODO:  Add to redis cache
             // TODO: Save to database
             auth_queue_1.authQueue.addAuthUserJob('addAuthUserToDB', { value: authData });
-            user_queue_1.userQueue.addUserToDB('addUserToDB', { value: userData });
+            user_queue_1.userQueue.addUserJob('addUserToDB', { value: userData });
             // TODO: Send OTP to user via otp method
             const msg = yield sms_transport_1.smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
             // if (msg === 'error') throw new BadRequestError('Error sending sms');

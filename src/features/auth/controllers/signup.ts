@@ -67,7 +67,7 @@ class SignUp {
 
     // TODO: Save to database
     authQueue.addAuthUserJob('addAuthUserToDB', { value: authData });
-    userQueue.addUserToDB('addUserToDB', { value: userData });
+    userQueue.addUserJob('addUserToDB', { value: userData });
 
     // TODO: Send OTP to user via otp method
     const msg = await smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);

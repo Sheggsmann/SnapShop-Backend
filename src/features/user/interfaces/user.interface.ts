@@ -20,8 +20,8 @@ export interface IUserDocument extends Document {
   roles: (keyof typeof Role)[];
   storeCount: number;
   createdAt?: Date;
-  savedStores: mongoose.Types.ObjectId[];
-  likedStores: mongoose.Types.ObjectId[];
+  savedStores: mongoose.Types.ObjectId[] | string[];
+  likedProducts: mongoose.Types.ObjectId[] | string[];
   deliveryAddresses: [];
   notifications: INotificationSettings;
 }

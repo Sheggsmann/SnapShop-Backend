@@ -10,7 +10,7 @@ const userSchema = new mongoose_1.Schema({
     email: String,
     roles: { type: [], default: [user_interface_1.Role.User] },
     savedStores: [{ type: mongoose_1.Types.ObjectId, ref: 'Store' }],
-    likedStores: [{ type: mongoose_1.Types.ObjectId, ref: 'Store' }],
+    likedProducts: [{ type: mongoose_1.Types.ObjectId, ref: 'Product' }],
     profilePicture: { type: String, default: '' },
     deliveryAddresses: [],
     notifications: {

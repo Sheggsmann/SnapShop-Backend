@@ -9,7 +9,7 @@ const userSchema: Schema = new Schema(
     email: String,
     roles: { type: [], default: [Role.User] },
     savedStores: [{ type: Types.ObjectId, ref: 'Store' }],
-    likedStores: [{ type: Types.ObjectId, ref: 'Store' }],
+    likedProducts: [{ type: Types.ObjectId, ref: 'Product' }],
     profilePicture: { type: String, default: '' },
     deliveryAddresses: [],
     notifications: {

@@ -34,5 +34,17 @@ class Get {
             res.status(http_status_codes_1.default.OK).json({ message: 'User Profile', user });
         });
     }
+    savedStores(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield (yield user_service_1.userService.getUserById(req.currentUser.userId)).populate('savedStores', '-owner');
+            res.status(http_status_codes_1.default.OK).json({ message: 'Saved stores', savedStores: user.savedStores });
+        });
+    }
+    likedProducts(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield (yield user_service_1.userService.getUserById(req.currentUser.userId)).populate('likedProducts', '-locations');
+            res.status(http_status_codes_1.default.OK).json({ message: 'Liked products', likedProducts: user.likedProducts });
+        });
+    }
 }
 exports.getUser = new Get();

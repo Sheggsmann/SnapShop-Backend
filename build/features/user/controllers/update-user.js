@@ -47,8 +47,38 @@ class Update {
                 profilePicture: image ? imageResult.secure_url : user.profilePicture,
                 email
             };
-            user_queue_1.userQueue.addUserToDB('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
+            user_queue_1.userQueue.addUserJob('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
             res.status(http_status_codes_1.default.OK).json({ message: 'User updated successfully', updatedUser });
+        });
+    }
+    saveStore(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { storeId } = req.body;
+            const user = yield user_service_1.userService.getUserById(req.currentUser.userId);
+            if (user.savedStores.includes(storeId))
+                throw new error_handler_1.BadRequestError('Store already saved');
+            const updatedUser = {
+                savedStores: [...user.savedStores, storeId]
+            };
+            user_queue_1.userQueue.addUserJob('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
+            res
+                .status(http_status_codes_1.default.OK)
+                .json({ message: 'Store saved successfully', savedStores: updatedUser.savedStores });
+        });
+    }
+    likeProduct(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { productId } = req.body;
+            const user = yield user_service_1.userService.getUserById(req.currentUser.userId);
+            if (user.likedProducts.includes(productId))
+                throw new error_handler_1.BadRequestError('Product liked already');
+            const updatedUser = {
+                likedProducts: [...user.likedProducts, productId]
+            };
+            user_queue_1.userQueue.addUserJob('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
+            res
+                .status(http_status_codes_1.default.OK)
+                .json({ message: 'Store saved successfully', likedProducts: updatedUser.likedProducts });
         });
     }
 }
@@ -58,4 +88,16 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], Update.prototype, "user", null);
+__decorate([
+    (0, joi_validation_decorator_1.validator)(user_scheme_1.saveStoreSchema),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], Update.prototype, "saveStore", null);
+__decorate([
+    (0, joi_validation_decorator_1.validator)(user_scheme_1.likedProductSchema),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], Update.prototype, "likeProduct", null);
 exports.updateUser = new Update();
