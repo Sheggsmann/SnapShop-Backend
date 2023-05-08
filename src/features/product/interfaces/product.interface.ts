@@ -1,10 +1,10 @@
-import { ILocation } from '@store/interfaces/store.interface';
+import { ILocation, IStoreDocument } from '@store/interfaces/store.interface';
 import { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
 
 export interface IProductDocument extends Document {
   _id: string | ObjectId;
-  store: string | ObjectId;
+  store: string | ObjectId | IStoreDocument;
   name: string;
   images: IProductFile[];
   videos: IProductFile[];

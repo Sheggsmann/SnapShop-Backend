@@ -9,8 +9,9 @@ import { IStoreJob } from '@store/interfaces/store.interface';
 import { IProductJob } from '@product/interfaces/product.interface';
 import { IOrderJob } from '@order/interfaces/order.interface';
 import { IChatJobData, IMessageData } from '@chat/interfaces/chat.interface';
-import Logger from 'bunyan';
+import { IReviewJob } from '@root/features/review/interfaces/review.interface';
 import { ISearchesJob } from '@searches/interfaces/searches.interfaces';
+import Logger from 'bunyan';
 
 export let bullAdapters: BullAdapter[] = [];
 export const serverAdapter: ExpressAdapter = new ExpressAdapter().setBasePath('/queues');
@@ -23,7 +24,8 @@ type IBaseJobData =
   | IOrderJob
   | IChatJobData
   | IMessageData
-  | ISearchesJob;
+  | ISearchesJob
+  | IReviewJob;
 
 export abstract class BaseQueue {
   protected queue: Queue.Queue;
