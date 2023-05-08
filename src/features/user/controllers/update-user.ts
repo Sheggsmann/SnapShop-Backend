@@ -1,14 +1,16 @@
 import { uploadFile } from '@global/helpers/cloudinary_upload';
 import { BadRequestError, NotFoundError } from '@global/helpers/error-handler';
+import { validator } from '@global/helpers/joi-validation-decorator';
 import { userService } from '@service/db/user.service';
 import { userQueue } from '@service/queues/user.queue';
 import { IUserDocument } from '@user/interfaces/user.interface';
+import { userSchema } from '@user/schemes/user.scheme';
 import { UploadApiResponse } from 'cloudinary';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
 class Update {
-  // Add Joi validation
+  @validator(userSchema)
   public async user(req: Request, res: Response): Promise<void> {
     const { email, image } = req.body;
 
