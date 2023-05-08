@@ -8,6 +8,7 @@ import { searchStoreRoutes } from '@store/routes/searchStoreRoutes';
 import { orderRoutes } from '@order/routes/orderRoutes';
 import { chatRoutes } from '@chat/routes/chatRoutes';
 import { reviewRoutes } from './features/review/routes/reviewRoutes';
+import { userRoutes } from '@user/routes/userRoutes';
 
 const BASE_PATH = '/api/v1';
 
@@ -18,6 +19,7 @@ export default (app: Application) => {
     app.use(BASE_PATH, authRoutes.routes());
     app.use(BASE_PATH, searchStoreRoutes.routes());
 
+    app.use(BASE_PATH, authMiddleware.protect, userRoutes.routes());
     app.use(BASE_PATH, authMiddleware.protect, storeRoutes.routes());
     app.use(BASE_PATH, authMiddleware.protect, orderRoutes.routes());
     app.use(BASE_PATH, authMiddleware.protect, chatRoutes.routes());

@@ -18,6 +18,18 @@ class UserWorker {
       done(err as Error);
     }
   }
+
+  public async updateUserInDB(job: Job, done: DoneCallback): Promise<void> {
+    try {
+      const { key, value } = job.data;
+      await userService.updateUser(key, value);
+
+      job.progress(100);
+      done(null, job.data);
+    } catch (err) {
+      done(err as Error);
+    }
+  }
 }
 
 export const userWorker: UserWorker = new UserWorker();

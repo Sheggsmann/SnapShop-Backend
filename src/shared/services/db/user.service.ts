@@ -19,6 +19,10 @@ class UserService {
       'mobileNumber verified uId'
     )) as IUserDocument;
   }
+
+  public async updateUser(userId: string, updatedUser: Partial<IUserDocument>): Promise<void> {
+    await UserModel.updateOne({ _id: userId }, { $set: updatedUser });
+  }
 }
 
 export const userService: UserService = new UserService();

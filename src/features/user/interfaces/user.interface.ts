@@ -31,5 +31,6 @@ export interface INotificationSettings {
 }
 
 export interface IUserJob {
-  value: IUserDocument;
+  value?: Partial<IUserDocument>;
+  key?: string;
 }
