@@ -13,16 +13,19 @@ const signupSchema: ObjectSchema = Joi.object().keys({
     'string.empty': 'password is required'
   }),
   firstname: Joi.string().required().messages({
-    'string.base': 'Firstname is required',
+    'string.base': 'Firstname must be of type string',
     'string.empty': 'first name is required'
   }),
   lastname: Joi.string().required().messages({
-    'string.base': '',
+    'string.base': 'Lastname must be of type string',
     'string.empty': 'last name is required'
   }),
   otpProvider: Joi.string().required().messages({
     'string.base': 'otp provider must be of type string',
     'string.empty': 'otp provider is required'
+  }),
+  app: Joi.string().optional().valid('merchant').messages({
+    'string.base': 'app must be of type string'
   })
 });
 

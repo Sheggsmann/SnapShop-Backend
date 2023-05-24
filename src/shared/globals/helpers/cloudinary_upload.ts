@@ -1,4 +1,7 @@
 import cloudinary, { UploadApiResponse, UploadApiErrorResponse } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { productConstants } from '@product/constants/product.constants';
+import multer from 'multer';
 
 export type UploadReturnType = UploadApiResponse | UploadApiErrorResponse | undefined;
 
@@ -85,3 +88,16 @@ export const deleteFile = (
     );
   });
 };
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary.v2,
+  params: {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    folder: productConstants.PRODUCT_VIDEO_FOLDER,
+    allowed_formats: ['mp4', 'mov'],
+    limits: { fileSize: 5 * 1024 * 1024 }
+  }
+});
+
+export const videoUploader = multer({ storage });

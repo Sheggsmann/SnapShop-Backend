@@ -12,7 +12,9 @@ export function validator(schema: ObjectSchema): IJoiDecorator {
       const req: Request = args[0];
       const { error } = await Promise.resolve(schema.validate(req.body));
 
-      if (error?.details) throw new JoiValidationError(error.details[0].message);
+      if (error?.details) {
+        throw new JoiValidationError(error.details[0].message);
+      }
 
       return originalMethod.apply(this, args);
     };

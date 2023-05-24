@@ -1,10 +1,6 @@
 import Joi, { ObjectSchema } from 'joi';
 
 const productSchema: ObjectSchema = Joi.object().keys({
-  storeId: Joi.string().required().messages({
-    'string.base': 'storeId must be of type string',
-    'string.empty': 'storeId is a required field'
-  }),
   name: Joi.string().required().min(2).max(100).messages({
     'string.base': 'name must be of type string',
     'string.min': 'invalid name length',
@@ -21,10 +17,11 @@ const productSchema: ObjectSchema = Joi.object().keys({
     'number.base': 'price must be of type number',
     'number.min': 'price should be greater than 1'
   }),
-  images: Joi.array().min(1).max(5).messages({
+  images: Joi.array().required().min(1).max(5).messages({
     'array.base': 'images must be of type array',
     'array.min': 'invalid array length',
-    'array.max': 'invalid array length'
+    'array.max': 'invalid array length',
+    'array.empty': 'images is a required field'
   }),
   category: Joi.string().required().messages({
     'string.base': 'category must be of type string',
@@ -32,7 +29,7 @@ const productSchema: ObjectSchema = Joi.object().keys({
   }),
   priceDiscount: Joi.number().optional().allow(null, 0),
   quantity: Joi.number().optional().allow(null, 0),
-  video: Joi.array().max(1).optional()
+  videos: Joi.array().max(1).optional()
 });
 
 const updateProductSchema: ObjectSchema = Joi.object().keys({

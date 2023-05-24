@@ -32,8 +32,11 @@ const product_constants_1 = require("../constants/product.constants");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class Create {
     product(req, res) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            const { storeId, name, description, images, videos, price, priceDiscount, quantity, category } = req.body;
+            const { name, videos, description, images, price, priceDiscount, quantity, category } = req.body;
+            if (!((_a = req.currentUser) === null || _a === void 0 ? void 0 : _a.storeId))
+                throw new error_handler_1.BadRequestError("User doesn't own a store");
             const productObjectId = new mongodb_1.ObjectId();
             // Images upload
             const uploadedImages = [];
@@ -47,12 +50,7 @@ class Create {
             // Videos Upload
             const uploadedVideos = [];
             if (videos && videos.length) {
-                const videoResponses = (yield (0, cloudinary_upload_1.uploadMultiple)(videos, 'video', true, true, product_constants_1.productConstants.PRODUCT_VIDEO_FOLDER));
-                videoResponses.forEach((videoRes) => {
-                    if (!videoRes.public_id)
-                        throw new error_handler_1.BadRequestError('An error occurred while uploading videos');
-                    uploadedVideos.push({ url: videoRes.secure_url, public_id: videoRes.public_id });
-                });
+                uploadedVideos.push(...videos);
             }
             const product = {
                 _id: productObjectId,
@@ -61,12 +59,12 @@ class Create {
                 price,
                 category,
                 images: uploadedImages,
-                store: storeId,
-                videos: uploadedVideos.length ? uploadedVideos : [],
+                store: req.currentUser.storeId,
+                videos: uploadedVideos,
                 priceDiscount: priceDiscount !== null && priceDiscount !== void 0 ? priceDiscount : 0,
                 quantity: quantity !== null && quantity !== void 0 ? quantity : 0
             };
-            product_queue_1.productQueue.addProductJob('addProductToDB', { value: product, key: storeId });
+            product_queue_1.productQueue.addProductJob('addProductToDB', { value: product, key: req.currentUser.storeId });
             res.status(http_status_codes_1.default.OK).json({ message: 'Product created successfully', product });
         });
     }

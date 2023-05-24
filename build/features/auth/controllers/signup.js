@@ -39,7 +39,7 @@ exports.OTP_EXPIRES_IN = 5 * 60 * 1000;
 class SignUp {
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { mobileNumber, password, firstname, lastname, otpProvider } = req.body;
+            const { mobileNumber, password, firstname, lastname, otpProvider, app } = req.body;
             // If the user exists, send an otp to the user
             const userExists = yield auth_service_1.authService.getUserByPhonenumber(mobileNumber);
             if (userExists) {

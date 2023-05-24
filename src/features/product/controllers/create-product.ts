@@ -13,7 +13,9 @@ import HTTP_STATUS from 'http-status-codes';
 class Create {
   @validator(productSchema)
   public async product(req: Request, res: Response): Promise<void> {
-    const { storeId, name, description, images, videos, price, priceDiscount, quantity, category } = req.body;
+    const { name, videos, description, images, price, priceDiscount, quantity, category } = req.body;
+
+    if (!req.currentUser?.storeId) throw new BadRequestError("User doesn't own a store");
 
     const productObjectId: ObjectId = new ObjectId();
 
@@ -39,18 +41,7 @@ class Create {
     const uploadedVideos: IProductFile[] = [];
 
     if (videos && videos.length) {
-      const videoResponses: UploadApiResponse[] = (await uploadMultiple(
-        videos,
-        'video',
-        true,
-        true,
-        productConstants.PRODUCT_VIDEO_FOLDER
-      )) as UploadApiResponse[];
-
-      videoResponses.forEach((videoRes) => {
-        if (!videoRes.public_id) throw new BadRequestError('An error occurred while uploading videos');
-        uploadedVideos.push({ url: videoRes.secure_url, public_id: videoRes.public_id });
-      });
+      uploadedVideos.push(...videos);
     }
 
     const product: IProductDocument = {
@@ -60,13 +51,13 @@ class Create {
       price,
       category,
       images: uploadedImages,
-      store: storeId,
-      videos: uploadedVideos.length ? uploadedVideos : [],
+      store: req.currentUser!.storeId,
+      videos: uploadedVideos,
       priceDiscount: priceDiscount ?? 0,
       quantity: quantity ?? 0
     } as IProductDocument;
 
-    productQueue.addProductJob('addProductToDB', { value: product, key: storeId });
+    productQueue.addProductJob('addProductToDB', { value: product, key: req.currentUser!.storeId });
 
     res.status(HTTP_STATUS.OK).json({ message: 'Product created successfully', product });
   }

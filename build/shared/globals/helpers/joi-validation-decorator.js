@@ -18,8 +18,9 @@ function validator(schema) {
             return __awaiter(this, void 0, void 0, function* () {
                 const req = args[0];
                 const { error } = yield Promise.resolve(schema.validate(req.body));
-                if (error === null || error === void 0 ? void 0 : error.details)
+                if (error === null || error === void 0 ? void 0 : error.details) {
                     throw new error_handler_1.JoiValidationError(error.details[0].message);
+                }
                 return originalMethod.apply(this, args);
             });
         };

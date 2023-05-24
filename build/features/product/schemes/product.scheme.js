@@ -6,10 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateProductMediaSchema = exports.updateProductSchema = exports.productSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 const productSchema = joi_1.default.object().keys({
-    storeId: joi_1.default.string().required().messages({
-        'string.base': 'storeId must be of type string',
-        'string.empty': 'storeId is a required field'
-    }),
     name: joi_1.default.string().required().min(2).max(100).messages({
         'string.base': 'name must be of type string',
         'string.min': 'invalid name length',
@@ -26,10 +22,11 @@ const productSchema = joi_1.default.object().keys({
         'number.base': 'price must be of type number',
         'number.min': 'price should be greater than 1'
     }),
-    images: joi_1.default.array().min(1).max(5).messages({
+    images: joi_1.default.array().required().min(1).max(5).messages({
         'array.base': 'images must be of type array',
         'array.min': 'invalid array length',
-        'array.max': 'invalid array length'
+        'array.max': 'invalid array length',
+        'array.empty': 'images is a required field'
     }),
     category: joi_1.default.string().required().messages({
         'string.base': 'category must be of type string',
@@ -37,7 +34,7 @@ const productSchema = joi_1.default.object().keys({
     }),
     priceDiscount: joi_1.default.number().optional().allow(null, 0),
     quantity: joi_1.default.number().optional().allow(null, 0),
-    video: joi_1.default.array().max(1).optional()
+    videos: joi_1.default.array().max(1).optional()
 });
 exports.productSchema = productSchema;
 const updateProductSchema = joi_1.default.object().keys({

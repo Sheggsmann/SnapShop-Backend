@@ -19,7 +19,7 @@ export const OTP_EXPIRES_IN = 5 * 60 * 1000;
 class SignUp {
   @validator(signupSchema)
   public async create(req: Request, res: Response): Promise<void> {
-    const { mobileNumber, password, firstname, lastname, otpProvider } = req.body;
+    const { mobileNumber, password, firstname, lastname, otpProvider, app } = req.body;
 
     // If the user exists, send an otp to the user
     const userExists = await authService.getUserByPhonenumber(mobileNumber);
