@@ -31,7 +31,7 @@ const storeSchema: ObjectSchema = Joi.object().keys({
 });
 
 const storeUpdateSchema: ObjectSchema = Joi.object().keys({
-  name: Joi.string().required().min(2).max(100).messages({
+  name: Joi.string().optional().allow(null, '').max(100).messages({
     'string.base': 'name must be of type string',
     'string.min': 'invalid store name',
     'string.max': 'invalid store name',
@@ -39,7 +39,7 @@ const storeUpdateSchema: ObjectSchema = Joi.object().keys({
   }),
   image: Joi.string().optional().allow(null, ''),
   bgImage: Joi.string().optional().allow(null, ''),
-  description: Joi.string().required().min(2).max(1000).messages({
+  description: Joi.string().optional().max(1000).messages({
     'string.base': 'description must be of type string',
     'string.min': 'invalid store description',
     'string.max': 'invalid store description',
