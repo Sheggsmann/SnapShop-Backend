@@ -9,6 +9,8 @@ const storeSchema: Schema = new Schema(
     bgImage: String,
     image: String,
     description: String,
+    ratingsCount: { type: Number, default: 0 },
+    totalRatings: { type: Number, default: 0 },
     locations: [
       {
         location: {

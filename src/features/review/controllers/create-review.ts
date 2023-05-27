@@ -10,25 +10,32 @@ import { userService } from '@service/db/user.service';
 import { reviewService } from '@service/db/review.service';
 import { validator } from '@global/helpers/joi-validation-decorator';
 import { reviewSchema } from '../schemes/review.scheme';
+import { storeService } from '@service/db/store.service';
+import { storeQueue } from '@service/queues/store.queue';
 import HTTP_STATUS from 'http-status-codes';
 
 class Create {
   @validator(reviewSchema)
   public async review(req: Request, res: Response): Promise<void> {
-    const { body, rating, productId } = req.body;
+    const { body, rating, productId, storeId, type } = req.body;
 
-    const product: IProductDocument | null = await productService.getProductById(productId);
-    if (!product) {
-      throw new NotFoundError('Product not found');
+    let reviewItem: IProductDocument | IStoreDocument | null = null;
+
+    if (type === 'product') {
+      reviewItem = await productService.getProductById(productId);
+    } else if (type == 'store') {
+      reviewItem = await storeService.getStoreByStoreId(storeId);
     }
 
+    if (!reviewItem) throw new NotFoundError('Item to review not found');
+
     const existingReview = await reviewService.getSingleReview({
-      product: product._id,
-      user: req.currentUser!.userId
+      user: req.currentUser!.userId,
+      $or: [{ product: reviewItem._id }, { store: reviewItem._id }]
     });
 
     if (existingReview) {
-      throw new BadRequestError('You already reviewed this product');
+      throw new BadRequestError(`You already reviewed this ${type}`);
     }
 
     const user: IUserDocument = await userService.getUserById(req.currentUser!.userId);
@@ -36,15 +43,25 @@ class Create {
     const review: IReviewDocument = {
       user: user._id,
       userName: `${user.firstname} ${user.lastname}`,
-      product: product._id,
-      productName: product.name,
-      store: (product.store as IStoreDocument)?._id,
-      storeName: (product.store as IStoreDocument)?.name,
+      product: type === 'product' ? reviewItem._id : null,
+      productName: type === 'product' ? reviewItem.name : '',
+      store: type === 'store' ? reviewItem._id : null,
+      storeName: type === 'store' ? reviewItem.name : '',
       body,
       rating
     } as IReviewDocument;
 
     reviewQueue.addReviewJob('addReviewToDB', { value: review });
+
+    if (type === 'store') {
+      storeQueue.addStoreJob('updateStoreInDB', {
+        key: `${reviewItem._id}`,
+        value: {
+          ratingsCount: (reviewItem as IStoreDocument).ratingsCount + rating,
+          totalRatings: (reviewItem as IStoreDocument).totalRatings + 1
+        }
+      });
+    }
 
     res.status(HTTP_STATUS.CREATED).json({ message: 'Created successfully', review });
   }

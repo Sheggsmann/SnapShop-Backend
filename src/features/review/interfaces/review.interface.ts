@@ -3,20 +3,22 @@ import { ObjectId } from 'mongodb';
 
 export interface IReviewDocument extends Document {
   _id: string | ObjectId;
-  product: string | ObjectId;
-  store: string | ObjectId;
+  product?: string | ObjectId;
+  store?: string | ObjectId;
   user: string | ObjectId;
-  productName: string;
-  storeName: string;
+  productName?: string;
+  storeName?: string;
   userName: string;
-  body: string;
+  body?: string;
   rating: number;
+  type: 'product' | 'store';
   images?: [];
 }
 
 export interface IGetReviewsQuery {
-  product?: string | ObjectId;
   user?: string | ObjectId;
+  store?: string | ObjectId;
+  product?: string | ObjectId;
 }
 
 export interface IReviewJob {

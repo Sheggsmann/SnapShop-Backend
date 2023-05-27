@@ -10,6 +10,7 @@ const reviewSchema: Schema = new Schema({
   userName: String,
   body: String,
   rating: Number,
+  type: { type: String, enum: ['product', 'store'] },
   images: []
 });
 

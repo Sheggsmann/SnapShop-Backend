@@ -21,12 +21,14 @@ export interface IStoreDocument extends Document {
   locations: ILocation[];
   badges: string[];
   productsCount: number;
-  productCategories: string[]
+  productCategories: string[];
+  ratingsCount: number;
+  totalRatings: number;
   isOwner(userId: string): boolean;
 }
 
 export interface IStoreJob {
-  value?: IStoreDocument;
+  value?: Partial<IStoreDocument>;
   userId?: string;
   key?: string;
 }
