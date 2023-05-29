@@ -53,8 +53,8 @@ class Update {
                     throw new error_handler_1.BadRequestError(bgImageResult.message);
             }
             const updatedStore = {
-                name,
-                description,
+                name: name ? name : store.name,
+                description: description ? description : store.description,
                 image: image ? imageResult.secure_url : store.image,
                 bgImage: bgImage ? bgImageResult.secure_url : store.bgImage
             };

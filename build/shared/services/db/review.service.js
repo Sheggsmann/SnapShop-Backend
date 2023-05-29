@@ -28,5 +28,10 @@ class ReviewService {
             return (yield review_model_1.ReviewModel.find({ product: productId }).limit(50));
         });
     }
+    getStoreReviews(storeId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return (yield review_model_1.ReviewModel.find({ store: storeId }).limit(50));
+        });
+    }
 }
 exports.reviewService = new ReviewService();

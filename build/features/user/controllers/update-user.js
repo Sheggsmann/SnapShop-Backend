@@ -51,14 +51,23 @@ class Update {
             res.status(http_status_codes_1.default.OK).json({ message: 'User updated successfully', updatedUser });
         });
     }
+    /**
+     * @param
+     * @desc defines an endpoint to save/unsave a store
+     */
     saveStore(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { storeId } = req.body;
             const user = yield user_service_1.userService.getUserById(req.currentUser.userId);
-            if (user.savedStores.includes(storeId))
-                throw new error_handler_1.BadRequestError('Store already saved');
+            let newSavedStores = [];
+            if (user.savedStores.includes(storeId)) {
+                newSavedStores = user.savedStores.filter((sId) => sId.toString() !== storeId);
+            }
+            else {
+                newSavedStores = [...user.savedStores, storeId];
+            }
             const updatedUser = {
-                savedStores: [...user.savedStores, storeId]
+                savedStores: newSavedStores
             };
             user_queue_1.userQueue.addUserJob('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
             res
@@ -66,19 +75,28 @@ class Update {
                 .json({ message: 'Store saved successfully', savedStores: updatedUser.savedStores });
         });
     }
+    /**
+     * @param
+     * @desc defines an endpoint to like or unlike a product
+     */
     likeProduct(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { productId } = req.body;
             const user = yield user_service_1.userService.getUserById(req.currentUser.userId);
-            if (user.likedProducts.includes(productId))
-                throw new error_handler_1.BadRequestError('Product liked already');
+            let newLikedProducts = [];
+            if (user.likedProducts.includes(productId)) {
+                newLikedProducts = user.likedProducts.filter((pId) => pId.toString() !== productId);
+            }
+            else {
+                newLikedProducts = [...user.likedProducts, productId];
+            }
             const updatedUser = {
-                likedProducts: [...user.likedProducts, productId]
+                likedProducts: newLikedProducts
             };
             user_queue_1.userQueue.addUserJob('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
             res
                 .status(http_status_codes_1.default.OK)
-                .json({ message: 'Store saved successfully', likedProducts: updatedUser.likedProducts });
+                .json({ message: 'Product liked successfully', likedProducts: updatedUser.likedProducts });
         });
     }
 }

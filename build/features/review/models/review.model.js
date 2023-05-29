@@ -11,6 +11,7 @@ const reviewSchema = new mongoose_1.Schema({
     userName: String,
     body: String,
     rating: Number,
+    type: { type: String, enum: ['product', 'store'] },
     images: []
 });
 const ReviewModel = (0, mongoose_1.model)('Review', reviewSchema, 'Review');

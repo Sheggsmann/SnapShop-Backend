@@ -20,7 +20,14 @@ class Get {
         return __awaiter(this, void 0, void 0, function* () {
             const { productId } = req.params;
             const reviews = yield review_service_1.reviewService.getProductReviews(productId);
-            res.status(http_status_codes_1.default.CREATED).json({ message: 'Product reviews', reviews });
+            res.status(http_status_codes_1.default.OK).json({ message: 'Product reviews', reviews });
+        });
+    }
+    storeReviews(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { storeId } = req.params;
+            const reviews = yield review_service_1.reviewService.getStoreReviews(storeId);
+            res.status(http_status_codes_1.default.OK).json({ message: 'Store reviews', reviews });
         });
     }
 }

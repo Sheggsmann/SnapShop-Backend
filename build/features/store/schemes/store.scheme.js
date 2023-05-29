@@ -36,7 +36,7 @@ const storeSchema = joi_1.default.object().keys({
 });
 exports.storeSchema = storeSchema;
 const storeUpdateSchema = joi_1.default.object().keys({
-    name: joi_1.default.string().required().min(2).max(100).messages({
+    name: joi_1.default.string().optional().allow(null, '').max(100).messages({
         'string.base': 'name must be of type string',
         'string.min': 'invalid store name',
         'string.max': 'invalid store name',
@@ -44,7 +44,7 @@ const storeUpdateSchema = joi_1.default.object().keys({
     }),
     image: joi_1.default.string().optional().allow(null, ''),
     bgImage: joi_1.default.string().optional().allow(null, ''),
-    description: joi_1.default.string().required().min(2).max(1000).messages({
+    description: joi_1.default.string().optional().max(1000).messages({
         'string.base': 'description must be of type string',
         'string.min': 'invalid store description',
         'string.max': 'invalid store description',
