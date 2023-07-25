@@ -128,15 +128,15 @@ class SignUp {
 
     if (user.verified) throw new BadRequestError('User already verified');
 
-    // const otp = `${Helpers.generateOtp(4)}`;
-    const otp = `1111`;
+    const otp = `${Helpers.generateOtp(4)}`;
+    // const otp = `1111`;
+
+    const msg = await smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
+    if (msg === 'error') throw new BadRequestError('Error sending sms');
 
     user.verificationToken = otp;
     user.verificationExpiersIn = Date.now() + OTP_EXPIRES_IN;
     await user.save();
-
-    const msg = await smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
-    // if (msg === 'error') throw new BadRequestError('Error sending sms');
 
     res.status(HTTP_STATUS.OK).json({ message: 'Otp resent successfully' });
   }
