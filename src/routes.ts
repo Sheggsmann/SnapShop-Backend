@@ -9,12 +9,14 @@ import { orderRoutes } from '@order/routes/orderRoutes';
 import { chatRoutes } from '@chat/routes/chatRoutes';
 import { reviewRoutes } from './features/review/routes/reviewRoutes';
 import { userRoutes } from '@user/routes/userRoutes';
+import { versionRoutes } from '@versioning/routes/versionRoutes';
 
 const BASE_PATH = '/api/v1';
 
 export default (app: Application) => {
   const routes = () => {
     app.use('/queues', serverAdapter.getRouter());
+    app.use(BASE_PATH, versionRoutes.routes());
 
     app.use(BASE_PATH, authRoutes.routes());
     app.use(BASE_PATH, searchStoreRoutes.routes());

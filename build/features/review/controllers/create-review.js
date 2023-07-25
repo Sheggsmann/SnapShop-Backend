@@ -8,15 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -33,48 +24,46 @@ const store_service_1 = require("../../../shared/services/db/store.service");
 const store_queue_1 = require("../../../shared/services/queues/store.queue");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class Create {
-    review(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { body, rating, productId, storeId, type } = req.body;
-            let reviewItem = null;
-            if (type === 'product') {
-                reviewItem = yield product_service_1.productService.getProductById(productId);
-            }
-            else if (type == 'store') {
-                reviewItem = yield store_service_1.storeService.getStoreByStoreId(storeId);
-            }
-            if (!reviewItem)
-                throw new error_handler_1.NotFoundError('Item to review not found');
-            const existingReview = yield review_service_1.reviewService.getSingleReview({
-                user: req.currentUser.userId,
-                $or: [{ product: reviewItem._id }, { store: reviewItem._id }]
-            });
-            if (existingReview) {
-                throw new error_handler_1.BadRequestError(`You already reviewed this ${type}`);
-            }
-            const user = yield user_service_1.userService.getUserById(req.currentUser.userId);
-            const review = {
-                user: user._id,
-                userName: `${user.firstname} ${user.lastname}`,
-                product: type === 'product' ? reviewItem._id : null,
-                productName: type === 'product' ? reviewItem.name : '',
-                store: type === 'store' ? reviewItem._id : null,
-                storeName: type === 'store' ? reviewItem.name : '',
-                body,
-                rating
-            };
-            review_queue_1.reviewQueue.addReviewJob('addReviewToDB', { value: review });
-            if (type === 'store') {
-                store_queue_1.storeQueue.addStoreJob('updateStoreInDB', {
-                    key: `${reviewItem._id}`,
-                    value: {
-                        ratingsCount: reviewItem.ratingsCount + rating,
-                        totalRatings: reviewItem.totalRatings + 1
-                    }
-                });
-            }
-            res.status(http_status_codes_1.default.CREATED).json({ message: 'Created successfully', review });
+    async review(req, res) {
+        const { body, rating, productId, storeId, type } = req.body;
+        let reviewItem = null;
+        if (type === 'product') {
+            reviewItem = await product_service_1.productService.getProductById(productId);
+        }
+        else if (type == 'store') {
+            reviewItem = await store_service_1.storeService.getStoreByStoreId(storeId);
+        }
+        if (!reviewItem)
+            throw new error_handler_1.NotFoundError('Item to review not found');
+        const existingReview = await review_service_1.reviewService.getSingleReview({
+            user: req.currentUser.userId,
+            $or: [{ product: reviewItem._id }, { store: reviewItem._id }]
         });
+        if (existingReview) {
+            throw new error_handler_1.BadRequestError(`You already reviewed this ${type}`);
+        }
+        const user = await user_service_1.userService.getUserById(req.currentUser.userId);
+        const review = {
+            user: user._id,
+            userName: `${user.firstname} ${user.lastname}`,
+            product: type === 'product' ? reviewItem._id : null,
+            productName: type === 'product' ? reviewItem.name : '',
+            store: type === 'store' ? reviewItem._id : null,
+            storeName: type === 'store' ? reviewItem.name : '',
+            body,
+            rating
+        };
+        review_queue_1.reviewQueue.addReviewJob('addReviewToDB', { value: review });
+        if (type === 'store') {
+            store_queue_1.storeQueue.addStoreJob('updateStoreInDB', {
+                key: `${reviewItem._id}`,
+                value: {
+                    ratingsCount: reviewItem.ratingsCount + rating,
+                    totalRatings: reviewItem.totalRatings + 1
+                }
+            });
+        }
+        res.status(http_status_codes_1.default.CREATED).json({ message: 'Created successfully', review });
     }
 }
 __decorate([

@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -75,35 +66,31 @@ class SnapShopServer {
             next();
         });
     }
-    startServer(app) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!config_1.config.JWT_TOKEN)
-                throw new Error('JWT_TOKEN must be provided');
-            try {
-                const httpServer = http_1.default.createServer(app);
-                const socketIo = yield this.createSocketIO(httpServer);
-                this.startHttpServer(httpServer);
-                this.socketIOConnections(socketIo);
-            }
-            catch (err) {
-                log.error(err);
-            }
-        });
+    async startServer(app) {
+        if (!config_1.config.JWT_TOKEN)
+            throw new Error('JWT_TOKEN must be provided');
+        try {
+            const httpServer = http_1.default.createServer(app);
+            const socketIo = await this.createSocketIO(httpServer);
+            this.startHttpServer(httpServer);
+            this.socketIOConnections(socketIo);
+        }
+        catch (err) {
+            log.error(err);
+        }
     }
-    createSocketIO(httpServer) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const io = new socket_io_1.Server(httpServer, {
-                cors: {
-                    origin: '*',
-                    methods: ['GET', 'POST', 'PUT', 'DELETE']
-                }
-            });
-            const pubClient = (0, redis_1.createClient)({ url: config_1.config.REDIS_HOST });
-            const subClient = pubClient.duplicate();
-            yield Promise.all([pubClient.connect(), subClient.connect()]);
-            io.adapter((0, redis_adapter_1.createAdapter)(pubClient, subClient));
-            return io;
+    async createSocketIO(httpServer) {
+        const io = new socket_io_1.Server(httpServer, {
+            cors: {
+                origin: '*',
+                methods: ['GET', 'POST', 'PUT', 'DELETE']
+            }
         });
+        const pubClient = (0, redis_1.createClient)({ url: config_1.config.REDIS_HOST });
+        const subClient = pubClient.duplicate();
+        await Promise.all([pubClient.connect(), subClient.connect()]);
+        io.adapter((0, redis_adapter_1.createAdapter)(pubClient, subClient));
+        return io;
     }
     socketIOConnections(io) {
         log.info('IO connection');

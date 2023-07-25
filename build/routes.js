@@ -10,10 +10,12 @@ const orderRoutes_1 = require("./features/order/routes/orderRoutes");
 const chatRoutes_1 = require("./features/chat/routes/chatRoutes");
 const reviewRoutes_1 = require("./features/review/routes/reviewRoutes");
 const userRoutes_1 = require("./features/user/routes/userRoutes");
+const versionRoutes_1 = require("./features/versioning/routes/versionRoutes");
 const BASE_PATH = '/api/v1';
 exports.default = (app) => {
     const routes = () => {
         app.use('/queues', base_queue_1.serverAdapter.getRouter());
+        app.use(BASE_PATH, versionRoutes_1.versionRoutes.routes());
         app.use(BASE_PATH, authRoutes_1.authRoutes.routes());
         app.use(BASE_PATH, searchStoreRoutes_1.searchStoreRoutes.routes());
         app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, userRoutes_1.userRoutes.routes());

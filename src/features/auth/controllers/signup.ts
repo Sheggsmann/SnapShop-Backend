@@ -3,7 +3,7 @@ import { BadRequestError, NotFoundError } from '@global/helpers/error-handler';
 import { validator } from '@global/helpers/joi-validation-decorator';
 import { authService } from '@service/db/auth.service';
 import { ObjectId } from 'mongodb';
-import { IAuthDocument } from '@auth/interfaces/auth.interface';
+import { Apps, IAuthDocument } from '@auth/interfaces/auth.interface';
 import { Helpers } from '@global/helpers/helpers';
 import { config } from '@root/config';
 import { resendOtpSchema, signupSchema, verifyAccountSchema } from '@auth/schemes/signup';
@@ -19,7 +19,7 @@ export const OTP_EXPIRES_IN = 5 * 60 * 1000;
 class SignUp {
   @validator(signupSchema)
   public async create(req: Request, res: Response): Promise<void> {
-    const { mobileNumber, password, firstname, lastname, otpProvider, app } = req.body;
+    const { mobileNumber, password, firstname, lastname, otpProvider, source, app } = req.body;
 
     // If the user exists, send an otp to the user
     const userExists = await authService.getUserByPhonenumber(mobileNumber);
@@ -32,8 +32,12 @@ class SignUp {
     const uId = `${Helpers.genrateRandomIntegers(12)}`;
 
     // TODO: Generate 4 digit OTP
-    // const otp = `${Helpers.generateOtp(4)}`;
-    const otp = '1111';
+    const otp = `${Helpers.generateOtp(4)}`;
+    // const otp = '1111';
+
+    // TODO: Send OTP to user via otp method
+    const msg = await smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
+    if (msg === 'error') throw new BadRequestError('Error sending sms');
 
     const authData: IAuthDocument = {
       _id: authObjectId,
@@ -45,6 +49,11 @@ class SignUp {
       password
     } as IAuthDocument;
 
+    const userRoles = [Role.User];
+    if (app === Apps.Merchant) {
+      userRoles.push(Role.StoreOwner);
+    }
+
     // TODO: Create User
     const userData: IUserDocument = {
       _id: userObjectId,
@@ -53,8 +62,9 @@ class SignUp {
       lastname,
       mobileNumber,
       password,
+      source,
       profilePicture: '',
-      role: [Role.User],
+      role: userRoles,
       savedStores: [],
       likedStores: [],
       deliveryAddresses: [],
@@ -69,15 +79,11 @@ class SignUp {
     authQueue.addAuthUserJob('addAuthUserToDB', { value: authData });
     userQueue.addUserJob('addUserToDB', { value: userData });
 
-    // TODO: Send OTP to user via otp method
-    const msg = await smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
-    // if (msg === 'error') throw new BadRequestError('Error sending sms');
-
     const jwtPayload = {
       mobileNumber,
       uId,
       userId: userObjectId,
-      roles: [Role.User],
+      roles: userRoles,
       profilePicture: ''
     };
 

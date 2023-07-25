@@ -8,15 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -30,74 +21,68 @@ const user_queue_1 = require("../../../shared/services/queues/user.queue");
 const user_scheme_1 = require("../schemes/user.scheme");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class Update {
-    user(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { email, image } = req.body;
-            const user = yield user_service_1.userService.getUserById(req.currentUser.userId);
-            if (!user)
-                throw new error_handler_1.NotFoundError('User not found');
-            // Upload Images if they are images
-            let imageResult = {};
-            if (image) {
-                imageResult = (yield (0, cloudinary_upload_1.uploadFile)(image, true, true, 'user'));
-                if (!imageResult.secure_url)
-                    throw new error_handler_1.BadRequestError(imageResult.message);
-            }
-            const updatedUser = {
-                profilePicture: image ? imageResult.secure_url : user.profilePicture,
-                email
-            };
-            user_queue_1.userQueue.addUserJob('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
-            res.status(http_status_codes_1.default.OK).json({ message: 'User updated successfully', updatedUser });
-        });
+    async user(req, res) {
+        const { email, image } = req.body;
+        const user = await user_service_1.userService.getUserById(req.currentUser.userId);
+        if (!user)
+            throw new error_handler_1.NotFoundError('User not found');
+        // Upload Images if they are images
+        let imageResult = {};
+        if (image) {
+            imageResult = (await (0, cloudinary_upload_1.uploadFile)(image, true, true, 'user'));
+            if (!imageResult.secure_url)
+                throw new error_handler_1.BadRequestError(imageResult.message);
+        }
+        const updatedUser = {
+            profilePicture: image ? imageResult.secure_url : user.profilePicture,
+            email
+        };
+        user_queue_1.userQueue.addUserJob('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
+        res.status(http_status_codes_1.default.OK).json({ message: 'User updated successfully', updatedUser });
     }
     /**
      * @param
      * @desc defines an endpoint to save/unsave a store
      */
-    saveStore(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { storeId } = req.body;
-            const user = yield user_service_1.userService.getUserById(req.currentUser.userId);
-            let newSavedStores = [];
-            if (user.savedStores.includes(storeId)) {
-                newSavedStores = user.savedStores.filter((sId) => sId.toString() !== storeId);
-            }
-            else {
-                newSavedStores = [...user.savedStores, storeId];
-            }
-            const updatedUser = {
-                savedStores: newSavedStores
-            };
-            user_queue_1.userQueue.addUserJob('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
-            res
-                .status(http_status_codes_1.default.OK)
-                .json({ message: 'Store saved successfully', savedStores: updatedUser.savedStores });
-        });
+    async saveStore(req, res) {
+        const { storeId } = req.body;
+        const user = await user_service_1.userService.getUserById(req.currentUser.userId);
+        let newSavedStores = [];
+        if (user.savedStores.includes(storeId)) {
+            newSavedStores = user.savedStores.filter((sId) => sId.toString() !== storeId);
+        }
+        else {
+            newSavedStores = [...user.savedStores, storeId];
+        }
+        const updatedUser = {
+            savedStores: newSavedStores
+        };
+        user_queue_1.userQueue.addUserJob('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
+        res
+            .status(http_status_codes_1.default.OK)
+            .json({ message: 'Store saved successfully', savedStores: updatedUser.savedStores });
     }
     /**
      * @param
      * @desc defines an endpoint to like or unlike a product
      */
-    likeProduct(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { productId } = req.body;
-            const user = yield user_service_1.userService.getUserById(req.currentUser.userId);
-            let newLikedProducts = [];
-            if (user.likedProducts.includes(productId)) {
-                newLikedProducts = user.likedProducts.filter((pId) => pId.toString() !== productId);
-            }
-            else {
-                newLikedProducts = [...user.likedProducts, productId];
-            }
-            const updatedUser = {
-                likedProducts: newLikedProducts
-            };
-            user_queue_1.userQueue.addUserJob('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
-            res
-                .status(http_status_codes_1.default.OK)
-                .json({ message: 'Product liked successfully', likedProducts: updatedUser.likedProducts });
-        });
+    async likeProduct(req, res) {
+        const { productId } = req.body;
+        const user = await user_service_1.userService.getUserById(req.currentUser.userId);
+        let newLikedProducts = [];
+        if (user.likedProducts.includes(productId)) {
+            newLikedProducts = user.likedProducts.filter((pId) => pId.toString() !== productId);
+        }
+        else {
+            newLikedProducts = [...user.likedProducts, productId];
+        }
+        const updatedUser = {
+            likedProducts: newLikedProducts
+        };
+        user_queue_1.userQueue.addUserJob('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
+        res
+            .status(http_status_codes_1.default.OK)
+            .json({ message: 'Product liked successfully', likedProducts: updatedUser.likedProducts });
     }
 }
 __decorate([

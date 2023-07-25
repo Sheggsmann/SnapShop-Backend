@@ -3,7 +3,6 @@ import { authMiddleware } from '@global/middlewares/auth-middleware';
 import { createProduct } from '@product/controllers/create-product';
 import { updateProduct } from '@product/controllers/update-product';
 import { getProduct } from '@product/controllers/get-product';
-import { videoUploader } from '@global/helpers/cloudinary_upload';
 
 class ProductRoutes {
   private router: Router;
@@ -21,7 +20,6 @@ class ProductRoutes {
       '/product',
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),
-      videoUploader.array('videos'),
       createProduct.product
     );
 

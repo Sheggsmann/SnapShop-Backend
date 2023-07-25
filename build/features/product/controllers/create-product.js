@@ -8,15 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -31,42 +22,39 @@ const product_queue_1 = require("../../../shared/services/queues/product.queue")
 const product_constants_1 = require("../constants/product.constants");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class Create {
-    product(req, res) {
-        var _a;
-        return __awaiter(this, void 0, void 0, function* () {
-            const { name, videos, description, images, price, priceDiscount, quantity, category } = req.body;
-            if (!((_a = req.currentUser) === null || _a === void 0 ? void 0 : _a.storeId))
-                throw new error_handler_1.BadRequestError("User doesn't own a store");
-            const productObjectId = new mongodb_1.ObjectId();
-            // Images upload
-            const uploadedImages = [];
-            const imageResponses = (yield (0, cloudinary_upload_1.uploadMultiple)(images, 'image', true, true, product_constants_1.productConstants.PRODUCT_IMAGE_FOLDER));
-            imageResponses.forEach((imgRes) => {
-                if (!imgRes.public_id) {
-                    throw new error_handler_1.BadRequestError('An error occurred while uploading the images');
-                }
-                uploadedImages.push({ url: imgRes.secure_url, public_id: imgRes.public_id });
-            });
-            // Videos Upload
-            const uploadedVideos = [];
-            if (videos && videos.length) {
-                uploadedVideos.push(...videos);
+    async product(req, res) {
+        const { name, videos, description, images, price, priceDiscount, quantity, category } = req.body;
+        if (!req.currentUser?.storeId)
+            throw new error_handler_1.BadRequestError("User doesn't own a store");
+        const productObjectId = new mongodb_1.ObjectId();
+        // Images upload
+        const uploadedImages = [];
+        const imageResponses = (await (0, cloudinary_upload_1.uploadMultiple)(images, 'image', true, true, product_constants_1.productConstants.PRODUCT_IMAGE_FOLDER));
+        imageResponses.forEach((imgRes) => {
+            if (!imgRes.public_id) {
+                throw new error_handler_1.BadRequestError('An error occurred while uploading the images');
             }
-            const product = {
-                _id: productObjectId,
-                name,
-                description,
-                price,
-                category,
-                images: uploadedImages,
-                store: req.currentUser.storeId,
-                videos: uploadedVideos,
-                priceDiscount: priceDiscount !== null && priceDiscount !== void 0 ? priceDiscount : 0,
-                quantity: quantity !== null && quantity !== void 0 ? quantity : 0
-            };
-            product_queue_1.productQueue.addProductJob('addProductToDB', { value: product, key: req.currentUser.storeId });
-            res.status(http_status_codes_1.default.OK).json({ message: 'Product created successfully', product });
+            uploadedImages.push({ url: imgRes.secure_url, public_id: imgRes.public_id });
         });
+        // Videos Upload
+        const uploadedVideos = [];
+        if (videos && videos.length) {
+            uploadedVideos.push(...videos);
+        }
+        const product = {
+            _id: productObjectId,
+            name,
+            description,
+            price,
+            category,
+            images: uploadedImages,
+            store: req.currentUser.storeId,
+            videos: uploadedVideos,
+            priceDiscount: priceDiscount ?? 0,
+            quantity: quantity ?? 0
+        };
+        product_queue_1.productQueue.addProductJob('addProductToDB', { value: product, key: req.currentUser.storeId });
+        res.status(http_status_codes_1.default.OK).json({ message: 'Product created successfully', product });
     }
 }
 __decorate([

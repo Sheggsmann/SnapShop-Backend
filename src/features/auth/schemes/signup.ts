@@ -20,6 +20,11 @@ const signupSchema: ObjectSchema = Joi.object().keys({
     'string.base': 'Lastname must be of type string',
     'string.empty': 'last name is required'
   }),
+  source: Joi.string().required().max(100).messages({
+    'string.base': 'Source is required',
+    'string.empty': 'source is required',
+    'string.max': 'source must be less than 100 characters long'
+  }),
   otpProvider: Joi.string().required().messages({
     'string.base': 'otp provider must be of type string',
     'string.empty': 'otp provider is required'

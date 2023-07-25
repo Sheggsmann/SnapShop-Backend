@@ -17,6 +17,7 @@ export interface IUserDocument extends Document {
   firstname: string;
   lastname: string;
   profilePicture: string;
+  source?: string;
   roles: (keyof typeof Role)[];
   storeCount: number;
   createdAt?: Date;

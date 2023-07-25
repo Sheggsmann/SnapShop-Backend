@@ -14,7 +14,6 @@ import mongosanitize from 'express-mongo-sanitize';
 import compression from 'compression';
 import Logger from 'bunyan';
 import HTTP_STATUS from 'http-status-codes';
-
 import 'express-async-errors';
 
 const SERVER_PORT = 5000;

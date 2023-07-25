@@ -47,3 +47,8 @@ export interface ISignUpData {
 export interface IAuthJob {
   value: IAuthDocument;
 }
+
+export enum Apps {
+  Merchant = 'merchant',
+  User = 'user'
+}
