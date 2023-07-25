@@ -25,6 +25,9 @@ class Config {
         this.TWILIO_SID = process.env.TWILIO_SID || '';
         this.TWILIO_NUMBER = process.env.TWILIO_NUMBER || '';
         this.TWILIO_WHATSAPP = process.env.TWILIO_WHATSAPP || '';
+        this.TERMII_API_KEY = process.env.TERMII_API_KEY || '';
+        this.TERMII_SECRET_KEY = process.env.TERMII_SECRET_KEY || '';
+        this.TERMII_URL = process.env.TERMII_URL || '';
     }
     validateConfig() {
         for (const [key, value] of Object.entries(this)) {

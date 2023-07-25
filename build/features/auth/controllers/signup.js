@@ -17,6 +17,7 @@ const error_handler_1 = require("../../../shared/globals/helpers/error-handler")
 const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-validation-decorator");
 const auth_service_1 = require("../../../shared/services/db/auth.service");
 const mongodb_1 = require("mongodb");
+const auth_interface_1 = require("../interfaces/auth.interface");
 const helpers_1 = require("../../../shared/globals/helpers/helpers");
 const config_1 = require("../../../config");
 const signup_1 = require("../schemes/signup");
@@ -29,7 +30,7 @@ const http_status_codes_1 = __importDefault(require("http-status-codes"));
 exports.OTP_EXPIRES_IN = 5 * 60 * 1000;
 class SignUp {
     async create(req, res) {
-        const { mobileNumber, password, firstname, lastname, otpProvider, app } = req.body;
+        const { mobileNumber, password, firstname, lastname, otpProvider, source, app } = req.body;
         // If the user exists, send an otp to the user
         const userExists = await auth_service_1.authService.getUserByPhonenumber(mobileNumber);
         if (userExists) {
@@ -39,8 +40,12 @@ class SignUp {
         const userObjectId = new mongodb_1.ObjectId();
         const uId = `${helpers_1.Helpers.genrateRandomIntegers(12)}`;
         // TODO: Generate 4 digit OTP
-        // const otp = `${Helpers.generateOtp(4)}`;
-        const otp = '1111';
+        const otp = `${helpers_1.Helpers.generateOtp(4)}`;
+        // const otp = '1111';
+        // TODO: Send OTP to user via otp method
+        const msg = await sms_transport_1.smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
+        if (msg === 'error')
+            throw new error_handler_1.BadRequestError('Error sending sms');
         const authData = {
             _id: authObjectId,
             verified: false,
@@ -50,6 +55,10 @@ class SignUp {
             mobileNumber,
             password
         };
+        const userRoles = [user_interface_1.Role.User];
+        if (app === auth_interface_1.Apps.Merchant) {
+            userRoles.push(user_interface_1.Role.StoreOwner);
+        }
         // TODO: Create User
         const userData = {
             _id: userObjectId,
@@ -58,8 +67,9 @@ class SignUp {
             lastname,
             mobileNumber,
             password,
+            source,
             profilePicture: '',
-            role: [user_interface_1.Role.User],
+            role: userRoles,
             savedStores: [],
             likedStores: [],
             deliveryAddresses: [],
@@ -71,14 +81,11 @@ class SignUp {
         // TODO: Save to database
         auth_queue_1.authQueue.addAuthUserJob('addAuthUserToDB', { value: authData });
         user_queue_1.userQueue.addUserJob('addUserToDB', { value: userData });
-        // TODO: Send OTP to user via otp method
-        const msg = await sms_transport_1.smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
-        // if (msg === 'error') throw new BadRequestError('Error sending sms');
         const jwtPayload = {
             mobileNumber,
             uId,
             userId: userObjectId,
-            roles: [user_interface_1.Role.User],
+            roles: userRoles,
             profilePicture: ''
         };
         const authToken = jsonwebtoken_1.default.sign(jwtPayload, config_1.config.JWT_TOKEN);
