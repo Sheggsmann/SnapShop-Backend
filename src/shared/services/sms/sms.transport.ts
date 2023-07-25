@@ -1,6 +1,7 @@
 import { config } from '@root/config';
 import Logger from 'bunyan';
 import axios from 'axios';
+// import Termii from 'termii-nodejs';
 
 const client = config.twilioConfig();
 const log: Logger = config.createLogger('SMS');
@@ -23,11 +24,23 @@ class SmsTransport {
     //   return Promise.resolve('error');
     // }
 
+    if (receiverMobileNumber.startsWith('+')) {
+      receiverMobileNumber = receiverMobileNumber.slice(1);
+    }
+
     try {
-      const response = await axios.post(config.TERMII_URL!, {
+      const data = JSON.stringify({
+        api_key: config.TERMII_API_KEY,
         to: receiverMobileNumber,
+        from: 'Snapshup',
         sms: body,
-        api_key: config.TERMII_API_KEY
+        type: 'plain',
+        channel: 'generic'
+      });
+      await axios.post(config.TERMII_URL!, data, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
       return Promise.resolve('success');
     } catch (err) {
@@ -42,11 +55,23 @@ class SmsTransport {
     body: string,
     type: string
   ): Promise<MsgResponse> {
+    if (receiverMobileNumber.startsWith('+')) {
+      receiverMobileNumber = receiverMobileNumber.slice(1);
+    }
+
     try {
-      const response = await axios.post(config.TERMII_URL!, {
+      const data = JSON.stringify({
+        api_key: config.TERMII_API_KEY,
         to: receiverMobileNumber,
+        from: 'Snapshup',
         sms: body,
-        api_key: config.TERMII_API_KEY
+        type: 'plain',
+        channel: 'generic'
+      });
+      await axios.post(config.TERMII_URL!, data, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
       return Promise.resolve('success');
     } catch (err) {
