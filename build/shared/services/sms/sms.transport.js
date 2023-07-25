@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.smsTransport = void 0;
 const config_1 = require("../../../config");
 const axios_1 = __importDefault(require("axios"));
+// import Termii from 'termii-nodejs';
 const client = config_1.config.twilioConfig();
 const log = config_1.config.createLogger('SMS');
 class SmsTransport {
@@ -22,11 +23,22 @@ class SmsTransport {
         //   log.error(err);
         //   return Promise.resolve('error');
         // }
+        if (receiverMobileNumber.startsWith('+')) {
+            receiverMobileNumber = receiverMobileNumber.slice(1);
+        }
         try {
-            const response = await axios_1.default.post(config_1.config.TERMII_URL, {
+            const data = JSON.stringify({
+                api_key: config_1.config.TERMII_API_KEY,
                 to: receiverMobileNumber,
+                from: 'Snapshup',
                 sms: body,
-                api_key: config_1.config.TERMII_API_KEY
+                type: 'plain',
+                channel: 'generic'
+            });
+            await axios_1.default.post(config_1.config.TERMII_URL, data, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
             return Promise.resolve('success');
         }
@@ -37,11 +49,22 @@ class SmsTransport {
     }
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     async prodSmsSender(receiverMobileNumber, body, type) {
+        if (receiverMobileNumber.startsWith('+')) {
+            receiverMobileNumber = receiverMobileNumber.slice(1);
+        }
         try {
-            const response = await axios_1.default.post(config_1.config.TERMII_URL, {
+            const data = JSON.stringify({
+                api_key: config_1.config.TERMII_API_KEY,
                 to: receiverMobileNumber,
+                from: 'Snapshup',
                 sms: body,
-                api_key: config_1.config.TERMII_API_KEY
+                type: 'plain',
+                channel: 'generic'
+            });
+            await axios_1.default.post(config_1.config.TERMII_URL, data, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
             return Promise.resolve('success');
         }
