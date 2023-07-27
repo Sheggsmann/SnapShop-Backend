@@ -29,7 +29,7 @@ class SmsTransport {
             const data = JSON.stringify({
                 api_key: config_1.config.TERMII_API_KEY,
                 to: receiverMobileNumber,
-                from: 'Snapshup',
+                from: 'Snapshu',
                 sms: body,
                 type: 'plain',
                 channel: 'generic'
@@ -42,7 +42,10 @@ class SmsTransport {
             return Promise.resolve('success');
         }
         catch (err) {
-            log.error(err);
+            if (axios_1.default.isAxiosError(err)) {
+                const axiosError = err;
+                log.error('\n\nAN ERROR OCCURRED:', axiosError.response?.data);
+            }
             return Promise.resolve('error');
         }
     }
@@ -55,7 +58,7 @@ class SmsTransport {
             const data = JSON.stringify({
                 api_key: config_1.config.TERMII_API_KEY,
                 to: receiverMobileNumber,
-                from: 'Snapshup',
+                from: 'Snapshu',
                 sms: body,
                 type: 'plain',
                 channel: 'generic'
@@ -68,13 +71,14 @@ class SmsTransport {
             return Promise.resolve('success');
         }
         catch (err) {
-            log.error(err);
+            if (axios_1.default.isAxiosError(err)) {
+                const axiosError = err;
+                log.error('\n\nAN ERROR OCCURRED:', axiosError.response?.data);
+            }
             return Promise.resolve('error');
         }
     }
     async sendSms(receiverMobileNumber, body, type = 'sms') {
-        console.log(config_1.config.NODE_ENV);
-        console.log(config_1.config.TERMII_URL);
         if (config_1.config.NODE_ENV === 'development') {
             return this.devSmsSender(receiverMobileNumber, body, type);
         }

@@ -1,6 +1,6 @@
 import { config } from '@root/config';
 import Logger from 'bunyan';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 // const client = config.twilioConfig();
 const log: Logger = config.createLogger('SMS');
@@ -31,7 +31,7 @@ class SmsTransport {
       const data = JSON.stringify({
         api_key: config.TERMII_API_KEY,
         to: receiverMobileNumber,
-        from: 'Snapshup',
+        from: 'Snapshu',
         sms: body,
         type: 'plain',
         channel: 'generic'
@@ -41,9 +41,13 @@ class SmsTransport {
           'Content-Type': 'application/json'
         }
       });
+
       return Promise.resolve('success');
     } catch (err) {
-      log.error(err);
+      if (axios.isAxiosError(err)) {
+        const axiosError: AxiosError = err;
+        log.error('\n\nAN ERROR OCCURRED:', axiosError.response?.data);
+      }
       return Promise.resolve('error');
     }
   }
@@ -62,7 +66,7 @@ class SmsTransport {
       const data = JSON.stringify({
         api_key: config.TERMII_API_KEY,
         to: receiverMobileNumber,
-        from: 'Snapshup',
+        from: 'Snapshu',
         sms: body,
         type: 'plain',
         channel: 'generic'
@@ -74,14 +78,15 @@ class SmsTransport {
       });
       return Promise.resolve('success');
     } catch (err) {
-      log.error(err);
+      if (axios.isAxiosError(err)) {
+        const axiosError: AxiosError = err;
+        log.error('\n\nAN ERROR OCCURRED:', axiosError.response?.data);
+      }
       return Promise.resolve('error');
     }
   }
 
   public async sendSms(receiverMobileNumber: string, body: string, type = 'sms'): Promise<MsgResponse> {
-    console.log(config.NODE_ENV);
-    console.log(config.TERMII_URL);
     if (config.NODE_ENV === 'development') {
       return this.devSmsSender(receiverMobileNumber, body, type);
     } else {
