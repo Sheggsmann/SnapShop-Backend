@@ -71,11 +71,12 @@ class SmsTransport {
         type: 'plain',
         channel: 'generic'
       });
-      await axios.post(config.TERMII_URL!, data, {
+      const response = await axios.post(config.TERMII_URL!, data, {
         headers: {
           'Content-Type': 'application/json'
         }
       });
+      console.log('\n\nTERMII RESPONSE:', response);
       return Promise.resolve('success');
     } catch (err) {
       if (axios.isAxiosError(err)) {
