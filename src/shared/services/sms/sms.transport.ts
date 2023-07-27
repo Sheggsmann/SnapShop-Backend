@@ -31,7 +31,7 @@ class SmsTransport {
       const data = JSON.stringify({
         api_key: config.TERMII_API_KEY,
         to: receiverMobileNumber,
-        from: 'Snapshu',
+        from: 'Snapshup',
         sms: body,
         type: 'plain',
         channel: 'generic'
@@ -66,7 +66,7 @@ class SmsTransport {
       const data = JSON.stringify({
         api_key: config.TERMII_API_KEY,
         to: receiverMobileNumber,
-        from: 'Snapshu',
+        from: 'Snapshup',
         sms: body,
         type: 'plain',
         channel: 'generic'
