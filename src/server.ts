@@ -16,8 +16,6 @@ import Logger from 'bunyan';
 import HTTP_STATUS from 'http-status-codes';
 import 'express-async-errors';
 
-const SERVER_PORT = process.env.PORT || 5000;
-
 const log: Logger = config.createLogger('server');
 
 export class SnapShopServer {
@@ -113,8 +111,15 @@ export class SnapShopServer {
   private startHttpServer(httpServer: http.Server): void {
     log.info(`Worker with process id of ${process.pid} has started...`);
     log.info(`Server has started with ${process.pid}`);
-    httpServer.listen(SERVER_PORT, () => {
-      log.info(`Server running on PORT: ${SERVER_PORT}`);
-    });
+
+    if (config.NODE_ENV === 'development') {
+      httpServer.listen(config.SERVER_PORT, () => {
+        log.info(`Server running on PORT: ${config.SERVER_PORT}`);
+      });
+    } else {
+      httpServer.listen(config.SERVER_PORT, '0.0.0.0', () => {
+        log.info(`Server running on PORT:${config.SERVER_PORT}`);
+      });
+    }
   }
 }
