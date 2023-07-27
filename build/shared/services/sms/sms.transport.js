@@ -6,8 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.smsTransport = void 0;
 const config_1 = require("../../../config");
 const axios_1 = __importDefault(require("axios"));
-// import Termii from 'termii-nodejs';
-const client = config_1.config.twilioConfig();
+// const client = config.twilioConfig();
 const log = config_1.config.createLogger('SMS');
 class SmsTransport {
     async devSmsSender(receiverMobileNumber, body, type) {
@@ -74,6 +73,8 @@ class SmsTransport {
         }
     }
     async sendSms(receiverMobileNumber, body, type = 'sms') {
+        console.log(config_1.config.NODE_ENV);
+        console.log(config_1.config.TERMII_URL);
         if (config_1.config.NODE_ENV === 'development') {
             return this.devSmsSender(receiverMobileNumber, body, type);
         }

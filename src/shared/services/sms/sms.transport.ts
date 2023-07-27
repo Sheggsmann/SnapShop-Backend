@@ -1,9 +1,8 @@
 import { config } from '@root/config';
 import Logger from 'bunyan';
 import axios from 'axios';
-// import Termii from 'termii-nodejs';
 
-const client = config.twilioConfig();
+// const client = config.twilioConfig();
 const log: Logger = config.createLogger('SMS');
 
 type MsgResponse = 'error' | 'success';
@@ -81,6 +80,8 @@ class SmsTransport {
   }
 
   public async sendSms(receiverMobileNumber: string, body: string, type = 'sms'): Promise<MsgResponse> {
+    console.log(config.NODE_ENV);
+    console.log(config.TERMII_URL);
     if (config.NODE_ENV === 'development') {
       return this.devSmsSender(receiverMobileNumber, body, type);
     } else {
