@@ -16,7 +16,7 @@ import Logger from 'bunyan';
 import HTTP_STATUS from 'http-status-codes';
 import 'express-async-errors';
 
-const SERVER_PORT = 5000;
+const SERVER_PORT = process.env.PORT || 5000;
 
 const log: Logger = config.createLogger('server');
 
