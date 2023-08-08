@@ -12,7 +12,9 @@ dotenv_1.default.config({});
 class Config {
     constructor() {
         this.DEFAULT_DATABSE_URL = 'mongodb://localhost:27017/snapshop-backend';
+        this.PORT = 5000;
         this.DATABASE_URL = process.env.DATABASE_URL || this.DEFAULT_DATABSE_URL;
+        this.SERVER_PORT = process.env.PORT ? parseInt(process.env.PORT) : '' || this.PORT;
         this.JWT_TOKEN = process.env.JWT_TOKEN || 'promisehasarandomjwttoken';
         this.NODE_ENV = process.env.NODE_ENV || '';
         this.SECRET_KEY_ONE = process.env.SECRET_KEY_ONE || '';

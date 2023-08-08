@@ -20,7 +20,6 @@ const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize
 const compression_1 = __importDefault(require("compression"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 require("express-async-errors");
-const SERVER_PORT = 5000;
 const log = config_1.config.createLogger('server');
 class SnapShopServer {
     constructor(app) {
@@ -98,9 +97,16 @@ class SnapShopServer {
     startHttpServer(httpServer) {
         log.info(`Worker with process id of ${process.pid} has started...`);
         log.info(`Server has started with ${process.pid}`);
-        httpServer.listen(SERVER_PORT, () => {
-            log.info(`Server running on PORT: ${SERVER_PORT}`);
-        });
+        if (config_1.config.NODE_ENV === 'development') {
+            httpServer.listen(config_1.config.SERVER_PORT, () => {
+                log.info(`Server running on PORT: ${config_1.config.SERVER_PORT}`);
+            });
+        }
+        else {
+            httpServer.listen(config_1.config.SERVER_PORT, '0.0.0.0', () => {
+                log.info(`Server running on PORT:${config_1.config.SERVER_PORT}`);
+            });
+        }
     }
 }
 exports.SnapShopServer = SnapShopServer;
