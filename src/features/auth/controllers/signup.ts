@@ -32,12 +32,12 @@ class SignUp {
     const uId = `${Helpers.genrateRandomIntegers(12)}`;
 
     // TODO: Generate 4 digit OTP
-    // const otp = `${Helpers.generateOtp(4)}`;
-    const otp = '1111';
+    const otp = `${Helpers.generateOtp(4)}`;
+    // const otp = '1111';
 
     // TODO: Send OTP to user via otp method
-    const msg = await smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
-    // if (msg === 'error') throw new BadRequestError('Error sending sms');
+    const msg = await smsTransport.sendSms(mobileNumber, `SnapShop OTP: ${otp}`, otpProvider);
+    if (msg === 'error') throw new BadRequestError('Error sending sms');
 
     const authData: IAuthDocument = {
       _id: authObjectId,
@@ -128,11 +128,11 @@ class SignUp {
 
     if (user.verified) throw new BadRequestError('User already verified');
 
-    // const otp = `${Helpers.generateOtp(4)}`;
-    const otp = `1111`;
+    const otp = `${Helpers.generateOtp(4)}`;
+    // const otp = `1111`;
 
-    const msg = await smsTransport.sendSms(mobileNumber, `SnapShop Otp: ${otp}`, otpProvider);
-    // if (msg === 'error') throw new BadRequestError('Error sending sms');
+    const msg = await smsTransport.sendSms(mobileNumber, `SnapShop OTP: ${otp}`, otpProvider);
+    if (msg === 'error') throw new BadRequestError('Error sending sms');
 
     user.verificationToken = otp;
     user.verificationExpiersIn = Date.now() + OTP_EXPIRES_IN;

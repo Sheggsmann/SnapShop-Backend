@@ -30,6 +30,9 @@ class Config {
         this.TERMII_API_KEY = process.env.TERMII_API_KEY || '';
         this.TERMII_SECRET_KEY = process.env.TERMII_SECRET_KEY || '';
         this.TERMII_URL = process.env.TERMII_URL || '';
+        this.AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY || '';
+        this.AWS_SECRET_KEY = process.env.AWS_SECRET_KEY || '';
+        this.AWS_REGION = process.env.AWS_REGION || '';
     }
     validateConfig() {
         for (const [key, value] of Object.entries(this)) {

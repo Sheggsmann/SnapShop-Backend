@@ -1,53 +1,28 @@
 import { config } from '@root/config';
+import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
 import Logger from 'bunyan';
-import axios, { AxiosError } from 'axios';
 
-// const client = config.twilioConfig();
 const log: Logger = config.createLogger('SMS');
 
 type MsgResponse = 'error' | 'success';
 
+const snsClient = new SNSClient({
+  region: 'us-east-2'
+});
+
 class SmsTransport {
   private async devSmsSender(receiverMobileNumber: string, body: string, type: string): Promise<MsgResponse> {
-    // try {
-    //   const message = await client.messages.create({
-    //     body,
-    //     from: type === 'sms' ? `${config.TWILIO_NUMBER}` : `whatsapp:${config.TWILIO_WHATSAPP}`,
-    //     to: type === 'sms' ? `${receiverMobileNumber}` : `whatsapp:${receiverMobileNumber}`
-    //   });
-
-    //   console.log(message);
-    //   return Promise.resolve('success');
-    // } catch (err) {
-    //   log.error(err);
-    //   return Promise.resolve('error');
-    // }
-
-    if (receiverMobileNumber.startsWith('+')) {
-      receiverMobileNumber = receiverMobileNumber.slice(1);
-    }
-
     try {
-      const data = JSON.stringify({
-        api_key: config.TERMII_API_KEY,
-        to: receiverMobileNumber,
-        from: 'Snapshup',
-        sms: body,
-        type: 'plain',
-        channel: 'generic'
-      });
-      await axios.post(config.TERMII_URL!, data, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      await snsClient.send(
+        new PublishCommand({
+          Message: body,
+          PhoneNumber: receiverMobileNumber
+        })
+      );
 
       return Promise.resolve('success');
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const axiosError: AxiosError = err;
-        log.error('\n\nAN ERROR OCCURRED:', axiosError.response?.data);
-      }
+      log.error(err);
       return Promise.resolve('error');
     }
   }
@@ -58,31 +33,17 @@ class SmsTransport {
     body: string,
     type: string
   ): Promise<MsgResponse> {
-    if (receiverMobileNumber.startsWith('+')) {
-      receiverMobileNumber = receiverMobileNumber.slice(1);
-    }
-
     try {
-      const data = JSON.stringify({
-        api_key: config.TERMII_API_KEY,
-        to: receiverMobileNumber,
-        from: 'Snapshup',
-        sms: body,
-        type: 'plain',
-        channel: 'generic'
-      });
-      const response = await axios.post(config.TERMII_URL!, data, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      console.log('\n\nTERMII RESPONSE:', response);
+      await snsClient.send(
+        new PublishCommand({
+          Message: body,
+          PhoneNumber: receiverMobileNumber
+        })
+      );
+
       return Promise.resolve('success');
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const axiosError: AxiosError = err;
-        log.error('\n\nAN ERROR OCCURRED:', axiosError.response?.data);
-      }
+      log.error(err);
       return Promise.resolve('error');
     }
   }

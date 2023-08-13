@@ -23,6 +23,9 @@ class Config {
   public TERMII_API_KEY: string | undefined;
   public TERMII_SECRET_KEY: string | undefined;
   public TERMII_URL: string | undefined;
+  public AWS_ACCESS_KEY: string | undefined;
+  public AWS_SECRET_KEY: string | undefined;
+  public AWS_REGION: string | undefined;
 
   private readonly DEFAULT_DATABSE_URL = 'mongodb://localhost:27017/snapshop-backend';
   private readonly PORT = 5000;
@@ -45,6 +48,9 @@ class Config {
     this.TERMII_API_KEY = process.env.TERMII_API_KEY || '';
     this.TERMII_SECRET_KEY = process.env.TERMII_SECRET_KEY || '';
     this.TERMII_URL = process.env.TERMII_URL || '';
+    this.AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY || '';
+    this.AWS_SECRET_KEY = process.env.AWS_SECRET_KEY || '';
+    this.AWS_REGION = process.env.AWS_REGION || '';
   }
 
   public validateConfig(): void {

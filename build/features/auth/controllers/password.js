@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.password = void 0;
 const password_1 = require("../schemes/password");
 const error_handler_1 = require("../../../shared/globals/helpers/error-handler");
+const helpers_1 = require("../../../shared/globals/helpers/helpers");
 const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-validation-decorator");
 const auth_service_1 = require("../../../shared/services/db/auth.service");
 const signup_1 = require("./signup");
@@ -26,8 +27,8 @@ class Password {
         const existingUser = await auth_service_1.authService.getUserByPhonenumber(mobileNumber);
         if (!existingUser)
             throw new error_handler_1.BadRequestError('Invalid credentials');
-        // const otp = `${Helpers.generateOtp(4)}`;
-        const otp = '1111';
+        const otp = `${helpers_1.Helpers.generateOtp(4)}`;
+        // const otp = '1111';
         await auth_service_1.authService.updatePasswordToken(`${existingUser._id}`, otp, Date.now() + signup_1.OTP_EXPIRES_IN);
         await sms_transport_1.smsTransport.sendSms(mobileNumber, `Snapshup password reset token: ${otp}`, otpProvider);
         res.status(http_status_codes_1.default.OK).json({ message: 'Password reset otp sent.' });

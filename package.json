@@ -19,6 +19,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-sns": "^3.388.0",
     "@bull-board/express": "^5.0.0",
     "@socket.io/redis-adapter": "^8.1.0",
     "axios": "^1.4.0",
