@@ -7,7 +7,9 @@ exports.userRoutes = void 0;
 const express_1 = __importDefault(require("express"));
 const auth_middleware_1 = require("../../../shared/globals/middlewares/auth-middleware");
 const get_user_1 = require("../controllers/get-user");
+const delete_user_1 = require("../controllers/delete-user");
 const update_user_1 = require("../controllers/update-user");
+const config_1 = require("../../../config");
 class UserRoutes {
     constructor() {
         this.router = express_1.default.Router();
@@ -20,6 +22,9 @@ class UserRoutes {
         this.router.put('/user', auth_middleware_1.authMiddleware.checkAuth, update_user_1.updateUser.user);
         this.router.post('/user/like-product', auth_middleware_1.authMiddleware.checkAuth, update_user_1.updateUser.likeProduct);
         this.router.post('/user/save-store', auth_middleware_1.authMiddleware.checkAuth, update_user_1.updateUser.saveStore);
+        if (config_1.config.NODE_ENV === 'development') {
+            this.router.delete('/user/:userId', delete_user_1.deleteUser.user);
+        }
         return this.router;
     }
 }

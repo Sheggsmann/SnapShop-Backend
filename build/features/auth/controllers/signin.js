@@ -39,7 +39,7 @@ class SignIn {
         const authUser = await SignIn.prototype.verifyLoginDetails(mobileNumber, password);
         const user = await user_service_1.userService.getUserByAuthId(`${authUser._id}`);
         const userJwt = jsonwebtoken_1.default.sign({
-            uId: user.uId,
+            uId: authUser.uId,
             userId: user._id,
             roles: user.roles,
             profilePicture: user.profilePicture,

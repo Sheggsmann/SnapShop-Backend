@@ -43,7 +43,8 @@ class SignUp {
         const otp = `${helpers_1.Helpers.generateOtp(4)}`;
         // const otp = '1111';
         // TODO: Send OTP to user via otp method
-        const msg = await sms_transport_1.smsTransport.sendSms(mobileNumber, `SnapShop OTP: ${otp}`, otpProvider);
+        const msg = await sms_transport_1.smsTransport.sendSms(mobileNumber, `SnapShup OTP: ${otp}`, otpProvider);
+        // notify me about our sms service
         if (msg === 'error')
             throw new error_handler_1.BadRequestError('Error sending sms');
         const authData = {
