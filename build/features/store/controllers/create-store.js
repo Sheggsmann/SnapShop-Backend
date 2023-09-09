@@ -40,7 +40,7 @@ class Create {
             throw new error_handler_1.BadRequestError(imageResult.message);
         let bgImgResult = {};
         if (bgImage) {
-            bgImgResult = (await (0, cloudinary_upload_1.uploadFile)(image, true, true, 'storeBg', `store_bg_${storeObjectId}`));
+            bgImgResult = (await (0, cloudinary_upload_1.uploadFile)(bgImage, true, true, 'storeBg', `store_bg_${storeObjectId}`));
             if (!bgImgResult.public_id)
                 throw new error_handler_1.BadRequestError(bgImgResult.message);
         }

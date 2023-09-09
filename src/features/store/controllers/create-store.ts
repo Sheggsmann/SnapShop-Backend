@@ -40,7 +40,7 @@ class Create {
 
     if (bgImage) {
       bgImgResult = (await uploadFile(
-        image,
+        bgImage,
         true,
         true,
         'storeBg',
