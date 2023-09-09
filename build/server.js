@@ -95,6 +95,7 @@ class SnapShopServer {
         log.info('IO connection');
     }
     startHttpServer(httpServer) {
+        log.info(`NODE ENV: ${config_1.config.NODE_ENV}`);
         log.info(`Worker with process id of ${process.pid} has started...`);
         log.info(`Server has started with ${process.pid}`);
         if (config_1.config.NODE_ENV === 'development') {

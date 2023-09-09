@@ -109,6 +109,7 @@ export class SnapShopServer {
   }
 
   private startHttpServer(httpServer: http.Server): void {
+    log.info(`NODE ENV: ${config.NODE_ENV}`);
     log.info(`Worker with process id of ${process.pid} has started...`);
     log.info(`Server has started with ${process.pid}`);
 
