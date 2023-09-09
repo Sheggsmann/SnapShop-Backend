@@ -31,9 +31,10 @@ class SignIn {
     const authUser = await SignIn.prototype.verifyLoginDetails(mobileNumber, password);
 
     const user: IUserDocument = await userService.getUserByAuthId(`${authUser._id}`);
+
     const userJwt: string = JWT.sign(
       {
-        uId: user.uId,
+        uId: authUser.uId,
         userId: user._id,
         roles: user.roles,
         profilePicture: user.profilePicture,

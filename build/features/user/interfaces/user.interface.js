@@ -6,4 +6,4 @@ var Role;
     Role["User"] = "User";
     Role["StoreOwner"] = "StoreOwner";
     Role["Admin"] = "Admin";
-})(Role = exports.Role || (exports.Role = {}));
+})(Role || (exports.Role = Role = {}));

@@ -5,4 +5,4 @@ var Apps;
 (function (Apps) {
     Apps["Merchant"] = "merchant";
     Apps["User"] = "user";
-})(Apps = exports.Apps || (exports.Apps = {}));
+})(Apps || (exports.Apps = Apps = {}));

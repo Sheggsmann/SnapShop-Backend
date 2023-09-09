@@ -1,3 +1,4 @@
+import { AuthModel } from '@auth/models/auth.model';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { UserModel } from '@user/models/user.model';
 
@@ -22,6 +23,13 @@ class UserService {
 
   public async updateUser(userId: string, updatedUser: Partial<IUserDocument>): Promise<void> {
     await UserModel.updateOne({ _id: userId }, { $set: updatedUser });
+  }
+
+  public async deleteUser(userId: string): Promise<void> {
+    const user = await this.getUserById(userId);
+
+    await UserModel.deleteOne({ _id: userId });
+    await AuthModel.deleteOne({ _id: user.authId });
   }
 }
 

@@ -16,7 +16,7 @@ const authSchema = new mongoose_1.Schema({
 }, {
     timestamps: true,
     toJSON: {
-        transform(doc, ret) {
+        transform(ret) {
             delete ret.password;
             return ret;
         }

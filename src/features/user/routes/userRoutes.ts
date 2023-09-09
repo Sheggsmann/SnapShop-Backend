@@ -1,7 +1,9 @@
 import express, { Router } from 'express';
 import { authMiddleware } from '@global/middlewares/auth-middleware';
 import { getUser } from '@user/controllers/get-user';
+import { deleteUser } from '@user/controllers/delete-user';
 import { updateUser } from '@user/controllers/update-user';
+import { config } from '@root/config';
 
 class UserRoutes {
   private router: Router;
@@ -19,6 +21,11 @@ class UserRoutes {
     this.router.put('/user', authMiddleware.checkAuth, updateUser.user);
     this.router.post('/user/like-product', authMiddleware.checkAuth, updateUser.likeProduct);
     this.router.post('/user/save-store', authMiddleware.checkAuth, updateUser.saveStore);
+
+    if (config.NODE_ENV! === 'development') {
+      this.router.delete('/user/:userId', deleteUser.user);
+    }
+
     return this.router;
   }
 }
