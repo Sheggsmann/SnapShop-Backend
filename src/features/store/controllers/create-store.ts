@@ -8,7 +8,10 @@ import { storeSchema } from '@store/schemes/store.scheme';
 import { storeQueue } from '@service/queues/store.queue';
 import { IStoreDocument } from '@store/interfaces/store.interface';
 import { ObjectId } from 'mongodb';
+import { config } from '@root/config';
 import { Helpers } from '@global/helpers/helpers';
+import JWT from 'jsonwebtoken';
+
 import HTTP_STATUS from 'http-status-codes';
 
 class Create {
@@ -66,7 +69,18 @@ class Create {
 
     storeQueue.addStoreJob('addStoreToDB', { value: store, userId: req.currentUser!.userId });
 
-    res.status(HTTP_STATUS.CREATED).json({ message: 'Store created successfully', store });
+    // sign a new jwt token appending the storeId to it
+    const jwtPayload = {
+      mobileNumber: req.currentUser!.mobileNumber,
+      uId: req.currentUser!.uId,
+      userId: req.currentUser!.userId,
+      roles: req.currentUser!.roles,
+      storeId: storeObjectId
+    };
+
+    const authToken: string = JWT.sign(jwtPayload, config.JWT_TOKEN!);
+
+    res.status(HTTP_STATUS.CREATED).json({ message: 'Store created successfully', store, token: authToken });
   }
 
   // Add Joi validation

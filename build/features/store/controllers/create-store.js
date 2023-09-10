@@ -20,7 +20,9 @@ const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-
 const store_scheme_1 = require("../schemes/store.scheme");
 const store_queue_1 = require("../../../shared/services/queues/store.queue");
 const mongodb_1 = require("mongodb");
+const config_1 = require("../../../config");
 const helpers_1 = require("../../../shared/globals/helpers/helpers");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class Create {
     async store(req, res) {
@@ -59,7 +61,16 @@ class Create {
             verified: false
         };
         store_queue_1.storeQueue.addStoreJob('addStoreToDB', { value: store, userId: req.currentUser.userId });
-        res.status(http_status_codes_1.default.CREATED).json({ message: 'Store created successfully', store });
+        // sign a new jwt token appending the storeId to it
+        const jwtPayload = {
+            mobileNumber: req.currentUser.mobileNumber,
+            uId: req.currentUser.uId,
+            userId: req.currentUser.userId,
+            roles: req.currentUser.roles,
+            storeId: storeObjectId
+        };
+        const authToken = jsonwebtoken_1.default.sign(jwtPayload, config_1.config.JWT_TOKEN);
+        res.status(http_status_codes_1.default.CREATED).json({ message: 'Store created successfully', store, token: authToken });
     }
     // Add Joi validation
     async productCategory(req, res) {
