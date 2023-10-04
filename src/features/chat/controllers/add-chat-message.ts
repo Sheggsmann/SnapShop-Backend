@@ -62,7 +62,7 @@ class Add {
 
     // TODO: add message data to cache
     // TODO: add message to message queue
-    await chatQueue.addChatJob('addChatMessageToDB', messageData);
+    chatQueue.addChatJob('addChatMessageToDB', messageData);
 
     res.status(HTTP_STATUS.CREATED).json({ message: 'Message added', conversationId: conversationObjectId });
   }

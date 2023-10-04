@@ -4,6 +4,7 @@ import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { config } from '@root/config';
 import { CustomError, IErrorResponse } from '@global/helpers/error-handler';
+import { SocketIOChatHandler } from '@socket/chat';
 import applicationRoutes from '@root/routes';
 import apiStats from 'swagger-stats';
 import http from 'http';
@@ -98,14 +99,24 @@ export class SnapShopServer {
     const pubClient = createClient({ url: config.REDIS_HOST });
     const subClient = pubClient.duplicate();
 
-    await Promise.all([pubClient.connect(), subClient.connect()]);
-
+    if (!pubClient.isOpen) {
+      await Promise.all([pubClient.connect(), subClient.connect()]);
+    }
     io.adapter(createAdapter(pubClient, subClient));
+
+    process.on('beforeExit', () => {
+      log.debug('CLOSING REDIS CONNECTION');
+      pubClient.quit();
+      subClient.quit();
+    });
+
     return io;
   }
 
   private socketIOConnections(io: Server): void {
-    log.info('IO connection');
+    const chatSocketHandler: SocketIOChatHandler = new SocketIOChatHandler(io);
+
+    chatSocketHandler.listen();
   }
 
   private startHttpServer(httpServer: http.Server): void {

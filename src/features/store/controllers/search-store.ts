@@ -19,19 +19,22 @@ class SearchStore {
     if (!req.query.searchParam) throw new BadRequestError('Search param is required');
 
     const searchParam = new RegExp(Helpers.escapeRegExp(`${req.query.searchParam}`), 'i');
+
     const maxPrice = req.query.maxPrice ?? this.MAX_PRICE;
     const minPrice = req.query.minPrice ?? this.MIN_PRICE;
     const unit = req.query.unit ?? this.UNIT;
+
     const distance = req.query.distance
       ? this.clampDistance(parseInt(req.query.distance as string), unit as string)
       : this.DEFAULT_DISTANCE;
+
     const [lat, lng] = center.split(',');
 
     if (!lat || !lng) throw new BadRequestError('Please provide latitude and longitude in format lat,lng');
     if (!unit || !['km', 'm'].includes(unit as string))
       throw new BadRequestError('Unit must be km(kilometers) or m(meters)');
 
-    const radius = unit === 'km' ? distance / 6378.1 : distance / 1000 / 6378.1;
+    const radius = unit === 'km' ? distance / 6378.1 : distance / (6378.1 * 1000);
 
     searchesQueue.addSearchTermJob('addSearchTermToDB', {
       searchParam: `${req.query.searchParam}`,
@@ -52,7 +55,8 @@ class SearchStore {
 
   private clampDistance = (distance: number, unit = 'km'): number => {
     // using 1 for kilometers and 1000 for meters
-    const d = Math.min(Math.max(distance, unit === 'km' ? 1 : 1000), this.MAX_DISTANCE);
+    const unitFactor = unit === 'km' ? 1 : 1000;
+    const d = Math.min(distance, this.MAX_DISTANCE * unitFactor);
     return d;
   };
 }

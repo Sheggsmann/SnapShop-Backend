@@ -39,6 +39,11 @@ class Application {
       Application.shutDownProperly(1);
     });
 
+    process.on('SIGINT', () => {
+      log.error('Caught SigInt');
+      Application.shutDownProperly(1);
+    });
+
     process.on('exit', () => {
       log.error('Exiting...');
     });
