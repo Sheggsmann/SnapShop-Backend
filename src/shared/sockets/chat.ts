@@ -1,9 +1,9 @@
-import JWT from 'jsonwebtoken';
 import { AuthUserPayload } from '@auth/interfaces/auth.interface';
 import { Server, Socket } from 'socket.io';
 import { config } from '@root/config';
 import { ChatCache } from '@service/redis/chat.cache';
 import { IMessageData } from '@chat/interfaces/chat.interface';
+import JWT from 'jsonwebtoken';
 import Logger from 'bunyan';
 
 const log: Logger = config.createLogger('CHAT-SOCKET');
@@ -45,23 +45,28 @@ export class SocketIOChatHandler {
     this.io.on('connection', async (socket: UserSocket) => {
       const user: AuthUserPayload = socket!.user as AuthUserPayload;
 
+      // Verify if connection is a store or if connection is a user
+      const currentAuthId = user.storeId ? user.storeId : user.userId;
+
+      console.log(user);
+
       // Once a socket connects, add him to a room with his UserId/StoreId
-      socket.join(user.userId);
+      socket.join(currentAuthId);
 
       // Add user to online_users set
-      await chatCache.userIsOnline(user.userId);
+      await chatCache.userIsOnline(currentAuthId);
 
       // Listen for private message
-      socket.on('private:message', async (message: IMessageData) => {
+      socket.on('private:message', async ({ message, to }: { message: IMessageData; to: string }) => {
         console.log('PRIVATE MESSAGE:', message);
         socket
-          .to(message.store as string)
-          .to(user.userId)
-          .emit('private:message', message);
+          .to(to)
+          .to(currentAuthId)
+          .emit('private:message', { ...message, from: currentAuthId });
       });
 
       socket.on('disconnect', async () => {
-        await chatCache.userIsOffline(user.userId);
+        await chatCache.userIsOffline(currentAuthId);
 
         // Emit user disconnection
       });

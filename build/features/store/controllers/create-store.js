@@ -37,9 +37,12 @@ class Create {
             throw new error_handler_1.BadRequestError('User already owns a store');
         const storeObjectId = new mongodb_1.ObjectId();
         // TODO: Upload images to cloudinary
-        const imageResult = (await (0, cloudinary_upload_1.uploadFile)(image, true, true, 'store', `store_img_${storeObjectId}`));
-        if (!imageResult.public_id)
-            throw new error_handler_1.BadRequestError(imageResult.message);
+        let imageResult = {};
+        if (image) {
+            imageResult = (await (0, cloudinary_upload_1.uploadFile)(image, true, true, 'store', `store_img_${storeObjectId}`));
+            if (!imageResult.public_id)
+                throw new error_handler_1.BadRequestError(imageResult.message);
+        }
         let bgImgResult = {};
         if (bgImage) {
             bgImgResult = (await (0, cloudinary_upload_1.uploadFile)(bgImage, true, true, 'storeBg', `store_bg_${storeObjectId}`));
@@ -53,7 +56,7 @@ class Create {
             name,
             description,
             owner: req.currentUser.userId,
-            image: imageResult.secure_url,
+            image: imageResult ? image.secure_url : '',
             uId: `${helpers_1.Helpers.genrateRandomIntegers(12)}`,
             bgImage: bgImage ? bgImgResult.secure_url : '',
             locations: [{ location: { type: 'Point', coordinates: [parseFloat(lng), parseFloat(lat)] }, address }],

@@ -13,6 +13,8 @@ class Get {
     /* Checks if the request is coming from the store app or from
      a normal user app (stores don't have store ids)
     */
+    console.log('\nCONVERSATION LIST CURRENT USER:', req.currentUser);
+
     const entityId = req.currentUser?.storeId ? req.currentUser.storeId : req.currentUser!.userId;
     list = await chatService.getConversationList(new mongoose.Types.ObjectId(entityId));
 

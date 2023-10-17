@@ -12,10 +12,7 @@ const storeSchema = joi_1.default.object().keys({
         'string.max': 'invalid store name',
         'string.empty': 'name is a required field'
     }),
-    image: joi_1.default.string().required().messages({
-        'any.required': 'image is a required field',
-        'string.empty': 'image is not allowed to be empty'
-    }),
+    image: joi_1.default.string().optional().allow(null, ''),
     bgImage: joi_1.default.string().optional().allow(null, ''),
     description: joi_1.default.string().required().min(2).max(1000).messages({
         'string.base': 'description must be of type string',

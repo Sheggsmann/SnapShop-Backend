@@ -25,12 +25,12 @@ class Application {
 
   private static handleExit(): void {
     process.on('uncaughtException', (error: Error) => {
-      log.error(`There was an uncaught error: ${error}`);
+      log.error(`\nThere was an uncaught error: ${error}`);
       Application.shutDownProperly(1);
     });
 
     process.on('unhandledRejection', (reason: Error) => {
-      log.error(`Unhandled reject at promise: ${reason}`);
+      log.error(`\nUnhandled reject at promise: ${reason}`);
       Application.shutDownProperly(2);
     });
 

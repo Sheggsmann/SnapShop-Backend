@@ -10,6 +10,7 @@ const redis_1 = require("redis");
 const redis_adapter_1 = require("@socket.io/redis-adapter");
 const config_1 = require("./config");
 const error_handler_1 = require("./shared/globals/helpers/error-handler");
+const chat_1 = require("./shared/sockets/chat");
 const routes_1 = __importDefault(require("./routes"));
 const swagger_stats_1 = __importDefault(require("swagger-stats"));
 const http_1 = __importDefault(require("http"));
@@ -87,12 +88,20 @@ class SnapShopServer {
         });
         const pubClient = (0, redis_1.createClient)({ url: config_1.config.REDIS_HOST });
         const subClient = pubClient.duplicate();
-        await Promise.all([pubClient.connect(), subClient.connect()]);
+        if (!pubClient.isOpen) {
+            await Promise.all([pubClient.connect(), subClient.connect()]);
+        }
         io.adapter((0, redis_adapter_1.createAdapter)(pubClient, subClient));
+        process.on('beforeExit', () => {
+            log.debug('CLOSING REDIS CONNECTION');
+            pubClient.quit();
+            subClient.quit();
+        });
         return io;
     }
     socketIOConnections(io) {
-        log.info('IO connection');
+        const chatSocketHandler = new chat_1.SocketIOChatHandler(io);
+        chatSocketHandler.listen();
     }
     startHttpServer(httpServer) {
         log.info(`NODE ENV: ${config_1.config.NODE_ENV}`);

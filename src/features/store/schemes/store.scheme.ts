@@ -7,10 +7,7 @@ const storeSchema: ObjectSchema = Joi.object().keys({
     'string.max': 'invalid store name',
     'string.empty': 'name is a required field'
   }),
-  image: Joi.string().required().messages({
-    'any.required': 'image is a required field',
-    'string.empty': 'image is not allowed to be empty'
-  }),
+  image: Joi.string().optional().allow(null, ''),
   bgImage: Joi.string().optional().allow(null, ''),
   description: Joi.string().required().min(2).max(1000).messages({
     'string.base': 'description must be of type string',

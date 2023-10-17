@@ -24,15 +24,19 @@ class Application {
     }
     static handleExit() {
         process.on('uncaughtException', (error) => {
-            log.error(`There was an uncaught error: ${error}`);
+            log.error(`\nThere was an uncaught error: ${error}`);
             Application.shutDownProperly(1);
         });
         process.on('unhandledRejection', (reason) => {
-            log.error(`Unhandled reject at promise: ${reason}`);
+            log.error(`\nUnhandled reject at promise: ${reason}`);
             Application.shutDownProperly(2);
         });
         process.on('SIGTERM', () => {
             log.error('Caught SIGTERM');
+            Application.shutDownProperly(1);
+        });
+        process.on('SIGINT', () => {
+            log.error('Caught SigInt');
             Application.shutDownProperly(1);
         });
         process.on('exit', () => {

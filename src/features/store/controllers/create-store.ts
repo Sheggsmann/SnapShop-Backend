@@ -30,17 +30,19 @@ class Create {
     const storeObjectId: ObjectId = new ObjectId();
 
     // TODO: Upload images to cloudinary
-    const imageResult: UploadApiResponse = (await uploadFile(
-      image,
-      true,
-      true,
-      'store',
-      `store_img_${storeObjectId}`
-    )) as UploadApiResponse;
-    if (!imageResult.public_id) throw new BadRequestError(imageResult.message);
+    let imageResult: UploadApiResponse = {} as UploadApiResponse;
+    if (image) {
+      imageResult = (await uploadFile(
+        image,
+        true,
+        true,
+        'store',
+        `store_img_${storeObjectId}`
+      )) as UploadApiResponse;
+      if (!imageResult.public_id) throw new BadRequestError(imageResult.message);
+    }
 
     let bgImgResult: UploadApiResponse = {} as UploadApiResponse;
-
     if (bgImage) {
       bgImgResult = (await uploadFile(
         bgImage,
@@ -59,7 +61,7 @@ class Create {
       name,
       description,
       owner: req.currentUser!.userId,
-      image: imageResult.secure_url,
+      image: imageResult ? image.secure_url : '',
       uId: `${Helpers.genrateRandomIntegers(12)}`,
       bgImage: bgImage ? bgImgResult.secure_url : '',
       locations: [{ location: { type: 'Point', coordinates: [parseFloat(lng), parseFloat(lat)] }, address }],

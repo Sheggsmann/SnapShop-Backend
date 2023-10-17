@@ -32,7 +32,7 @@ class SearchStore {
                 throw new error_handler_1.BadRequestError('Please provide latitude and longitude in format lat,lng');
             if (!unit || !['km', 'm'].includes(unit))
                 throw new error_handler_1.BadRequestError('Unit must be km(kilometers) or m(meters)');
-            const radius = unit === 'km' ? distance / 6378.1 : distance / 1000 / 6378.1;
+            const radius = unit === 'km' ? distance / 6378.1 : distance / (6378.1 * 1000);
             searches_queue_1.searchesQueue.addSearchTermJob('addSearchTermToDB', {
                 searchParam: `${req.query.searchParam}`,
                 location: [parseFloat(lat), parseFloat(lng)]
@@ -42,7 +42,8 @@ class SearchStore {
         };
         this.clampDistance = (distance, unit = 'km') => {
             // using 1 for kilometers and 1000 for meters
-            const d = Math.min(Math.max(distance, unit === 'km' ? 1 : 1000), this.MAX_DISTANCE);
+            const unitFactor = unit === 'km' ? 1 : 1000;
+            const d = Math.min(distance, this.MAX_DISTANCE * unitFactor);
             return d;
         };
     }

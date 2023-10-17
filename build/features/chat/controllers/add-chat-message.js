@@ -53,7 +53,7 @@ class Add {
         // TODO: add receiver to chatlist in cache
         // TODO: add message data to cache
         // TODO: add message to message queue
-        await chat_queue_1.chatQueue.addChatJob('addChatMessageToDB', messageData);
+        chat_queue_1.chatQueue.addChatJob('addChatMessageToDB', messageData);
         res.status(http_status_codes_1.default.CREATED).json({ message: 'Message added', conversationId: conversationObjectId });
     }
 }
