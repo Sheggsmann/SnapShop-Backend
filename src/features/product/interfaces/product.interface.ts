@@ -19,6 +19,7 @@ export interface IProductDocument extends Document {
 export interface IProductJob {
   value?: IProductDocument;
   key?: string;
+  storeId?: string;
 }
 
 export interface IProductFile {

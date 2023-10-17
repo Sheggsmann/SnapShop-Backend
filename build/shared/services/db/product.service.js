@@ -20,5 +20,9 @@ class ProductService {
     async updateProduct(productId, updatedProduct) {
         await product_model_1.ProductModel.updateOne({ _id: productId }, { $set: updatedProduct });
     }
+    async removeProductFromDB(productId, storeId) {
+        await product_model_1.ProductModel.findByIdAndRemove(productId);
+        await store_model_1.StoreModel.updateOne({ _id: storeId }, { $inc: { productsCount: -1 } });
+    }
 }
 exports.productService = new ProductService();

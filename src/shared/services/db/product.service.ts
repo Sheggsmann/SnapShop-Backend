@@ -23,6 +23,11 @@ class ProductService {
   public async updateProduct(productId: string, updatedProduct: IProductDocument): Promise<void> {
     await ProductModel.updateOne({ _id: productId }, { $set: updatedProduct });
   }
+
+  public async removeProductFromDB(productId: string, storeId: string): Promise<void> {
+    await ProductModel.findByIdAndRemove(productId);
+    await StoreModel.updateOne({ _id: storeId }, { $inc: { productsCount: -1 } });
+  }
 }
 
 export const productService: ProductService = new ProductService();

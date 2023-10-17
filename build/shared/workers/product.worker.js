@@ -29,5 +29,17 @@ class ProductWorker {
             done(err);
         }
     }
+    async removeProductFromDB(job, done) {
+        try {
+            const { key, storeId } = job.data;
+            await product_service_1.productService.removeProductFromDB(key, storeId);
+            job.progress(100);
+            done(null, job.data);
+        }
+        catch (err) {
+            log.error(err);
+            done(err);
+        }
+    }
 }
 exports.productWorker = new ProductWorker();

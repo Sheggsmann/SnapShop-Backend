@@ -54,6 +54,12 @@ const updateProductSchema = joi_1.default.object().keys({
         'number.base': 'price must be of type number',
         'number.min': 'price should be greater than 1'
     }),
+    images: joi_1.default.array().required().min(1).max(5).messages({
+        'array.base': 'images must be of type array',
+        'array.min': 'invalid array length',
+        'array.max': 'invalid array length',
+        'array.empty': 'images is a required field'
+    }),
     category: joi_1.default.string().required().messages({
         'string.base': 'category must be of type string',
         'string.empty': 'category is a required field'

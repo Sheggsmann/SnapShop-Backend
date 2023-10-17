@@ -21,13 +21,24 @@ following format.
 
 the 'public_id' is used to tell cloudinary what file to invalidate to ensure
 our storage space over-utilized
+
+
+=== MODIFIED ===
+
+The images are uploaded on the frontend, then an array of object containing the details from IProductFile
+interface are being sent to the backend.
+
+eg:
+[
+  { public_id: "", url: "https://youtu.be/953vyZMO4cM" }
+]
 */
 
 class Update {
   @validator(updateProductSchema)
   public async product(req: Request, res: Response): Promise<void> {
     const { productId } = req.params;
-    const { name, description, price, priceDiscount, quantity, category } = req.body;
+    const { name, images, description, price, priceDiscount, quantity, category } = req.body;
 
     const product: IProductDocument | null = await productService.getProductById(productId);
 
@@ -42,6 +53,7 @@ class Update {
     const updatedProduct: IProductDocument = {
       name,
       description,
+      images,
       price,
       priceDiscount,
       quantity,
@@ -144,6 +156,12 @@ class Update {
     productQueue.addProductJob('updateProductInDB', { key: productId, value: updatedProduct });
 
     res.status(HTTP_STATUS.OK).json({ message: 'Product updated successfully', updatedProduct });
+  }
+
+  public async deleteProduct(req: Request, res: Response): Promise<void> {
+    const { productId } = req.params;
+    productQueue.addProductJob('removeProductFromDB', { key: productId, storeId: req.currentUser!.storeId });
+    res.status(HTTP_STATUS.OK).json({ message: 'Product deleted successfully', productId });
   }
 }
 

@@ -37,6 +37,13 @@ class ProductRoutes {
       updateProduct.productWithMedia
     );
 
+    this.router.delete(
+      '/product/:productId',
+      authMiddleware.checkAuth,
+      authMiddleware.restrictTo(['StoreOwner']),
+      updateProduct.deleteProduct
+    );
+
     return this.router;
   }
 }

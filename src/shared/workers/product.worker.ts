@@ -31,6 +31,19 @@ class ProductWorker {
       done(err as Error);
     }
   }
+
+  public async removeProductFromDB(job: Job, done: DoneCallback): Promise<void> {
+    try {
+      const { key, storeId } = job.data;
+      await productService.removeProductFromDB(key, storeId);
+
+      job.progress(100);
+      done(null, job.data);
+    } catch (err) {
+      log.error(err);
+      done(err as Error);
+    }
+  }
 }
 
 export const productWorker: ProductWorker = new ProductWorker();
