@@ -60,7 +60,8 @@ const updateProductSchema: ObjectSchema = Joi.object().keys({
     'string.empty': 'category is a required field'
   }),
   priceDiscount: Joi.number().optional().allow(null, 0),
-  quantity: Joi.number().optional().allow(null, 0)
+  quantity: Joi.number().optional().allow(null, 0),
+  videos: Joi.array().max(1).optional()
 });
 
 const updateProductMediaSchema: ObjectSchema = Joi.object().keys({
