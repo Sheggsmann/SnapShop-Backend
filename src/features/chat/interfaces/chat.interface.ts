@@ -24,8 +24,6 @@ export interface IMessageData {
   user: string | ObjectId;
   store: string | ObjectId;
   conversationId: string | ObjectId;
-  userName: string;
-  storeName: string;
   images: [];
   body: string;
   isRead: boolean;

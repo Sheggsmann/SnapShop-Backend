@@ -1,8 +1,6 @@
 import { BadRequestError, NotFoundError } from '@global/helpers/error-handler';
 import { storeService } from '@service/db/store.service';
 import { Request, Response } from 'express';
-import { UploadApiResponse } from 'cloudinary';
-import { uploadFile } from '@global/helpers/cloudinary_upload';
 import { validator } from '@global/helpers/joi-validation-decorator';
 import { storeSchema } from '@store/schemes/store.scheme';
 import { storeQueue } from '@service/queues/store.queue';
@@ -17,7 +15,7 @@ import HTTP_STATUS from 'http-status-codes';
 class Create {
   @validator(storeSchema)
   public async store(req: Request, res: Response): Promise<void> {
-    const { name, image, bgImage, description, address, latlng } = req.body;
+    const { name, description, address, latlng } = req.body;
     const [lat, lng] = latlng.split(',');
 
     const exists = await storeService.getStoreByName(name);
@@ -29,31 +27,6 @@ class Create {
 
     const storeObjectId: ObjectId = new ObjectId();
 
-    // TODO: Upload images to cloudinary
-    let imageResult: UploadApiResponse = {} as UploadApiResponse;
-    if (image) {
-      imageResult = (await uploadFile(
-        image,
-        true,
-        true,
-        'store',
-        `store_img_${storeObjectId}`
-      )) as UploadApiResponse;
-      if (!imageResult.public_id) throw new BadRequestError(imageResult.message);
-    }
-
-    let bgImgResult: UploadApiResponse = {} as UploadApiResponse;
-    if (bgImage) {
-      bgImgResult = (await uploadFile(
-        bgImage,
-        true,
-        true,
-        'storeBg',
-        `store_bg_${storeObjectId}`
-      )) as UploadApiResponse;
-      if (!bgImgResult.public_id) throw new BadRequestError(bgImgResult.message);
-    }
-
     // Store Latitude and Longitude in reverse order because of the way
     // mongodb geospatial queries
     const store: IStoreDocument = {
@@ -61,9 +34,7 @@ class Create {
       name,
       description,
       owner: req.currentUser!.userId,
-      image: imageResult ? image.secure_url : '',
       uId: `${Helpers.genrateRandomIntegers(12)}`,
-      bgImage: bgImage ? bgImgResult.secure_url : '',
       locations: [{ location: { type: 'Point', coordinates: [parseFloat(lng), parseFloat(lat)] }, address }],
       badges: [],
       verified: false

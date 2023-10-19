@@ -3,8 +3,13 @@ import { Server, Socket } from 'socket.io';
 import { config } from '@root/config';
 import { ChatCache } from '@service/redis/chat.cache';
 import { IMessageData } from '@chat/interfaces/chat.interface';
+import { addChatSchema } from '@chat/schemes/chat.scheme';
+import { ObjectId } from 'mongodb';
+import { chatQueue } from '@service/queues/chat.queue';
+import { chatService } from '@service/db/chat.service';
 import JWT from 'jsonwebtoken';
 import Logger from 'bunyan';
+import mongoose from 'mongoose';
 
 const log: Logger = config.createLogger('CHAT-SOCKET');
 
@@ -56,13 +61,34 @@ export class SocketIOChatHandler {
       // Add user to online_users set
       await chatCache.userIsOnline(currentAuthId);
 
+      // Emit the conversation list to the connected user
+      const conversationList = await chatService.getConversationList(
+        new mongoose.Types.ObjectId(currentAuthId)
+      );
+      socket.emit('conversation:list', conversationList);
+
       // Listen for private message
       socket.on('private:message', async ({ message, to }: { message: IMessageData; to: string }) => {
-        console.log('PRIVATE MESSAGE:', message);
+        const conversationObjectId: ObjectId = message?.conversationId
+          ? new mongoose.Types.ObjectId(message.conversationId)
+          : new ObjectId();
+
+        await this.addChatMessage(message, conversationObjectId);
+
+        // if (!message.conversationId && !user.storeId) {
+        //   socket
+        //     .to(currentAuthId)
+        //     .emit('new:conversation', {
+        //       _id: conversationObjectId,
+        //       store: message.store,
+        //       user: message.user
+        //     });
+        // }
+
         socket
           .to(to)
           .to(currentAuthId)
-          .emit('private:message', { ...message, from: currentAuthId });
+          .emit('private:message', { ...message, from: currentAuthId, conversationId: conversationObjectId });
       });
 
       socket.on('disconnect', async () => {
@@ -71,5 +97,37 @@ export class SocketIOChatHandler {
         // Emit user disconnection
       });
     });
+  }
+
+  public async addChatMessage(message: IMessageData, conversationId: string | ObjectId): Promise<void> {
+    try {
+      const values = await addChatSchema.validate(message);
+      log.info('\nVALIDATION RESULTS:', values);
+
+      const { user, store, body, isReply, isOrder, order, images } = message;
+
+      const messageId: ObjectId = new ObjectId();
+
+      const messageData: IMessageData = {
+        _id: `${messageId}`,
+        conversationId,
+        user,
+        store,
+        body,
+        isRead: false,
+        isReply: !!isReply,
+        isOrder: !!isOrder,
+        order: isOrder ? new mongoose.Types.ObjectId(order) : null,
+        images: images ? images : [],
+        deleted: false
+      } as IMessageData;
+
+      console.log('\nADDING MESSAGE TO DB:', messageData);
+      chatQueue.addChatJob('addChatMessageToDB', message);
+
+      // Add message to db
+    } catch (err) {
+      log.error(err);
+    }
   }
 }

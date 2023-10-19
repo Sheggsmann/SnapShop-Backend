@@ -8,8 +8,6 @@ const messageSchema: Schema = new Schema(
     user: { type: Types.ObjectId, required: true },
     store: { type: Types.ObjectId, required: true },
     body: String,
-    userName: String,
-    storeName: String,
     images: [{ url: String }],
     isRead: { type: Boolean, default: false },
     isReply: { type: Boolean, default: false },
