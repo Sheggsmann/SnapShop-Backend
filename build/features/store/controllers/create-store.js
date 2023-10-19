@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createStore = void 0;
 const error_handler_1 = require("../../../shared/globals/helpers/error-handler");
 const store_service_1 = require("../../../shared/services/db/store.service");
-const cloudinary_upload_1 = require("../../../shared/globals/helpers/cloudinary_upload");
 const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-validation-decorator");
 const store_scheme_1 = require("../schemes/store.scheme");
 const store_queue_1 = require("../../../shared/services/queues/store.queue");
@@ -26,7 +25,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class Create {
     async store(req, res) {
-        const { name, image, bgImage, description, address, latlng } = req.body;
+        const { name, description, address, latlng } = req.body;
         const [lat, lng] = latlng.split(',');
         const exists = await store_service_1.storeService.getStoreByName(name);
         if (exists)
@@ -36,19 +35,6 @@ class Create {
         if (ownsStore)
             throw new error_handler_1.BadRequestError('User already owns a store');
         const storeObjectId = new mongodb_1.ObjectId();
-        // TODO: Upload images to cloudinary
-        let imageResult = {};
-        if (image) {
-            imageResult = (await (0, cloudinary_upload_1.uploadFile)(image, true, true, 'store', `store_img_${storeObjectId}`));
-            if (!imageResult.public_id)
-                throw new error_handler_1.BadRequestError(imageResult.message);
-        }
-        let bgImgResult = {};
-        if (bgImage) {
-            bgImgResult = (await (0, cloudinary_upload_1.uploadFile)(bgImage, true, true, 'storeBg', `store_bg_${storeObjectId}`));
-            if (!bgImgResult.public_id)
-                throw new error_handler_1.BadRequestError(bgImgResult.message);
-        }
         // Store Latitude and Longitude in reverse order because of the way
         // mongodb geospatial queries
         const store = {
@@ -56,9 +42,7 @@ class Create {
             name,
             description,
             owner: req.currentUser.userId,
-            image: imageResult ? image.secure_url : '',
             uId: `${helpers_1.Helpers.genrateRandomIntegers(12)}`,
-            bgImage: bgImage ? bgImgResult.secure_url : '',
             locations: [{ location: { type: 'Point', coordinates: [parseFloat(lng), parseFloat(lat)] }, address }],
             badges: [],
             verified: false

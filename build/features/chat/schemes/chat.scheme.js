@@ -7,10 +7,8 @@ exports.addChatSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 const addChatSchema = joi_1.default.object().keys({
     conversationId: joi_1.default.string().optional().allow(null, ''),
-    userId: joi_1.default.string().required(),
-    storeId: joi_1.default.string().required(),
-    userName: joi_1.default.string().required(),
-    storeName: joi_1.default.string().required(),
+    user: joi_1.default.string().required(),
+    store: joi_1.default.string().required(),
     body: joi_1.default.string().optional().allow(null, ''),
     images: joi_1.default.array().max(5).optional(),
     isRead: joi_1.default.boolean().optional(),

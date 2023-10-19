@@ -8,8 +8,6 @@ const messageSchema = new mongoose_1.Schema({
     user: { type: mongoose_1.Types.ObjectId, required: true },
     store: { type: mongoose_1.Types.ObjectId, required: true },
     body: String,
-    userName: String,
-    storeName: String,
     images: [{ url: String }],
     isRead: { type: Boolean, default: false },
     isReply: { type: Boolean, default: false },
