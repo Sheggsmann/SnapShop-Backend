@@ -46,7 +46,7 @@ eg:
 class Update {
     async product(req, res) {
         const { productId } = req.params;
-        const { name, images, description, price, priceDiscount, quantity, category } = req.body;
+        const { name, images, videos, description, price, priceDiscount, quantity, category } = req.body;
         const product = await product_service_1.productService.getProductById(productId);
         if (!product) {
             throw new error_handler_1.NotFoundError('Product not found');
@@ -61,7 +61,8 @@ class Update {
             price,
             priceDiscount,
             quantity,
-            category
+            category,
+            videos
         };
         product_queue_1.productQueue.addProductJob('updateProductInDB', { key: productId, value: updatedProduct });
         res.status(http_status_codes_1.default.OK).json({ message: 'Product updated successfully', updatedProduct });

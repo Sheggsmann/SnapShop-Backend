@@ -38,7 +38,7 @@ class Update {
   @validator(updateProductSchema)
   public async product(req: Request, res: Response): Promise<void> {
     const { productId } = req.params;
-    const { name, images, description, price, priceDiscount, quantity, category } = req.body;
+    const { name, images, videos, description, price, priceDiscount, quantity, category } = req.body;
 
     const product: IProductDocument | null = await productService.getProductById(productId);
 
@@ -57,7 +57,8 @@ class Update {
       price,
       priceDiscount,
       quantity,
-      category
+      category,
+      videos
     } as IProductDocument;
 
     productQueue.addProductJob('updateProductInDB', { key: productId, value: updatedProduct });
