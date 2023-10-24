@@ -49,22 +49,19 @@ class SocketIOChatHandler {
             // Listen for private message
             socket.on('private:message', async ({ message, to }) => {
                 const conversationObjectId = message?.conversationId
-                    ? new mongoose_1.default.Types.ObjectId(message.conversationId)
-                    : new mongodb_1.ObjectId();
+                    ? message.conversationId
+                    : `${new mongoose_1.default.Types.ObjectId()}`;
                 await this.addChatMessage(message, conversationObjectId);
-                // if (!message.conversationId && !user.storeId) {
-                //   socket
-                //     .to(currentAuthId)
-                //     .emit('new:conversation', {
-                //       _id: conversationObjectId,
-                //       store: message.store,
-                //       user: message.user
-                //     });
-                // }
+                if (!message?.conversationId) {
+                    socket.emit('new:conversationId', {
+                        conversationId: conversationObjectId,
+                        lastMessage: message.body
+                    });
+                }
                 socket
                     .to(to)
                     .to(currentAuthId)
-                    .emit('private:message', { ...message, from: currentAuthId, conversationId: conversationObjectId });
+                    .emit('private:message', { message, from: currentAuthId, conversationId: conversationObjectId });
             });
             socket.on('disconnect', async () => {
                 await chatCache.userIsOffline(currentAuthId);
@@ -75,7 +72,7 @@ class SocketIOChatHandler {
     async addChatMessage(message, conversationId) {
         try {
             const values = await chat_scheme_1.addChatSchema.validate(message);
-            log.info('\nVALIDATION RESULTS:', values);
+            // log.info('\nVALIDATION RESULTS:', values);
             const { user, store, body, isReply, isOrder, order, images } = message;
             const messageId = new mongodb_1.ObjectId();
             const messageData = {
@@ -92,7 +89,7 @@ class SocketIOChatHandler {
                 deleted: false
             };
             console.log('\nADDING MESSAGE TO DB:', messageData);
-            chat_queue_1.chatQueue.addChatJob('addChatMessageToDB', message);
+            chat_queue_1.chatQueue.addChatJob('addChatMessageToDB', messageData);
             // Add message to db
         }
         catch (err) {

@@ -13,8 +13,8 @@ class ChatRoutes {
         this.router = express_1.default.Router();
     }
     routes() {
-        this.router.get('/chat/messages/conversation-list', auth_middleware_1.authMiddleware.checkAuth, get_chat_messages_1.getChatMessage.conversationList);
-        this.router.get('/chat/messages/conversation/:userId/:storeId', auth_middleware_1.authMiddleware.checkAuth, get_chat_messages_1.getChatMessage.messages);
+        this.router.get('/chat/conversation-list', auth_middleware_1.authMiddleware.checkAuth, get_chat_messages_1.getChatMessage.conversationList);
+        this.router.get('/chat/messages', auth_middleware_1.authMiddleware.checkAuth, get_chat_messages_1.getChatMessage.messages);
         this.router.post('/chat/message', auth_middleware_1.authMiddleware.checkAuth, add_chat_message_1.addChatMessage.message);
         return this.router;
     }
