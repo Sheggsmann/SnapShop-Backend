@@ -11,17 +11,9 @@ class ChatRoutes {
   }
 
   public routes(): Router {
-    this.router.get(
-      '/chat/messages/conversation-list',
-      authMiddleware.checkAuth,
-      getChatMessage.conversationList
-    );
+    this.router.get('/chat/conversation-list', authMiddleware.checkAuth, getChatMessage.conversationList);
 
-    this.router.get(
-      '/chat/messages/conversation/:userId/:storeId',
-      authMiddleware.checkAuth,
-      getChatMessage.messages
-    );
+    this.router.get('/chat/messages', authMiddleware.checkAuth, getChatMessage.messages);
 
     this.router.post('/chat/message', authMiddleware.checkAuth, addChatMessage.message);
 

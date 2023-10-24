@@ -69,26 +69,23 @@ export class SocketIOChatHandler {
 
       // Listen for private message
       socket.on('private:message', async ({ message, to }: { message: IMessageData; to: string }) => {
-        const conversationObjectId: ObjectId = message?.conversationId
-          ? new mongoose.Types.ObjectId(message.conversationId)
-          : new ObjectId();
+        const conversationObjectId: string = message?.conversationId
+          ? (message.conversationId as string)
+          : `${new mongoose.Types.ObjectId()}`;
 
         await this.addChatMessage(message, conversationObjectId);
 
-        // if (!message.conversationId && !user.storeId) {
-        //   socket
-        //     .to(currentAuthId)
-        //     .emit('new:conversation', {
-        //       _id: conversationObjectId,
-        //       store: message.store,
-        //       user: message.user
-        //     });
-        // }
+        if (!message?.conversationId) {
+          socket.emit('new:conversationId', {
+            conversationId: conversationObjectId,
+            lastMessage: message.body
+          });
+        }
 
         socket
           .to(to)
           .to(currentAuthId)
-          .emit('private:message', { ...message, from: currentAuthId, conversationId: conversationObjectId });
+          .emit('private:message', { message, from: currentAuthId, conversationId: conversationObjectId });
       });
 
       socket.on('disconnect', async () => {
@@ -102,7 +99,7 @@ export class SocketIOChatHandler {
   public async addChatMessage(message: IMessageData, conversationId: string | ObjectId): Promise<void> {
     try {
       const values = await addChatSchema.validate(message);
-      log.info('\nVALIDATION RESULTS:', values);
+      // log.info('\nVALIDATION RESULTS:', values);
 
       const { user, store, body, isReply, isOrder, order, images } = message;
 
@@ -123,7 +120,7 @@ export class SocketIOChatHandler {
       } as IMessageData;
 
       console.log('\nADDING MESSAGE TO DB:', messageData);
-      chatQueue.addChatJob('addChatMessageToDB', message);
+      chatQueue.addChatJob('addChatMessageToDB', messageData);
 
       // Add message to db
     } catch (err) {

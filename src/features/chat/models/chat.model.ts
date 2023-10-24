@@ -5,8 +5,8 @@ const messageSchema: Schema = new Schema(
   {
     // TODO: Add a conversation Id if you understand how redis works
     conversationId: { type: Types.ObjectId, required: true },
-    user: { type: Types.ObjectId, required: true },
-    store: { type: Types.ObjectId, required: true },
+    user: { type: Types.ObjectId, required: true, ref: 'User' },
+    store: { type: Types.ObjectId, required: true, ref: 'Store' },
     body: String,
     images: [{ url: String }],
     isRead: { type: Boolean, default: false },
