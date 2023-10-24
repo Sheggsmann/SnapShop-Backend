@@ -54,6 +54,27 @@ class SignIn {
     const user: IUserDocument = await userService.getUserByAuthId(`${authUser._id}`);
     const store: IStoreDocument | null = await storeService.getStoreByUserId(`${user._id}`);
 
+    /**
+     * User exists but store is not found
+     * ==================================
+     * send the user JWT to the frontend so the store can be created
+     */
+    if (!store) {
+      const jwtToken: string = JWT.sign(
+        {
+          uId: user.uId,
+          userId: user._id,
+          roles: user.roles,
+          profilePicture: user.profilePicture,
+          mobileNumber: authUser.mobileNumber
+        },
+        config.JWT_TOKEN!
+      );
+
+      res.status(HTTP_STATUS.NOT_FOUND).json({ message: 'Store not found', token: jwtToken, user });
+      return;
+    }
+
     if (!store) throw new NotFoundError('Store not found.');
 
     const userJwt: string = JWT.sign(

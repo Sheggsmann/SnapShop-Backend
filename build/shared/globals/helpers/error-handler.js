@@ -29,7 +29,7 @@ exports.BadRequestError = BadRequestError;
 class NotFoundError extends CustomError {
     constructor(message) {
         super(message);
-        this.statusCode = http_status_codes_1.default.BAD_REQUEST;
+        this.statusCode = http_status_codes_1.default.NOT_FOUND;
         this.status = 'error';
     }
 }

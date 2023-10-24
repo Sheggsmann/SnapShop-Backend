@@ -40,7 +40,7 @@ export class BadRequestError extends CustomError {
 }
 
 export class NotFoundError extends CustomError {
-  statusCode = HTTP_STATUS.BAD_REQUEST;
+  statusCode = HTTP_STATUS.NOT_FOUND;
   status = 'error';
 
   constructor(message: string) {
