@@ -21,13 +21,8 @@ class ChatService {
             if (!conversation) {
                 await conversation_model_1.ConversationModel.create({
                     _id: conversationId,
-<<<<<<< HEAD
-                    user: data.user,
-                    store: data.store
-=======
                     user: data.senderType === 'User' ? data.sender : data.receiver,
                     store: data.senderType === 'Store' ? data.sender : data.receiver
->>>>>>> features/chat-feature
                 });
             }
             await chat_model_1.MessageModel.create(data);
@@ -37,10 +32,6 @@ class ChatService {
         const messages = await chat_model_1.MessageModel.aggregate([
             { $match: { $or: [{ sender: entityId }, { receiver: entityId }] } },
             { $group: { _id: '$conversationId', result: { $last: '$$ROOT' } } },
-<<<<<<< HEAD
-            { $lookup: { from: 'Store', localField: 'result.store', foreignField: '_id', as: 'storeData' } },
-            { $lookup: { from: 'User', localField: 'result.user', foreignField: '_id', as: 'userData' } },
-=======
             { $lookup: { from: 'User', localField: 'result.sender', foreignField: '_id', as: 'userSenderData' } },
             { $lookup: { from: 'Store', localField: 'result.sender', foreignField: '_id', as: 'storeSenderData' } },
             {
@@ -54,17 +45,10 @@ class ChatService {
                     as: 'storeReceiverData'
                 }
             },
->>>>>>> features/chat-feature
             {
                 $project: {
                     _id: '$result.id',
                     conversationId: '$result.conversationId',
-<<<<<<< HEAD
-                    store: { $arrayElemAt: ['$storeData', 0] },
-                    user: { $arrayElemAt: ['$userData', 0] },
-                    userName: '$result.userName',
-                    storeName: '$result.storeName',
-=======
                     senderType: '$result.senderType',
                     receiverType: '$result.receiverType',
                     sender: {
@@ -99,7 +83,6 @@ class ChatService {
                             }
                         }
                     },
->>>>>>> features/chat-feature
                     body: '$result.body',
                     images: '$result.images',
                     isOrder: '$result.isOrder',

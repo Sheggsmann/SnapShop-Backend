@@ -53,11 +53,7 @@ class SocketIOChatHandler {
                 const conversationObjectId = message?.conversationId
                     ? message.conversationId
                     : `${new mongoose_1.default.Types.ObjectId()}`;
-<<<<<<< HEAD
-                await this.addChatMessage(message, conversationObjectId);
-=======
                 await this.addChatMessage(message, conversationObjectId, socket);
->>>>>>> features/chat-feature
                 if (!message?.conversationId) {
                     socket.emit('new:conversationId', {
                         conversationId: conversationObjectId,
@@ -77,18 +73,12 @@ class SocketIOChatHandler {
     }
     async addChatMessage(message, conversationId, socket) {
         try {
-<<<<<<< HEAD
-            const values = await chat_scheme_1.addChatSchema.validate(message);
-            // log.info('\nVALIDATION RESULTS:', values);
-            const { user, store, body, isReply, isOrder, order, images } = message;
-=======
             const { error } = await chat_scheme_1.addChatSchema.validate(message);
             if (error) {
                 log.error('Validation Error:', error.details);
                 throw new Error('Message validation failed');
             }
             const { sender, receiver, senderType, receiverType, body, isReply, isOrder, order, images } = message;
->>>>>>> features/chat-feature
             const messageId = new mongodb_1.ObjectId();
             /**
              * If it is an order, create the order here
@@ -145,14 +135,8 @@ class SocketIOChatHandler {
                 images: images ? images : [],
                 deleted: false
             };
-<<<<<<< HEAD
-            console.log('\nADDING MESSAGE TO DB:', messageData);
-            chat_queue_1.chatQueue.addChatJob('addChatMessageToDB', messageData);
-            // Add message to db
-=======
             // console.log('\nADDING MESSAGE TO DB:', messageData);
             chat_queue_1.chatQueue.addChatJob('addChatMessageToDB', messageData);
->>>>>>> features/chat-feature
         }
         catch (err) {
             log.error(err);

@@ -4,15 +4,10 @@ exports.MessageModel = void 0;
 const mongoose_1 = require("mongoose");
 const messageSchema = new mongoose_1.Schema({
     conversationId: { type: mongoose_1.Types.ObjectId, required: true },
-<<<<<<< HEAD
-    user: { type: mongoose_1.Types.ObjectId, required: true, ref: 'User' },
-    store: { type: mongoose_1.Types.ObjectId, required: true, ref: 'Store' },
-=======
     sender: { type: mongoose_1.Types.ObjectId, required: true, redPath: 'senderType' },
     receiver: { type: mongoose_1.Types.ObjectId, required: true, refPath: 'receiverType' },
     senderType: { type: String, enum: ['User', 'Store'], required: true },
     receiverType: { type: String, enum: ['User', 'Store'], required: true },
->>>>>>> features/chat-feature
     body: String,
     images: [{ url: String }],
     isRead: { type: Boolean, default: false },

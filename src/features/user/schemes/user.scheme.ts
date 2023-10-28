@@ -1,11 +1,7 @@
 import Joi, { ObjectSchema } from 'joi';
 
 const userSchema: ObjectSchema = Joi.object().keys({
-<<<<<<< HEAD
-  email: Joi.string().email().min(2).max(100).optional().allow(null, '').messages({
-=======
   email: Joi.string().email().optional().allow(null, '').min(2).max(100).messages({
->>>>>>> features/chat-feature
     'string.base': 'email must be of type string',
     'string.min': 'invalid email',
     'string.max': 'invalid email',
