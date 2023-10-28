@@ -23,7 +23,7 @@ const http_status_codes_1 = __importDefault(require("http-status-codes"));
 // or the merchant app
 class Add {
     async message(req, res) {
-        const { conversationId, storeId, userId, storeName, userName, body, isRead, isReply, isOrder, orderId, reply, images } = req.body;
+        const { conversationId, senderId, receiverId, senderType, receiverType, storeName, userName, body, isRead, isReply, isOrder, order, reply, images } = req.body;
         const messageObjectId = new mongodb_1.ObjectId();
         const conversationObjectId = !conversationId
             ? new mongodb_1.ObjectId()
@@ -32,18 +32,43 @@ class Add {
         if (images) {
             //
         }
+        let orderId;
+        let orderData = null;
+        if (isOrder) {
+            orderId = new mongodb_1.ObjectId();
+            orderData = {
+                _id: orderId,
+                amount: order.amount,
+                products: order.products,
+                status: order.status
+            };
+            // orderQueue.addOrderJob('addOrderToDB', {
+            //   value: {
+            //     _id: orderId,
+            //     store: receiverId,
+            //     user: {
+            //       userId: req.currentUser!.userId,
+            //       name: '',
+            //       mobileNumber: req.currentUser!.mobileNumber
+            //     },
+            //     products: order.products
+            //   }
+            // });
+        }
         const messageData = {
             _id: `${messageObjectId}`,
             conversationId: conversationObjectId,
-            user: userId,
-            store: storeId,
+            sender: senderId,
+            receiver: receiverId,
+            senderType,
+            receiverType,
             userName,
             storeName,
             body,
             isRead: !!isRead,
             isReply: !!isReply,
             isOrder: !!isOrder,
-            order: isOrder ? new mongoose_1.default.Types.ObjectId(orderId) : null,
+            order: orderData,
             images: [],
             reply: isReply ? { messageId: reply.messageId, body: reply.body, images: reply.images } : undefined,
             deleted: false

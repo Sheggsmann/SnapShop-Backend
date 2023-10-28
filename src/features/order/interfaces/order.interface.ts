@@ -44,6 +44,13 @@ export interface IOrderDocument extends Document {
   cancelledAt?: Date;
 }
 
+export interface IOrderData {
+  _id: string | ObjectId;
+  products: ICartItem[];
+  amount: number;
+  status: OrderStatus.PENDING | OrderStatus.ACTIVE | OrderStatus.DELIVERED | OrderStatus.CANCELLED;
+}
+
 export interface IOrderJob {
   key?: string;
   value: IOrderDocument;

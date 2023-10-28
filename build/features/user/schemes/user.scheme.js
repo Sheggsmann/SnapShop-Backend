@@ -6,12 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.likedProductSchema = exports.saveStoreSchema = exports.userSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 const userSchema = joi_1.default.object().keys({
-    email: joi_1.default.string().email().required().min(2).max(100).messages({
+    email: joi_1.default.string().email().optional().allow(null, '').min(2).max(100).messages({
         'string.base': 'email must be of type string',
         'string.min': 'invalid email',
         'string.max': 'invalid email',
-        'string.email': 'invalid email',
-        'string.empty': 'email is a required field'
+        'string.email': 'invalid email'
     }),
     image: joi_1.default.string().optional().allow(null, '')
 });
