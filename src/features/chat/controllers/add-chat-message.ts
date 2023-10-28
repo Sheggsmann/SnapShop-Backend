@@ -4,6 +4,7 @@ import { chatQueue } from '@service/queues/chat.queue';
 import { addChatSchema } from '@chat/schemes/chat.scheme';
 import { validator } from '@global/helpers/joi-validation-decorator';
 import { IMessageData } from '@chat/interfaces/chat.interface';
+import { IOrderData } from '@order/interfaces/order.interface';
 import mongoose from 'mongoose';
 import HTTP_STATUS from 'http-status-codes';
 
@@ -15,15 +16,17 @@ class Add {
   public async message(req: Request, res: Response): Promise<void> {
     const {
       conversationId,
-      storeId,
-      userId,
+      senderId,
+      receiverId,
+      senderType,
+      receiverType,
       storeName,
       userName,
       body,
       isRead,
       isReply,
       isOrder,
-      orderId,
+      order,
       reply,
       images
     } = req.body;
@@ -38,18 +41,46 @@ class Add {
       //
     }
 
+    let orderId: ObjectId;
+    let orderData: IOrderData | null = null;
+
+    if (isOrder) {
+      orderId = new ObjectId();
+      orderData = {
+        _id: orderId,
+        amount: order.amount,
+        products: order.products,
+        status: order.status
+      };
+
+      // orderQueue.addOrderJob('addOrderToDB', {
+      //   value: {
+      //     _id: orderId,
+      //     store: receiverId,
+      //     user: {
+      //       userId: req.currentUser!.userId,
+      //       name: '',
+      //       mobileNumber: req.currentUser!.mobileNumber
+      //     },
+      //     products: order.products
+      //   }
+      // });
+    }
+
     const messageData: IMessageData = {
       _id: `${messageObjectId}`,
       conversationId: conversationObjectId,
-      user: userId,
-      store: storeId,
+      sender: senderId,
+      receiver: receiverId,
+      senderType,
+      receiverType,
       userName,
       storeName,
       body,
       isRead: !!isRead,
       isReply: !!isReply,
       isOrder: !!isOrder,
-      order: isOrder ? new mongoose.Types.ObjectId(orderId) : null,
+      order: orderData,
       images: [],
       reply: isReply ? { messageId: reply.messageId, body: reply.body, images: reply.images } : undefined,
       deleted: false

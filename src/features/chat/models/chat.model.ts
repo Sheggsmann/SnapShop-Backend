@@ -3,17 +3,18 @@ import { IMessageDocument } from '../interfaces/chat.interface';
 
 const messageSchema: Schema = new Schema(
   {
-    // TODO: Add a conversation Id if you understand how redis works
     conversationId: { type: Types.ObjectId, required: true },
-    user: { type: Types.ObjectId, required: true, ref: 'User' },
-    store: { type: Types.ObjectId, required: true, ref: 'Store' },
+    sender: { type: Types.ObjectId, required: true, redPath: 'senderType' },
+    receiver: { type: Types.ObjectId, required: true, refPath: 'receiverType' },
+    senderType: { type: String, enum: ['User', 'Store'], required: true },
+    receiverType: { type: String, enum: ['User', 'Store'], required: true },
     body: String,
     images: [{ url: String }],
     isRead: { type: Boolean, default: false },
     isReply: { type: Boolean, default: false },
     isOrder: { type: Boolean, default: false },
     deleted: { type: Boolean, default: false },
-    order: { type: Types.ObjectId },
+    order: { _id: Types.ObjectId, amount: Number, products: [{ product: Types.ObjectId }] },
     reply: { messageId: Types.ObjectId, body: String, images: [] }
   },
   {

@@ -7,6 +7,10 @@ import { addChatSchema } from '@chat/schemes/chat.scheme';
 import { ObjectId } from 'mongodb';
 import { chatQueue } from '@service/queues/chat.queue';
 import { chatService } from '@service/db/chat.service';
+import { IOrderData, IOrderDocument } from '@order/interfaces/order.interface';
+import { orderQueue } from '@service/queues/order.queue';
+import { IUserDocument } from '@user/interfaces/user.interface';
+import { userService } from '@service/db/user.service';
 import JWT from 'jsonwebtoken';
 import Logger from 'bunyan';
 import mongoose from 'mongoose';
@@ -73,7 +77,7 @@ export class SocketIOChatHandler {
           ? (message.conversationId as string)
           : `${new mongoose.Types.ObjectId()}`;
 
-        await this.addChatMessage(message, conversationObjectId);
+        await this.addChatMessage(message, conversationObjectId, socket);
 
         if (!message?.conversationId) {
           socket.emit('new:conversationId', {
@@ -96,33 +100,85 @@ export class SocketIOChatHandler {
     });
   }
 
-  public async addChatMessage(message: IMessageData, conversationId: string | ObjectId): Promise<void> {
+  public async addChatMessage(
+    message: IMessageData,
+    conversationId: string | ObjectId,
+    socket: UserSocket
+  ): Promise<void> {
     try {
-      const values = await addChatSchema.validate(message);
-      // log.info('\nVALIDATION RESULTS:', values);
+      const { error } = await addChatSchema.validate(message);
 
-      const { user, store, body, isReply, isOrder, order, images } = message;
+      if (error) {
+        log.error('Validation Error:', error.details);
+        throw new Error('Message validation failed');
+      }
+
+      const { sender, receiver, senderType, receiverType, body, isReply, isOrder, order, images } = message;
 
       const messageId: ObjectId = new ObjectId();
+
+      /**
+       * If it is an order, create the order here
+       *
+       * only a user can create an order,
+       *
+       * if orderMessage:
+       *   sender = userId
+       *   senderType = "User"
+       *
+       *   receiver = storeId
+       *   receiverType = "Store"
+       *
+       * Store Owners cannot create an order themselves
+       */
+
+      let orderId: ObjectId;
+      let orderData: IOrderData | null = null;
+
+      if (isOrder) {
+        orderId = new ObjectId();
+        orderData = {
+          _id: orderId,
+          amount: order!.amount,
+          products: order!.products,
+          status: order!.status
+        };
+
+        if (senderType === 'User' && receiverType === 'Store') {
+          const user: IUserDocument = await userService.getUserById(socket.user!.userId);
+          orderQueue.addOrderJob('addOrderToDB', {
+            value: {
+              _id: orderId,
+              store: receiver,
+              user: {
+                userId: user._id,
+                name: `${user.firstname} ${user.lastname}`,
+                mobileNumber: socket.user!.mobileNumber
+              },
+              products: order!.products
+            } as IOrderDocument
+          });
+        }
+      }
 
       const messageData: IMessageData = {
         _id: `${messageId}`,
         conversationId,
-        user,
-        store,
+        sender,
+        receiver,
+        senderType,
+        receiverType,
         body,
         isRead: false,
         isReply: !!isReply,
         isOrder: !!isOrder,
-        order: isOrder ? new mongoose.Types.ObjectId(order) : null,
+        order: orderData,
         images: images ? images : [],
         deleted: false
       } as IMessageData;
 
-      console.log('\nADDING MESSAGE TO DB:', messageData);
+      // console.log('\nADDING MESSAGE TO DB:', messageData);
       chatQueue.addChatJob('addChatMessageToDB', messageData);
-
-      // Add message to db
     } catch (err) {
       log.error(err);
     }

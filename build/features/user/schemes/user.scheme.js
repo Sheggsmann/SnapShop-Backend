@@ -6,7 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.likedProductSchema = exports.saveStoreSchema = exports.userSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 const userSchema = joi_1.default.object().keys({
+<<<<<<< HEAD
     email: joi_1.default.string().email().min(2).max(100).optional().allow(null, '').messages({
+=======
+    email: joi_1.default.string().email().optional().allow(null, '').min(2).max(100).messages({
+>>>>>>> features/chat-feature
         'string.base': 'email must be of type string',
         'string.min': 'invalid email',
         'string.max': 'invalid email',

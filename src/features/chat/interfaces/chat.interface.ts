@@ -1,10 +1,13 @@
+import { IOrderData } from '@order/interfaces/order.interface';
 import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 
 export interface IMessageDocument extends Document {
   _id: ObjectId;
-  user: ObjectId;
-  store: ObjectId;
+  sender: ObjectId;
+  receiver: ObjectId;
+  senderType: 'User' | 'Store';
+  receiverType: 'User' | 'Store';
   conversationId: ObjectId;
   userName: string;
   storeName: string;
@@ -14,15 +17,17 @@ export interface IMessageDocument extends Document {
   isOrder: boolean;
   isReply: boolean;
   deleted: boolean;
-  order?: string | ObjectId;
+  order?: IOrderData;
   reply?: { messageId: ObjectId; body: string; images: [] };
   createdAt?: Date;
 }
 
 export interface IMessageData {
   _id: string | ObjectId;
-  user: string | ObjectId;
-  store: string | ObjectId;
+  sender: string | ObjectId;
+  receiver: string | ObjectId;
+  senderType: 'User' | 'Store';
+  receiverType: 'User' | 'Store';
   conversationId: string | ObjectId;
   images: [];
   body: string;
@@ -30,7 +35,7 @@ export interface IMessageData {
   isOrder: boolean;
   isReply: boolean;
   deleted: boolean;
-  order?: string | ObjectId;
+  order?: IOrderData;
   reply?: { messageId: ObjectId; body: string; images: [] };
   createdAt?: Date;
 }

@@ -10,6 +10,8 @@ const chat_scheme_1 = require("../../features/chat/schemes/chat.scheme");
 const mongodb_1 = require("mongodb");
 const chat_queue_1 = require("../services/queues/chat.queue");
 const chat_service_1 = require("../services/db/chat.service");
+const order_queue_1 = require("../services/queues/order.queue");
+const user_service_1 = require("../services/db/user.service");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const log = config_1.config.createLogger('CHAT-SOCKET');
@@ -51,7 +53,11 @@ class SocketIOChatHandler {
                 const conversationObjectId = message?.conversationId
                     ? message.conversationId
                     : `${new mongoose_1.default.Types.ObjectId()}`;
+<<<<<<< HEAD
                 await this.addChatMessage(message, conversationObjectId);
+=======
+                await this.addChatMessage(message, conversationObjectId, socket);
+>>>>>>> features/chat-feature
                 if (!message?.conversationId) {
                     socket.emit('new:conversationId', {
                         conversationId: conversationObjectId,
@@ -69,28 +75,84 @@ class SocketIOChatHandler {
             });
         });
     }
-    async addChatMessage(message, conversationId) {
+    async addChatMessage(message, conversationId, socket) {
         try {
+<<<<<<< HEAD
             const values = await chat_scheme_1.addChatSchema.validate(message);
             // log.info('\nVALIDATION RESULTS:', values);
             const { user, store, body, isReply, isOrder, order, images } = message;
+=======
+            const { error } = await chat_scheme_1.addChatSchema.validate(message);
+            if (error) {
+                log.error('Validation Error:', error.details);
+                throw new Error('Message validation failed');
+            }
+            const { sender, receiver, senderType, receiverType, body, isReply, isOrder, order, images } = message;
+>>>>>>> features/chat-feature
             const messageId = new mongodb_1.ObjectId();
+            /**
+             * If it is an order, create the order here
+             *
+             * only a user can create an order,
+             *
+             * if orderMessage:
+             *   sender = userId
+             *   senderType = "User"
+             *
+             *   receiver = storeId
+             *   receiverType = "Store"
+             *
+             * Store Owners cannot create an order themselves
+             */
+            let orderId;
+            let orderData = null;
+            if (isOrder) {
+                orderId = new mongodb_1.ObjectId();
+                orderData = {
+                    _id: orderId,
+                    amount: order.amount,
+                    products: order.products,
+                    status: order.status
+                };
+                if (senderType === 'User' && receiverType === 'Store') {
+                    const user = await user_service_1.userService.getUserById(socket.user.userId);
+                    order_queue_1.orderQueue.addOrderJob('addOrderToDB', {
+                        value: {
+                            _id: orderId,
+                            store: receiver,
+                            user: {
+                                userId: user._id,
+                                name: `${user.firstname} ${user.lastname}`,
+                                mobileNumber: socket.user.mobileNumber
+                            },
+                            products: order.products
+                        }
+                    });
+                }
+            }
             const messageData = {
                 _id: `${messageId}`,
                 conversationId,
-                user,
-                store,
+                sender,
+                receiver,
+                senderType,
+                receiverType,
                 body,
                 isRead: false,
                 isReply: !!isReply,
                 isOrder: !!isOrder,
-                order: isOrder ? new mongoose_1.default.Types.ObjectId(order) : null,
+                order: orderData,
                 images: images ? images : [],
                 deleted: false
             };
+<<<<<<< HEAD
             console.log('\nADDING MESSAGE TO DB:', messageData);
             chat_queue_1.chatQueue.addChatJob('addChatMessageToDB', messageData);
             // Add message to db
+=======
+            // console.log('\nADDING MESSAGE TO DB:', messageData);
+            chat_queue_1.chatQueue.addChatJob('addChatMessageToDB', messageData);
+>>>>>>> features/chat-feature
         }
         catch (err) {
             log.error(err);
