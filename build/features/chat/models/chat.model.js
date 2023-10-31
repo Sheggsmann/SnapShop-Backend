@@ -14,7 +14,12 @@ const messageSchema = new mongoose_1.Schema({
     isReply: { type: Boolean, default: false },
     isOrder: { type: Boolean, default: false },
     deleted: { type: Boolean, default: false },
-    order: { _id: mongoose_1.Types.ObjectId, amount: Number, products: [{ product: mongoose_1.Types.ObjectId }] },
+    order: {
+        _id: mongoose_1.Types.ObjectId,
+        amount: Number,
+        status: String,
+        products: [{ product: mongoose_1.Types.ObjectId, quantity: Number }]
+    },
     reply: { messageId: mongoose_1.Types.ObjectId, body: String, images: [] }
 }, {
     timestamps: true
