@@ -113,7 +113,8 @@ export class SocketIOChatHandler {
         throw new Error('Message validation failed');
       }
 
-      const { sender, receiver, senderType, receiverType, body, isReply, isOrder, order, images } = message;
+      const { sender, receiver, senderType, receiverType, body, isReply, reply, isOrder, order, images } =
+        message;
 
       const messageId: ObjectId = new ObjectId();
 
@@ -174,6 +175,7 @@ export class SocketIOChatHandler {
         isOrder: !!isOrder,
         order: orderData,
         images: images ? images : [],
+        reply,
         deleted: false
       } as IMessageData;
 

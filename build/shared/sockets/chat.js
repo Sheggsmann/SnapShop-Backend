@@ -78,7 +78,7 @@ class SocketIOChatHandler {
                 log.error('Validation Error:', error.details);
                 throw new Error('Message validation failed');
             }
-            const { sender, receiver, senderType, receiverType, body, isReply, isOrder, order, images } = message;
+            const { sender, receiver, senderType, receiverType, body, isReply, reply, isOrder, order, images } = message;
             const messageId = new mongodb_1.ObjectId();
             /**
              * If it is an order, create the order here
@@ -133,6 +133,7 @@ class SocketIOChatHandler {
                 isOrder: !!isOrder,
                 order: orderData,
                 images: images ? images : [],
+                reply,
                 deleted: false
             };
             // console.log('\nADDING MESSAGE TO DB:', messageData);
