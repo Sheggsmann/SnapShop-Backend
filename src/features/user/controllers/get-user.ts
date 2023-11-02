@@ -1,24 +1,28 @@
 import { BadRequestError, NotFoundError } from '@global/helpers/error-handler';
-import { storeService } from '@service/db/store.service';
 import { userService } from '@service/db/user.service';
-import { IStoreDocument } from '@store/interfaces/store.interface';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
 class Get {
   public async me(req: Request, res: Response): Promise<void> {
-    let user: IUserDocument | null = null;
-    let store: IStoreDocument | null = null;
-
-    user = await userService.getUserById(req.currentUser!.userId);
-    store = await storeService.getStoreByStoreId(req.currentUser!.storeId!);
-
-    if (!user && !store) {
+    const user: IUserDocument = await userService.getUserById(req.currentUser!.userId);
+    if (!user) {
       throw new BadRequestError('Details not found');
     }
 
-    res.status(HTTP_STATUS.OK).json({ message: 'User profile', user, store });
+    res.status(HTTP_STATUS.OK).json({ message: 'User profile', user });
+  }
+
+  public async auth(req: Request, res: Response): Promise<void> {
+    const { userId } = req.params;
+    const user: IUserDocument = await userService.getUserById(userId);
+
+    if (!user) {
+      throw new BadRequestError('Details not found');
+    }
+
+    res.status(HTTP_STATUS.OK).json({ message: 'User Auth', user });
   }
 
   public async profile(req: Request, res: Response): Promise<void> {
