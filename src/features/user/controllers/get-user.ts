@@ -1,15 +1,24 @@
-import { NotFoundError } from '@global/helpers/error-handler';
+import { BadRequestError, NotFoundError } from '@global/helpers/error-handler';
+import { storeService } from '@service/db/store.service';
 import { userService } from '@service/db/user.service';
+import { IStoreDocument } from '@store/interfaces/store.interface';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
 class Get {
   public async me(req: Request, res: Response): Promise<void> {
-    const user: IUserDocument = await userService.getUserById(req.currentUser!.userId);
-    if (!user) throw new NotFoundError('Account not found');
+    let user: IUserDocument | null = null;
+    let store: IStoreDocument | null = null;
 
-    res.status(HTTP_STATUS.OK).json({ message: 'User profile', user });
+    user = await userService.getUserById(req.currentUser!.userId);
+    store = await storeService.getStoreByStoreId(req.currentUser!.storeId!);
+
+    if (!user && !store) {
+      throw new BadRequestError('Details not found');
+    }
+
+    res.status(HTTP_STATUS.OK).json({ message: 'User profile', user, store });
   }
 
   public async profile(req: Request, res: Response): Promise<void> {
