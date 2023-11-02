@@ -18,7 +18,7 @@ export interface IMessageDocument extends Document {
   isReply: boolean;
   deleted: boolean;
   order?: IOrderData;
-  reply?: { messageId: ObjectId; body: string; images: [] };
+  reply?: { messageId: ObjectId; body: string; images: []; sender: ObjectId; receiver: ObjectId };
   createdAt?: Date;
 }
 
@@ -36,7 +36,7 @@ export interface IMessageData {
   isReply: boolean;
   deleted: boolean;
   order?: IOrderData;
-  reply?: { messageId: ObjectId; body: string; images: [] };
+  reply?: { messageId: ObjectId; body: string; images: []; sender: ObjectId; receiver: ObjectId };
   createdAt?: Date;
 }
 

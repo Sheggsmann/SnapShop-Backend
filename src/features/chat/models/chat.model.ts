@@ -20,7 +20,13 @@ const messageSchema: Schema = new Schema(
       status: String,
       products: [{ product: Types.ObjectId, quantity: Number }]
     },
-    reply: { messageId: Types.ObjectId, body: String, images: [] }
+    reply: {
+      messageId: Types.ObjectId,
+      body: String,
+      images: [],
+      sender: Types.ObjectId,
+      receiver: Types.ObjectId
+    }
   },
   {
     timestamps: true

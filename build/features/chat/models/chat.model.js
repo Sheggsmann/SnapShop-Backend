@@ -20,7 +20,13 @@ const messageSchema = new mongoose_1.Schema({
         status: String,
         products: [{ product: mongoose_1.Types.ObjectId, quantity: Number }]
     },
-    reply: { messageId: mongoose_1.Types.ObjectId, body: String, images: [] }
+    reply: {
+        messageId: mongoose_1.Types.ObjectId,
+        body: String,
+        images: [],
+        sender: mongoose_1.Types.ObjectId,
+        receiver: mongoose_1.Types.ObjectId
+    }
 }, {
     timestamps: true
 });
