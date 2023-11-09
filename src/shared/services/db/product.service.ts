@@ -53,6 +53,9 @@ class ProductService {
           image: { $first: '$image' },
           bgImage: { $first: '$bgImage' },
           owner: { $first: '$owner' },
+          totalRatings: { $first: '$totalRatings' },
+          ratingsCount: { $first: '$ratingsCount' },
+          locations: { $first: '$locations' },
           products: { $push: '$products' }
         }
       }
