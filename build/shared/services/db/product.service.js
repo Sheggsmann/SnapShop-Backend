@@ -17,6 +17,45 @@ class ProductService {
     async getProductsByStoreId(storeId) {
         return await product_model_1.ProductModel.find({ store: storeId });
     }
+    async getFrequentlyPurchasedProductsNearUser(location, limit) {
+        const frequentlyPurchasedProducts = await store_model_1.StoreModel.aggregate([
+            {
+                $geoNear: {
+                    near: { type: 'Point', coordinates: [location[0], location[1]] },
+                    distanceField: 'distance',
+                    maxDistance: 100000,
+                    spherical: true
+                }
+            },
+            {
+                $lookup: {
+                    from: 'Product',
+                    localField: '_id',
+                    foreignField: 'store',
+                    pipeline: [{ $limit: 3 }],
+                    as: 'products'
+                }
+            },
+            { $unwind: '$products' },
+            { $sort: { 'products.purchaseCount': -1 } },
+            { $limit: limit },
+            {
+                $group: {
+                    _id: '$_id',
+                    name: { $first: '$name' },
+                    description: { $first: '$description' },
+                    image: { $first: '$image' },
+                    bgImage: { $first: '$bgImage' },
+                    owner: { $first: '$owner' },
+                    products: { $push: '$products' }
+                }
+            }
+        ]);
+        return frequentlyPurchasedProducts;
+    }
+    async getRandomProducts() {
+        return [];
+    }
     async updateProduct(productId, updatedProduct) {
         await product_model_1.ProductModel.updateOne({ _id: productId }, { $set: updatedProduct });
     }

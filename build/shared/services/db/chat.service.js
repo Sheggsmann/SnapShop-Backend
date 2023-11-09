@@ -15,9 +15,17 @@ class ChatService {
         }
         else {
             const conversationId = new mongoose_1.default.Types.ObjectId(conversationIdString);
-            const conversation = await conversation_model_1.ConversationModel.findOne({
+            let conversation = await conversation_model_1.ConversationModel.findOne({
                 _id: conversationId
             });
+            if (!conversation) {
+                conversation = await conversation_model_1.ConversationModel.findOne({
+                    user: data.senderType === 'User' ? data.sender : data.receiver,
+                    store: data.senderType === 'Store' ? data.sender : data.receiver
+                });
+                data.conversationId = conversation._id;
+            }
+            // If there's no conversation between the user and the store, create one
             if (!conversation) {
                 await conversation_model_1.ConversationModel.create({
                     _id: conversationId,

@@ -14,6 +14,7 @@ class UserRoutes {
 
   public routes(): Router {
     this.router.get('/me', authMiddleware.checkAuth, getUser.me);
+    this.router.get('/user/feed', authMiddleware.checkAuth, getUser.feed);
     this.router.get('/user/saved-stores', authMiddleware.checkAuth, getUser.savedStores);
     this.router.get('/user/liked-products', authMiddleware.checkAuth, getUser.likedProducts);
     this.router.get('/user/auth/:userId', authMiddleware.checkAuth, getUser.auth);

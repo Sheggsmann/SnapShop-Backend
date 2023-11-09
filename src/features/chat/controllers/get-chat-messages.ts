@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { IMessageData } from '@chat/interfaces/chat.interface';
 import { chatService } from '@service/db/chat.service';
+import { BadRequestError } from '@global/helpers/error-handler';
 import mongoose from 'mongoose';
 import HTTP_STATUS from 'http-status-codes';
-import { BadRequestError } from '@global/helpers/error-handler';
 
 class Get {
   public async conversationList(req: Request, res: Response): Promise<void> {

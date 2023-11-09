@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getChatMessage = void 0;
 const chat_service_1 = require("../../../shared/services/db/chat.service");
+const error_handler_1 = require("../../../shared/globals/helpers/error-handler");
 const mongoose_1 = __importDefault(require("mongoose"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
-const error_handler_1 = require("../../../shared/globals/helpers/error-handler");
 class Get {
     async conversationList(req, res) {
         let list = [];

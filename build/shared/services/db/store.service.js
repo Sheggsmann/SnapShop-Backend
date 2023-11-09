@@ -47,6 +47,23 @@ class StoreService {
         ]);
         return products;
     }
+    async getClosestStores(location, limit) {
+        const closestStores = await store_model_1.StoreModel.aggregate([
+            {
+                $geoNear: {
+                    near: {
+                        type: 'Point',
+                        coordinates: [location[0], location[1]]
+                    },
+                    distanceField: 'distance',
+                    spherical: true,
+                    maxDistance: 100000 // Maximum distance in meter
+                }
+            },
+            { $limit: limit }
+        ]);
+        return closestStores;
+    }
     async updateStore(storeId, updatedStore) {
         await store_model_1.StoreModel.updateOne({ _id: storeId }, { $set: updatedStore });
     }

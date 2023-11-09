@@ -1,5 +1,7 @@
 import mongoose, { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import { IStoreDocument } from '@store/interfaces/store.interface';
+import { IProductDocument } from '@product/interfaces/product.interface';
 
 export enum Role {
   User = 'User',
@@ -29,6 +31,12 @@ export interface IUserDocument extends Document {
 
 export interface INotificationSettings {
   messages: boolean;
+}
+
+export interface IFeed {
+  title: string;
+  subtitle: string;
+  content: IStoreDocument[] | IProductDocument[];
 }
 
 export interface IUserJob {

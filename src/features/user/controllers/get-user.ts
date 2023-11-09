@@ -1,8 +1,15 @@
 import { BadRequestError, NotFoundError } from '@global/helpers/error-handler';
+import { IProductDocument } from '@product/interfaces/product.interface';
+import { productService } from '@service/db/product.service';
+import { storeService } from '@service/db/store.service';
 import { userService } from '@service/db/user.service';
-import { IUserDocument } from '@user/interfaces/user.interface';
+import { FeedCache } from '@service/redis/feed.cache';
+import { IStoreDocument } from '@store/interfaces/store.interface';
+import { IFeed, IUserDocument } from '@user/interfaces/user.interface';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
+
+const feedCache: FeedCache = new FeedCache();
 
 class Get {
   public async me(req: Request, res: Response): Promise<void> {
@@ -12,6 +19,43 @@ class Get {
     }
 
     res.status(HTTP_STATUS.OK).json({ message: 'User profile', user });
+  }
+
+  public async feed(req: Request, res: Response): Promise<void> {
+    if (!req.query.latitude || !req.query.longitude)
+      throw new BadRequestError('Latitude and Longitude are required');
+
+    const lat = parseFloat(req.query.latitude as string);
+    const long = parseFloat(req.query.longitude as string);
+
+    const feedData: IFeed[] = [];
+
+    // Check if data exists in cache
+    const cachedData = await feedCache.getFeedData(req.currentUser!.userId);
+
+    if (cachedData) {
+      res.status(HTTP_STATUS.OK).json({ message: 'Feed', feed: cachedData });
+    } else {
+      const closestStores: IStoreDocument[] = await storeService.getClosestStores([long, lat], 10);
+      const frequentlyPurchasedProducts: IProductDocument[] =
+        await productService.getFrequentlyPurchasedProductsNearUser([long, lat], 10);
+
+      feedData.push({
+        title: 'Stores close to you',
+        subtitle: 'Based on your location',
+        content: closestStores
+      });
+
+      feedData.push({
+        title: 'Frequently purchased',
+        subtitle: 'Close to you',
+        content: frequentlyPurchasedProducts
+      });
+
+      await feedCache.saveFeedDataToCache(req.currentUser!.userId, feedData);
+
+      res.status(HTTP_STATUS.OK).json({ message: 'Feed', feed: feedData });
+    }
   }
 
   public async auth(req: Request, res: Response): Promise<void> {

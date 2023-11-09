@@ -66,6 +66,25 @@ class StoreService {
     return products as IStoreWithCategories[];
   }
 
+  public async getClosestStores(location: [number, number], limit: number): Promise<IStoreDocument[]> {
+    const closestStores: IStoreDocument[] = await StoreModel.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: 'Point',
+            coordinates: [location[0], location[1]]
+          },
+          distanceField: 'distance',
+          spherical: true,
+          maxDistance: 100000 // Maximum distance in meter
+        }
+      },
+      { $limit: limit }
+    ]);
+
+    return closestStores;
+  }
+
   public async updateStore(storeId: string, updatedStore: Partial<IStoreDocument>): Promise<void> {
     await StoreModel.updateOne({ _id: storeId }, { $set: updatedStore });
   }

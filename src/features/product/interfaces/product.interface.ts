@@ -11,6 +11,7 @@ export interface IProductDocument extends Document {
   price: number;
   priceDiscount: number;
   description: string;
+  purchaseCount: number;
   quantity?: number;
   category?: string;
   locations?: ILocation[];

@@ -10,6 +10,7 @@ const productSchema: Schema = new Schema(
     category: String,
     images: [{ url: String, public_id: String }],
     videos: [{ url: String, public_id: String }],
+    purchaseCount: { type: Number, default: 0 },
     priceDiscount: Number,
     quantity: Number
   },
