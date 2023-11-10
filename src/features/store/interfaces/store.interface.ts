@@ -12,6 +12,8 @@ export interface ILocation {
 export interface IStoreDocument extends Document {
   _id: string | ObjectId;
   owner: string | ObjectId;
+  escrowBalance: number;
+  mainBalance: number;
   uId: string;
   name: string;
   bgImage: string;

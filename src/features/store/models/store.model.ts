@@ -5,6 +5,8 @@ const storeSchema: Schema = new Schema(
   {
     name: { type: String, unique: true, required: true },
     owner: { type: Types.ObjectId, ref: 'User', index: true, required: true },
+    escrowBalance: { type: Number, default: 0, min: 0 },
+    mainBalance: { type: Number, default: 0, min: 0 },
     uId: String,
     bgImage: String,
     image: String,
