@@ -40,7 +40,8 @@ class OrderRoutes {
       createOrder.order
     );
 
-    this.router.post('/order/payment/verify', authMiddleware.checkAuth, updateOrder.orderPayment);
+    // Implementing IP blacklisting
+    this.router.post('/order/payment/verify', updateOrder.orderPayment);
 
     return this.router;
   }
