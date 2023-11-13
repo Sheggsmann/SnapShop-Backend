@@ -8,7 +8,6 @@ const express_1 = __importDefault(require("express"));
 const auth_middleware_1 = require("../../../shared/globals/middlewares/auth-middleware");
 const create_order_1 = require("../controllers/create-order");
 const get_order_1 = require("../controllers/get-order");
-const update_order_1 = require("../controllers/update-order");
 class OrderRoutes {
     constructor() {
         this.router = express_1.default.Router();
@@ -18,7 +17,6 @@ class OrderRoutes {
         this.router.get('/order/store/:storeId', auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['StoreOwner']), get_order_1.getOrders.storeOrders);
         this.router.get('/order/:orderId', auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['User']), get_order_1.getOrders.order);
         this.router.post('/order/store/:storeId', auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['User']), create_order_1.createOrder.order);
-        this.router.post('/order/payment/verify', auth_middleware_1.authMiddleware.checkAuth, update_order_1.updateOrder.orderPayment);
         return this.router;
     }
 }

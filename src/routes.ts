@@ -10,6 +10,7 @@ import { chatRoutes } from '@chat/routes/chatRoutes';
 import { reviewRoutes } from './features/review/routes/reviewRoutes';
 import { userRoutes } from '@user/routes/userRoutes';
 import { versionRoutes } from '@versioning/routes/versionRoutes';
+import { paymentRoutes } from './features/payment/routes/paymentRoutes';
 
 const BASE_PATH = '/api/v1';
 
@@ -20,6 +21,7 @@ export default (app: Application) => {
 
     app.use(BASE_PATH, authRoutes.routes());
     app.use(BASE_PATH, searchStoreRoutes.routes());
+    app.use(BASE_PATH, paymentRoutes.routes());
 
     app.use(BASE_PATH, authMiddleware.protect, userRoutes.routes());
     app.use(BASE_PATH, authMiddleware.protect, storeRoutes.routes());
