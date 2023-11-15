@@ -18,7 +18,7 @@ const messageSchema = new mongoose_1.Schema({
         _id: mongoose_1.Types.ObjectId,
         amount: Number,
         status: String,
-        products: [{ product: mongoose_1.Types.ObjectId, quantity: Number }]
+        products: [{ product: { type: mongoose_1.Types.ObjectId, ref: 'Product' }, quantity: Number }]
     },
     reply: {
         messageId: mongoose_1.Types.ObjectId,

@@ -17,5 +17,17 @@ class OrderWorker {
             done(err);
         }
     }
+    async updateOrderInDB(job, done) {
+        try {
+            const { key, value } = job.data;
+            await order_service_1.orderService.updateOrder(key, value);
+            job.progress(100);
+            done(null, job.data);
+        }
+        catch (err) {
+            log.error(err);
+            done(err);
+        }
+    }
 }
 exports.orderWorker = new OrderWorker();
