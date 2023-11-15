@@ -53,5 +53,5 @@ export interface IOrderData {
 
 export interface IOrderJob {
   key?: string;
-  value: IOrderDocument;
+  value?: IOrderDocument;
 }

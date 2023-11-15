@@ -25,6 +25,10 @@ class OrderService {
       .populate('store', '_id name description image bgImage owner')
       .populate('products.product', '-quantity -store');
   }
+
+  public async updateOrder(orderId: string, updatedOrder: IOrderDocument): Promise<void> {
+    await OrderModel.updateOne({ _id: orderId }, { $set: updatedOrder });
+  }
 }
 
 export const orderService: OrderService = new OrderService();

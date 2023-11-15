@@ -18,6 +18,19 @@ class OrderWorker {
       done(err as Error);
     }
   }
+
+  public async updateOrderInDB(job: Job, done: DoneCallback): Promise<void> {
+    try {
+      const { key, value } = job.data;
+      await orderService.updateOrder(key, value);
+
+      job.progress(100);
+      done(null, job.data);
+    } catch (err) {
+      log.error(err);
+      done(err as Error);
+    }
+  }
 }
 
 export const orderWorker: OrderWorker = new OrderWorker();

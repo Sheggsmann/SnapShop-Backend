@@ -5,7 +5,7 @@ const orderSchema: Schema = new Schema(
   {
     store: { type: Types.ObjectId, ref: 'Store' },
     user: { userId: { type: Types.ObjectId, ref: 'User' }, name: String, mobileNumber: String },
-    products: [{ product: { type: Types.ObjectId, ref: 'Product' }, quantity: Number }],
+    products: [{ product: { type: Types.ObjectId, ref: 'Product', index: true }, quantity: Number }],
     status: {
       type: String,
       default: OrderStatus.PENDING,

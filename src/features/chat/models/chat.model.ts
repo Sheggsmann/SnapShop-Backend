@@ -18,7 +18,7 @@ const messageSchema: Schema = new Schema(
       _id: Types.ObjectId,
       amount: Number,
       status: String,
-      products: [{ product: Types.ObjectId, quantity: Number }]
+      products: [{ product: { type: Types.ObjectId, ref: 'Product' }, quantity: Number }]
     },
     reply: {
       messageId: Types.ObjectId,

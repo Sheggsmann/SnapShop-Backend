@@ -122,19 +122,11 @@ class ChatService {
       ]
     };
 
-    const messages: IMessageData[] = await MessageModel.aggregate([
-      { $match: query },
-      { $limit: 100 },
-      { $sort: sort },
-      {
-        $lookup: {
-          from: 'Product',
-          localField: 'order.products.product',
-          foreignField: '_id',
-          as: 'order.products'
-        }
-      }
-    ]);
+    const messages: IMessageData[] = await MessageModel.find(query)
+      .sort(sort)
+      .limit(100)
+      .populate('order.products.product', '-quantity -purchaseCount');
+
     return messages;
   }
 }

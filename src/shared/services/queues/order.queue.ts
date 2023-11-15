@@ -6,6 +6,7 @@ class OrderQueue extends BaseQueue {
   constructor() {
     super('Order');
     this.processJob('addOrderToDB', 5, orderWorker.addOrderToDB);
+    this.processJob('updateOrderInDB', 5, orderWorker.updateOrderInDB);
   }
 
   public addOrderJob(name: string, data: IOrderJob): void {
