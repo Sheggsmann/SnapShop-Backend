@@ -14,12 +14,11 @@ const messageSchema: Schema = new Schema(
     isReply: { type: Boolean, default: false },
     isOrder: { type: Boolean, default: false },
     deleted: { type: Boolean, default: false },
-    order: {
-      _id: Types.ObjectId,
-      amount: Number,
-      status: String,
-      products: [{ product: { type: Types.ObjectId, ref: 'Product' }, quantity: Number }]
-    },
+    order: Types.ObjectId,
+    // _id: Types.ObjectId
+    // amount: Number,
+    // status: String,
+    // products: [{ product: { type: Types.ObjectId, ref: 'Product' }, quantity: Number }]
     reply: {
       messageId: Types.ObjectId,
       body: String,
