@@ -9,15 +9,13 @@ export interface IMessageDocument extends Document {
   senderType: 'User' | 'Store';
   receiverType: 'User' | 'Store';
   conversationId: ObjectId;
-  userName: string;
-  storeName: string;
   images: [];
   body: string;
   isRead: boolean;
   isOrder: boolean;
   isReply: boolean;
   deleted: boolean;
-  order?: IOrderData;
+  order?: ObjectId;
   reply?: { messageId: ObjectId; body: string; images: []; sender: ObjectId; receiver: ObjectId };
   createdAt?: Date;
 }

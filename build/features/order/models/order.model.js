@@ -6,7 +6,7 @@ const mongoose_1 = require("mongoose");
 const orderSchema = new mongoose_1.Schema({
     store: { type: mongoose_1.Types.ObjectId, ref: 'Store' },
     user: { userId: { type: mongoose_1.Types.ObjectId, ref: 'User' }, name: String, mobileNumber: String },
-    products: [{ product: { type: mongoose_1.Types.ObjectId, ref: 'Product', index: true }, quantity: Number }],
+    products: [{ product: {}, quantity: Number }],
     status: {
         type: String,
         default: order_interface_1.OrderStatus.PENDING,

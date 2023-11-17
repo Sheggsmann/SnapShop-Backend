@@ -2,12 +2,12 @@ import { AuthUserPayload } from '@auth/interfaces/auth.interface';
 import { Server, Socket } from 'socket.io';
 import { config } from '@root/config';
 import { ChatCache } from '@service/redis/chat.cache';
-import { IMessageData } from '@chat/interfaces/chat.interface';
+import { IMessageData, IMessageDocument } from '@chat/interfaces/chat.interface';
 import { addChatSchema } from '@chat/schemes/chat.scheme';
 import { ObjectId } from 'mongodb';
 import { chatQueue } from '@service/queues/chat.queue';
 import { chatService } from '@service/db/chat.service';
-import { IOrderData, IOrderDocument } from '@order/interfaces/order.interface';
+import { IOrderDocument } from '@order/interfaces/order.interface';
 import { orderQueue } from '@service/queues/order.queue';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { userService } from '@service/db/user.service';
@@ -133,17 +133,9 @@ export class SocketIOChatHandler {
        * Store Owners cannot create an order themselves
        */
 
-      let orderId: ObjectId;
-      let orderData: IOrderData | null = null;
-
+      let orderId: ObjectId | null = null;
       if (isOrder) {
         orderId = new ObjectId();
-        orderData = {
-          _id: orderId,
-          amount: order!.amount,
-          products: order!.products,
-          status: order!.status
-        };
 
         if (senderType === 'User' && receiverType === 'Store') {
           const user: IUserDocument = await userService.getUserById(socket.user!.userId);
@@ -162,7 +154,7 @@ export class SocketIOChatHandler {
         }
       }
 
-      const messageData: IMessageData = {
+      const messageData: IMessageDocument = {
         _id: `${messageId}`,
         conversationId,
         sender,
@@ -173,11 +165,11 @@ export class SocketIOChatHandler {
         isRead: false,
         isReply: !!isReply,
         isOrder: !!isOrder,
-        order: orderData,
+        order: orderId,
         images: images ? images : [],
         reply,
         deleted: false
-      } as IMessageData;
+      } as unknown as IMessageDocument;
 
       // console.log('\nADDING MESSAGE TO DB:', messageData);
       chatQueue.addChatJob('addChatMessageToDB', messageData);

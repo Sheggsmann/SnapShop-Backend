@@ -94,16 +94,9 @@ class SocketIOChatHandler {
              *
              * Store Owners cannot create an order themselves
              */
-            let orderId;
-            let orderData = null;
+            let orderId = null;
             if (isOrder) {
                 orderId = new mongodb_1.ObjectId();
-                orderData = {
-                    _id: orderId,
-                    amount: order.amount,
-                    products: order.products,
-                    status: order.status
-                };
                 if (senderType === 'User' && receiverType === 'Store') {
                     const user = await user_service_1.userService.getUserById(socket.user.userId);
                     order_queue_1.orderQueue.addOrderJob('addOrderToDB', {
@@ -131,7 +124,7 @@ class SocketIOChatHandler {
                 isRead: false,
                 isReply: !!isReply,
                 isOrder: !!isOrder,
-                order: orderData,
+                order: orderId,
                 images: images ? images : [],
                 reply,
                 deleted: false

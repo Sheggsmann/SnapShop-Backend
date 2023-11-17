@@ -8,7 +8,7 @@ import { IUserJob } from '@user/interfaces/user.interface';
 import { IStoreJob } from '@store/interfaces/store.interface';
 import { IProductJob } from '@product/interfaces/product.interface';
 import { IOrderJob } from '@order/interfaces/order.interface';
-import { IChatJobData, IMessageData } from '@chat/interfaces/chat.interface';
+import { IMessageData, IMessageDocument } from '@chat/interfaces/chat.interface';
 import { IReviewJob } from '@root/features/review/interfaces/review.interface';
 import { ISearchesJob } from '@searches/interfaces/searches.interfaces';
 import Logger from 'bunyan';
@@ -22,8 +22,8 @@ type IBaseJobData =
   | IStoreJob
   | IProductJob
   | IOrderJob
-  | IChatJobData
   | IMessageData
+  | IMessageDocument
   | ISearchesJob
   | IReviewJob;
 

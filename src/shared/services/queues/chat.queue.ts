@@ -1,4 +1,4 @@
-import { IChatJobData, IMessageData } from '@chat/interfaces/chat.interface';
+import { IMessageData, IMessageDocument } from '@chat/interfaces/chat.interface';
 import { BaseQueue } from './base.queue';
 import { chatWorker } from '@worker/chat.worker';
 
@@ -8,7 +8,7 @@ class ChatQueue extends BaseQueue {
     this.processJob('addChatMessageToDB', 5, chatWorker.addChatMessageToDB);
   }
 
-  public addChatJob(name: string, data: IChatJobData | IMessageData): void {
+  public addChatJob(name: string, data: IMessageData | IMessageDocument): void {
     this.addJob(name, data);
   }
 }

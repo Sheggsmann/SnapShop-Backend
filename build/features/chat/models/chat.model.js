@@ -14,12 +14,7 @@ const messageSchema = new mongoose_1.Schema({
     isReply: { type: Boolean, default: false },
     isOrder: { type: Boolean, default: false },
     deleted: { type: Boolean, default: false },
-    order: {
-        _id: mongoose_1.Types.ObjectId,
-        amount: Number,
-        status: String,
-        products: [{ product: { type: mongoose_1.Types.ObjectId, ref: 'Product' }, quantity: Number }]
-    },
+    order: { type: mongoose_1.Types.ObjectId, ref: 'Order', index: true },
     reply: {
         messageId: mongoose_1.Types.ObjectId,
         body: String,

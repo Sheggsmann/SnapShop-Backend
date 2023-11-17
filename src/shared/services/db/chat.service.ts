@@ -122,10 +122,7 @@ class ChatService {
       ]
     };
 
-    const messages: IMessageData[] = await MessageModel.find(query)
-      .sort(sort)
-      .limit(100)
-      .populate('order.products.product', '-quantity -purchaseCount');
+    const messages: IMessageData[] = await MessageModel.find(query).sort(sort).limit(100).populate('order');
 
     return messages;
   }

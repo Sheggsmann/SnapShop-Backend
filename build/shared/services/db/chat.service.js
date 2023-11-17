@@ -113,10 +113,7 @@ class ChatService {
                 { sender: storeId, receiver: userId }
             ]
         };
-        const messages = await chat_model_1.MessageModel.find(query)
-            .sort(sort)
-            .limit(100)
-            .populate('order.products.product', '-quantity -purchaseCount');
+        const messages = await chat_model_1.MessageModel.find(query).sort(sort).limit(100).populate('order');
         return messages;
     }
 }
