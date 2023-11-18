@@ -133,12 +133,17 @@ export class SocketIOChatHandler {
        * Store Owners cannot create an order themselves
        */
 
+      console.log('\n\nMESSAGE:', message);
+
       let orderId: ObjectId | null = null;
       if (isOrder) {
         orderId = new ObjectId();
 
         if (senderType === 'User' && receiverType === 'Store') {
           const user: IUserDocument = await userService.getUserById(socket.user!.userId);
+
+          console.log('\n\nORDER:', user);
+
           orderQueue.addOrderJob('addOrderToDB', {
             value: {
               _id: orderId,
