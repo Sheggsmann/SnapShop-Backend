@@ -100,7 +100,6 @@ class SocketIOChatHandler {
                 orderId = new mongodb_1.ObjectId();
                 if (senderType === 'User' && receiverType === 'Store') {
                     const user = await user_service_1.userService.getUserById(socket.user.userId);
-                    console.log('\n\nORDER:', user);
                     order_queue_1.orderQueue.addOrderJob('addOrderToDB', {
                         value: {
                             _id: orderId,

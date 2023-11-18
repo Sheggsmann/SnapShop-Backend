@@ -12,7 +12,7 @@ class ChatService {
     if (!mongoose.Types.ObjectId.isValid(conversationIdString)) {
       console.error('Invalid conversationId:', conversationIdString);
     } else {
-      const conversationId = new mongoose.Types.ObjectId(conversationIdString);
+      let conversationId = new mongoose.Types.ObjectId(conversationIdString);
       let conversation: IConversationDocument | null = await ConversationModel.findOne({
         _id: conversationId
       });
@@ -22,7 +22,11 @@ class ChatService {
           user: data.senderType === 'User' ? data.sender : data.receiver,
           store: data.senderType === 'Store' ? data.sender : data.receiver
         });
-        data.conversationId = conversation!._id;
+
+        if (conversation) {
+          conversationId = conversation._id;
+          data.conversationId = conversation._id;
+        }
       }
 
       // If there's no conversation between the user and the store, create one

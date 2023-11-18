@@ -141,9 +141,6 @@ export class SocketIOChatHandler {
 
         if (senderType === 'User' && receiverType === 'Store') {
           const user: IUserDocument = await userService.getUserById(socket.user!.userId);
-
-          console.log('\n\nORDER:', user);
-
           orderQueue.addOrderJob('addOrderToDB', {
             value: {
               _id: orderId,
