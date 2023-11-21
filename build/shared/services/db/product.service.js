@@ -50,6 +50,7 @@ class ProductService {
                     totalRatings: { $first: '$totalRatings' },
                     ratingsCount: { $first: '$ratingsCount' },
                     locations: { $first: '$locations' },
+                    productCategories: { $first: '$productCategories' },
                     products: { $push: '$products' }
                 }
             }

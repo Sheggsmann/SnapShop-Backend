@@ -25,10 +25,7 @@ class UpdateOrder {
     const order: IOrderDocument | null = await orderService.getOrderByOrderId(orderId);
     if (!order) throw new NotFoundError('Order not found');
 
-    if (
-      order.store.toString() !== req.currentUser?.storeId &&
-      order.user.userId.toString() !== req.currentUser?.userId
-    ) {
+    if (order.store.toString() !== req.currentUser?.storeId) {
       throw new NotAuthorizedError('You are not authorized to make this request');
     }
 
