@@ -24,7 +24,7 @@ class UpdateOrder {
         const order = await order_service_1.orderService.getOrderByOrderId(orderId);
         if (!order)
             throw new error_handler_1.NotFoundError('Order not found');
-        if (order.store.toString() !== req.currentUser?.storeId) {
+        if (order.store._id.toString() !== req.currentUser?.storeId?.toString()) {
             throw new error_handler_1.NotAuthorizedError('You are not authorized to make this request');
         }
         order.deliveryFee = deliveryFee;

@@ -1,4 +1,5 @@
 import { IProductDocument } from '@product/interfaces/product.interface';
+import { IStoreDocument } from '@store/interfaces/store.interface';
 import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 
@@ -16,7 +17,7 @@ export interface ICartItem {
 
 export interface IOrderDocument extends Document {
   _id: string | ObjectId;
-  store: string | ObjectId;
+  store: string | ObjectId | IStoreDocument;
   user: {
     userId: string | ObjectId;
     name: string;

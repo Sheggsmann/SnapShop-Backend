@@ -2,6 +2,7 @@ import { NotAuthorizedError, NotFoundError } from '@global/helpers/error-handler
 import { IOrderDocument } from '@order/interfaces/order.interface';
 import { orderService } from '@service/db/order.service';
 import { orderQueue } from '@service/queues/order.queue';
+import { IStoreDocument } from '@store/interfaces/store.interface';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
@@ -25,7 +26,7 @@ class UpdateOrder {
     const order: IOrderDocument | null = await orderService.getOrderByOrderId(orderId);
     if (!order) throw new NotFoundError('Order not found');
 
-    if (order.store.toString() !== req.currentUser?.storeId) {
+    if ((order.store as IStoreDocument)._id.toString() !== req.currentUser?.storeId?.toString()) {
       throw new NotAuthorizedError('You are not authorized to make this request');
     }
 
