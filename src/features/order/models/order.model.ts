@@ -13,7 +13,7 @@ const orderSchema: Schema = new Schema(
     },
     paid: { type: Boolean, default: false },
     deliveryFee: Number,
-    deliveryCode: Number,
+    deliveryCode: String,
     reason: String,
     deliveryAddress: {
       street: String,

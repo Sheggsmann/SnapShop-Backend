@@ -1,5 +1,5 @@
-import { NotAuthorizedError, NotFoundError } from '@global/helpers/error-handler';
-import { IOrderDocument } from '@order/interfaces/order.interface';
+import { BadRequestError, NotAuthorizedError, NotFoundError } from '@global/helpers/error-handler';
+import { IOrderDocument, OrderStatus } from '@order/interfaces/order.interface';
 import { orderService } from '@service/db/order.service';
 import { orderQueue } from '@service/queues/order.queue';
 import { IStoreDocument } from '@store/interfaces/store.interface';
@@ -53,7 +53,7 @@ class UpdateOrder {
           console.log('AMOUNT PAID:', amountPaid);
 
           if (total === amountPaid) {
-            const deliveryCode = parseInt(Helpers.generateOtp(4));
+            const deliveryCode = Helpers.generateOtp(4);
             await orderService.updateOrderPaymentStatus(orderId, true, deliveryCode);
             await storeService.updateStoreEscrowBalance(storeId, amountPaid);
 
@@ -84,6 +84,24 @@ class UpdateOrder {
     orderQueue.addOrderJob('updateOrderInDB', { key: orderId, value: order });
 
     res.status(HTTP_STATUS.OK).json({ message: 'Order updated successfully' });
+  }
+
+  public async completeOrder(req: Request, res: Response): Promise<void> {
+    const { orderId } = req.params;
+
+    const order: IOrderDocument | null = await orderService.getOrderByOrderId(orderId);
+    if (!order) throw new NotFoundError('Order not found');
+
+    if (order.deliveryCode !== req.body.deliveryCode) {
+      throw new BadRequestError('Invalid delivery code');
+    }
+
+    order.status = OrderStatus.DELIVERED;
+    orderQueue.addOrderJob('updateOrderInDB', { key: orderId, value: order });
+
+    // TODO: implement logic to move balance from escrow to main balance.
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Order completed' });
   }
 }
 

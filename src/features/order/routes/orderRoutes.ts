@@ -42,6 +42,8 @@ class OrderRoutes {
       createOrder.order
     );
 
+    this.router.put('/order/verify/:orderId', authMiddleware.checkAuth, updateOrder.completeOrder);
+
     return this.router;
   }
 }

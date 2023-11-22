@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateOrder = void 0;
 const error_handler_1 = require("../../../shared/globals/helpers/error-handler");
+const order_interface_1 = require("../interfaces/order.interface");
 const order_service_1 = require("../../../shared/services/db/order.service");
 const order_queue_1 = require("../../../shared/services/queues/order.queue");
 const config_1 = require("../../../config");
@@ -40,7 +41,7 @@ class UpdateOrder {
                     console.log('ORDER TOTAL:', total);
                     console.log('AMOUNT PAID:', amountPaid);
                     if (total === amountPaid) {
-                        const deliveryCode = parseInt(helpers_1.Helpers.generateOtp(4));
+                        const deliveryCode = helpers_1.Helpers.generateOtp(4);
                         await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, deliveryCode);
                         await store_service_1.storeService.updateStoreEscrowBalance(storeId, amountPaid);
                         // TODO: emit event using socket.io
@@ -65,6 +66,19 @@ class UpdateOrder {
         order.products = products;
         order_queue_1.orderQueue.addOrderJob('updateOrderInDB', { key: orderId, value: order });
         res.status(http_status_codes_1.default.OK).json({ message: 'Order updated successfully' });
+    }
+    async completeOrder(req, res) {
+        const { orderId } = req.params;
+        const order = await order_service_1.orderService.getOrderByOrderId(orderId);
+        if (!order)
+            throw new error_handler_1.NotFoundError('Order not found');
+        if (order.deliveryCode !== req.body.deliveryCode) {
+            throw new error_handler_1.BadRequestError('Invalid delivery code');
+        }
+        order.status = order_interface_1.OrderStatus.DELIVERED;
+        order_queue_1.orderQueue.addOrderJob('updateOrderInDB', { key: orderId, value: order });
+        // TODO: implement logic to move balance from escrow to main balance.
+        res.status(http_status_codes_1.default.OK).json({ message: 'Order completed' });
     }
 }
 exports.updateOrder = new UpdateOrder();

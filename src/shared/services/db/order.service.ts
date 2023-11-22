@@ -31,7 +31,7 @@ class OrderService {
     await OrderModel.updateOne({ _id: orderId }, { $set: updatedOrder });
   }
 
-  public async updateOrderPaymentStatus(orderId: string, paid: boolean, deliveryCode: number): Promise<void> {
+  public async updateOrderPaymentStatus(orderId: string, paid: boolean, deliveryCode: string): Promise<void> {
     await OrderModel.updateOne(
       { _id: orderId },
       { $set: { paid, deliveryCode, status: OrderStatus.ACTIVE } }
