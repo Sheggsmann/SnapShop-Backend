@@ -32,4 +32,14 @@ export class Helpers {
   static escapeRegExp(text: string) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
   }
+
+  static calculateServiceFee(totalPrice: number) {
+    if (totalPrice >= 0 && totalPrice <= 50000) {
+      return Math.round(totalPrice * 0.04);
+    } else if (totalPrice > 50000 && totalPrice <= 100000) {
+      return Math.round(totalPrice * 0.03);
+    } else {
+      return Math.round(totalPrice * 0.02);
+    }
+  }
 }

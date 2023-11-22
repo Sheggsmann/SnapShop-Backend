@@ -33,6 +33,7 @@ class Config {
         this.AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY || '';
         this.AWS_SECRET_KEY = process.env.AWS_SECRET_KEY || '';
         this.AWS_REGION = process.env.AWS_REGION || '';
+        this.PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
     }
     validateConfig() {
         for (const [key, value] of Object.entries(this)) {

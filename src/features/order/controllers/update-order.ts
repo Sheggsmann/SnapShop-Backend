@@ -3,20 +3,69 @@ import { IOrderDocument } from '@order/interfaces/order.interface';
 import { orderService } from '@service/db/order.service';
 import { orderQueue } from '@service/queues/order.queue';
 import { IStoreDocument } from '@store/interfaces/store.interface';
+import { IProductDocument } from '@product/interfaces/product.interface';
 import { Request, Response } from 'express';
+import { config } from '@root/config';
+import { Helpers } from '@global/helpers/helpers';
+import { storeService } from '@service/db/store.service';
+import { socketIOChatObject } from '@socket/chat';
+import crypto from 'crypto';
+// import mongoose from 'mongoose';
 import HTTP_STATUS from 'http-status-codes';
+
+const KOBO_IN_NAIRA = 100;
 
 class UpdateOrder {
   public async orderPayment(req: Request, res: Response): Promise<void> {
-    console.log('\n\n');
-    // console.log('[REQUEST HEADERS]:', req.headers);
-    console.log('\n[REQUEST BODY]:', req.body);
+    // OUS => Order Id, User Id, Store Id
 
-    const eventData = req.body;
-    console.log('\nMETADATA:', eventData.data.metadata);
+    const hash = crypto
+      .createHmac('sha512', config.PAYSTACK_SECRET_KEY!)
+      .update(JSON.stringify(req.body))
+      .digest('hex');
 
-    res.send(200);
-    // res.status(HTTP_STATUS.OK);
+    if (hash === req.headers['x-paystack-signature']) {
+      // console.log('[REQUEST HEADERS]:', req.headers);
+      console.log('\n[REQUEST BODY]:', req.body);
+
+      const eventData = req.body;
+
+      if (eventData.event === 'charge.success') {
+        const [orderId, userId, storeId] = eventData.data.reference.split('-');
+
+        // Amount in Kobo, change to naira
+        const amountPaid: number = eventData.data.amount / KOBO_IN_NAIRA;
+
+        // TODO: Check if the amount paid is the same as the total of all the products
+        const order: IOrderDocument | null = await orderService.getOrderByOrderId(orderId);
+
+        if (order) {
+          // sum the price of all the products and their quantities and check if the amount paid is equal
+          let total: number = order.products.reduce(
+            (acc, item) => (acc += (item.product as IProductDocument).price * item.quantity),
+            0
+          );
+
+          total += Helpers.calculateServiceFee(total);
+          total += order?.deliveryFee || 0;
+
+          console.log('ORDER TOTAL:', total);
+          console.log('AMOUNT PAID:', amountPaid);
+
+          if (total === amountPaid) {
+            const deliveryCode = parseInt(Helpers.generateOtp(4));
+            await orderService.updateOrderPaymentStatus(orderId, true, deliveryCode);
+            await storeService.updateStoreEscrowBalance(storeId, amountPaid);
+
+            // TODO: emit event using socket.io
+            socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });
+            // TODO: send push notification to the user and the store
+          }
+        }
+      }
+    }
+
+    res.sendStatus(200);
   }
 
   public async order(req: Request, res: Response): Promise<void> {

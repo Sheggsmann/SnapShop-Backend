@@ -1,6 +1,7 @@
-import { IOrderDocument } from '@order/interfaces/order.interface';
+import { IOrderDocument, OrderStatus } from '@order/interfaces/order.interface';
 import { OrderModel } from '@order/models/order.model';
 import { IProductDocument } from '@product/interfaces/product.interface';
+// import { ClientSession } from 'mongoose';
 
 class OrderService {
   public async addOrderToDB(data: IProductDocument): Promise<void> {
@@ -28,6 +29,13 @@ class OrderService {
 
   public async updateOrder(orderId: string, updatedOrder: IOrderDocument): Promise<void> {
     await OrderModel.updateOne({ _id: orderId }, { $set: updatedOrder });
+  }
+
+  public async updateOrderPaymentStatus(orderId: string, paid: boolean, deliveryCode: number): Promise<void> {
+    await OrderModel.updateOne(
+      { _id: orderId },
+      { $set: { paid, deliveryCode, status: OrderStatus.ACTIVE } }
+    );
   }
 }
 

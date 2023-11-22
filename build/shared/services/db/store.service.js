@@ -67,5 +67,10 @@ class StoreService {
     async updateStore(storeId, updatedStore) {
         await store_model_1.StoreModel.updateOne({ _id: storeId }, { $set: updatedStore });
     }
+    async updateStoreEscrowBalance(storeId, balance) {
+        if (Number(balance) > 0) {
+            await store_model_1.StoreModel.updateOne({ _id: storeId }, { $set: { escrowBalance: Number(balance) } });
+        }
+    }
 }
 exports.storeService = new StoreService();

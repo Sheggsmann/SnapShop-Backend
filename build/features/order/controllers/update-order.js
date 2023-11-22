@@ -7,16 +7,50 @@ exports.updateOrder = void 0;
 const error_handler_1 = require("../../../shared/globals/helpers/error-handler");
 const order_service_1 = require("../../../shared/services/db/order.service");
 const order_queue_1 = require("../../../shared/services/queues/order.queue");
+const config_1 = require("../../../config");
+const helpers_1 = require("../../../shared/globals/helpers/helpers");
+const store_service_1 = require("../../../shared/services/db/store.service");
+const chat_1 = require("../../../shared/sockets/chat");
+const crypto_1 = __importDefault(require("crypto"));
+// import mongoose from 'mongoose';
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
+const KOBO_IN_NAIRA = 100;
 class UpdateOrder {
     async orderPayment(req, res) {
-        console.log('\n\n');
-        // console.log('[REQUEST HEADERS]:', req.headers);
-        console.log('\n[REQUEST BODY]:', req.body);
-        const eventData = req.body;
-        console.log('\nMETADATA:', eventData.data.metadata);
-        res.send(200);
-        // res.status(HTTP_STATUS.OK);
+        // OUS => Order Id, User Id, Store Id
+        const hash = crypto_1.default
+            .createHmac('sha512', config_1.config.PAYSTACK_SECRET_KEY)
+            .update(JSON.stringify(req.body))
+            .digest('hex');
+        if (hash === req.headers['x-paystack-signature']) {
+            // console.log('[REQUEST HEADERS]:', req.headers);
+            console.log('\n[REQUEST BODY]:', req.body);
+            const eventData = req.body;
+            if (eventData.event === 'charge.success') {
+                const [orderId, userId, storeId] = eventData.data.reference.split('-');
+                // Amount in Kobo, change to naira
+                const amountPaid = eventData.data.amount / KOBO_IN_NAIRA;
+                // TODO: Check if the amount paid is the same as the total of all the products
+                const order = await order_service_1.orderService.getOrderByOrderId(orderId);
+                if (order) {
+                    // sum the price of all the products and their quantities and check if the amount paid is equal
+                    let total = order.products.reduce((acc, item) => (acc += item.product.price * item.quantity), 0);
+                    total += helpers_1.Helpers.calculateServiceFee(total);
+                    total += order?.deliveryFee || 0;
+                    console.log('ORDER TOTAL:', total);
+                    console.log('AMOUNT PAID:', amountPaid);
+                    if (total === amountPaid) {
+                        const deliveryCode = parseInt(helpers_1.Helpers.generateOtp(4));
+                        await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, deliveryCode);
+                        await store_service_1.storeService.updateStoreEscrowBalance(storeId, amountPaid);
+                        // TODO: emit event using socket.io
+                        chat_1.socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });
+                        // TODO: send push notification to the user and the store
+                    }
+                }
+            }
+        }
+        res.sendStatus(200);
     }
     async order(req, res) {
         const { orderId } = req.params;

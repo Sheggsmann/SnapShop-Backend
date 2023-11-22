@@ -88,6 +88,12 @@ class StoreService {
   public async updateStore(storeId: string, updatedStore: Partial<IStoreDocument>): Promise<void> {
     await StoreModel.updateOne({ _id: storeId }, { $set: updatedStore });
   }
+
+  public async updateStoreEscrowBalance(storeId: string, balance: number): Promise<void> {
+    if (Number(balance) > 0) {
+      await StoreModel.updateOne({ _id: storeId }, { $set: { escrowBalance: Number(balance) } });
+    }
+  }
 }
 
 export const storeService: StoreService = new StoreService();
