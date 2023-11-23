@@ -85,6 +85,10 @@ class UpdateOrder {
     order.deliveryFee = deliveryFee;
     order.products = products;
     orderQueue.addOrderJob('updateOrderInDB', { key: orderId, value: order });
+    socketIOChatObject
+      .to(req.currentUser.storeId!)
+      .to(order.user.userId as string)
+      .emit('order:update', { order });
 
     res.status(HTTP_STATUS.OK).json({ message: 'Order updated successfully' });
   }
