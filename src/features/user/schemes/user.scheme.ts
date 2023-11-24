@@ -24,4 +24,11 @@ const likedProductSchema: ObjectSchema = Joi.object().keys({
   })
 });
 
-export { userSchema, saveStoreSchema, likedProductSchema };
+const savePushTokenSchema: ObjectSchema = Joi.object().keys({
+  pushToken: Joi.string().required().messages({
+    'string.base': 'pushToken must be a string',
+    'string.empty': 'pushToken is required'
+  })
+});
+
+export { userSchema, saveStoreSchema, likedProductSchema, savePushTokenSchema };

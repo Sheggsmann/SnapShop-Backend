@@ -27,6 +27,7 @@ class Config {
   public AWS_SECRET_KEY: string | undefined;
   public AWS_REGION: string | undefined;
   public PAYSTACK_SECRET_KEY: string | undefined;
+  public EXPO_ACCESS_TOKEN: string | undefined;
 
   private readonly DEFAULT_DATABSE_URL = 'mongodb://localhost:27017/snapshop-backend';
   private readonly PORT = 5000;
@@ -53,6 +54,7 @@ class Config {
     this.AWS_SECRET_KEY = process.env.AWS_SECRET_KEY || '';
     this.AWS_REGION = process.env.AWS_REGION || '';
     this.PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
+    this.EXPO_ACCESS_TOKEN = process.env.EXPO_ACCESS_TOKEN || '';
   }
 
   public validateConfig(): void {

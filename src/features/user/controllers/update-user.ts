@@ -4,7 +4,12 @@ import { validator } from '@global/helpers/joi-validation-decorator';
 import { userService } from '@service/db/user.service';
 import { userQueue } from '@service/queues/user.queue';
 import { IUserDocument } from '@user/interfaces/user.interface';
-import { likedProductSchema, saveStoreSchema, userSchema } from '@user/schemes/user.scheme';
+import {
+  likedProductSchema,
+  savePushTokenSchema,
+  saveStoreSchema,
+  userSchema
+} from '@user/schemes/user.scheme';
 import { UploadApiResponse } from 'cloudinary';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
@@ -90,6 +95,19 @@ class Update {
     res
       .status(HTTP_STATUS.OK)
       .json({ message: 'Product liked successfully', likedProducts: updatedUser.likedProducts });
+  }
+
+  /**
+   * @param
+   * @desc defines the endpoint to store expo push token
+   */
+  @validator(savePushTokenSchema)
+  public async savePushNotificationToken(req: Request, res: Response): Promise<void> {
+    const { pushToken } = req.body;
+    const updatedUser: Pick<IUserDocument, 'expoPushToken'> = { expoPushToken: pushToken };
+    userQueue.addUserJob('updateUserInDB', { key: req.currentUser!.userId, value: updatedUser });
+
+    res.status(HTTP_STATUS.OK).json({ message: 'PushToken saved successfully' });
   }
 }
 

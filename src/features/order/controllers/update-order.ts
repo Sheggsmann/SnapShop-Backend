@@ -9,6 +9,7 @@ import { Request, Response } from 'express';
 import { Helpers } from '@global/helpers/helpers';
 import { storeService } from '@service/db/store.service';
 import { socketIOChatObject } from '@socket/chat';
+import { notificationQueue } from '@service/queues/notification.queue';
 // import crypto from 'crypto';
 // import mongoose from 'mongoose';
 import HTTP_STATUS from 'http-status-codes';
@@ -59,7 +60,17 @@ class UpdateOrder {
 
           // TODO: emit event using socket.io
           socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });
+
           // TODO: send push notification to the user and the store
+          notificationQueue.addNotificationJob('sendPushNotificationToStore', {
+            key: storeId,
+            value: {
+              title: `Order Payment 🥳`,
+              body: `${order.user.name} just paid ₦${amountPaid} for order #${order._id
+                .toString()
+                .substring(0, 8)}`
+            }
+          });
         }
       }
     }
@@ -75,20 +86,48 @@ class UpdateOrder {
     const order: IOrderDocument | null = await orderService.getOrderByOrderId(orderId);
     if (!order) throw new NotFoundError('Order not found');
 
-    if (
-      (order.store as IStoreDocument)._id.toString() !== req.currentUser?.storeId?.toString() &&
-      order.user.userId.toString() !== req.currentUser?.userId.toString()
-    ) {
+    const isOrderStore =
+      (order.store as IStoreDocument)._id.toString() === req.currentUser!.storeId?.toString();
+    const isOrderUser = order.user.userId.toString() === req.currentUser!.userId.toString();
+
+    if (!isOrderStore || !isOrderUser) {
       throw new NotAuthorizedError('You are not authorized to make this request');
     }
 
     order.deliveryFee = deliveryFee;
     order.products = products;
     orderQueue.addOrderJob('updateOrderInDB', { key: orderId, value: order });
+
     socketIOChatObject
-      .to(req.currentUser.storeId!)
+      .to(`${req.currentUser!.storeId}`)
       .to(order.user.userId as string)
       .emit('order:update', { order });
+
+    // TODO: if update is from user, send notification to store
+    if (isOrderUser) {
+      notificationQueue.addNotificationJob('sendPushNotificationToStore', {
+        key: (order.store as IStoreDocument)._id as string,
+        value: {
+          title: `Order Updated`,
+          body: `${order.user.name} just updated the product quantity for order #${order._id
+            .toString()
+            .substring(0, 8)}`
+        }
+      });
+    }
+
+    // if update is from store, send update to user
+    if (isOrderStore) {
+      notificationQueue.addNotificationJob('sendPushNotificationToUser', {
+        key: order.user.userId as string,
+        value: {
+          title: 'Order Updated',
+          body: `${(order.store as IStoreDocument).name} added a delivery fee for order #${order._id
+            .toString()
+            .substring(0, 8)}`
+        }
+      });
+    }
 
     res.status(HTTP_STATUS.OK).json({ message: 'Order updated successfully' });
   }

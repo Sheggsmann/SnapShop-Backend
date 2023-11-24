@@ -26,6 +26,7 @@ export interface IStoreDocument extends Document {
   productCategories: string[];
   ratingsCount: number;
   totalRatings: number;
+  expoPushToken: string;
   isOwner(userId: string): boolean;
 }
 

@@ -37,6 +37,12 @@ class StoreRoutes {
 
     this.router.post('/store/signup', authMiddleware.checkAuth, createStore.store);
     this.router.post(
+      '/store/store-expo-push-token',
+      authMiddleware.checkAuth,
+      authMiddleware.restrictTo(['StoreOwner']),
+      updateStore.savePushNotificationToken
+    );
+    this.router.post(
       '/store/product-categories',
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),

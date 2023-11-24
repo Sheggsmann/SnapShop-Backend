@@ -27,6 +27,7 @@ export interface IUserDocument extends Document {
   likedProducts: mongoose.Types.ObjectId[] | string[];
   deliveryAddresses: [];
   notifications: INotificationSettings;
+  expoPushToken: string;
 }
 
 export interface INotificationSettings {

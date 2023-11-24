@@ -7,6 +7,7 @@ import { storeQueue } from '@service/queues/store.queue';
 import { IStoreDocument } from '@store/interfaces/store.interface';
 import { storeUpdateSchema } from '@store/schemes/store.scheme';
 import { Request, Response } from 'express';
+import { savePushTokenSchema } from '@user/schemes/user.scheme';
 import HTTP_STATUS from 'http-status-codes';
 
 class Update {
@@ -59,6 +60,15 @@ class Update {
     storeQueue.addStoreJob('updateStoreInDB', { key: storeId, value: updatedStore });
 
     res.status(HTTP_STATUS.OK).json({ message: 'Store verified successfully' });
+  }
+
+  @validator(savePushTokenSchema)
+  public async savePushNotificationToken(req: Request, res: Response): Promise<void> {
+    const { pushToken } = req.body;
+    const updatedStore: Pick<IStoreDocument, 'expoPushToken'> = { expoPushToken: pushToken };
+    storeQueue.addStoreJob('updateStoreInDB', { key: req.currentUser!.storeId, value: updatedStore });
+
+    res.status(HTTP_STATUS.OK).json({ message: 'PushToken saved successfully' });
   }
 }
 

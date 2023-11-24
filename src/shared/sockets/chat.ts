@@ -11,6 +11,7 @@ import { IOrderDocument } from '@order/interfaces/order.interface';
 import { orderQueue } from '@service/queues/order.queue';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { userService } from '@service/db/user.service';
+import { notificationQueue } from '@service/queues/notification.queue';
 import JWT from 'jsonwebtoken';
 import Logger from 'bunyan';
 import mongoose from 'mongoose';
@@ -175,6 +176,27 @@ export class SocketIOChatHandler {
 
       // console.log('\nADDING MESSAGE TO DB:', messageData);
       chatQueue.addChatJob('addChatMessageToDB', messageData);
+
+      if (isOrder) {
+        notificationQueue.addNotificationJob('sendPushNotificationToStore', {
+          key: `${receiver}`,
+          value: { title: 'New Order 🥳🎉', body: 'You just received a new order' }
+        });
+      } else {
+        if (senderType === 'User') {
+          notificationQueue.addNotificationJob('sendPushNotificationToStore', {
+            key: `${receiver}`,
+            value: { title: 'New Message', body: body.substring(0, 30) }
+          });
+        }
+
+        if (senderType === 'Store') {
+          notificationQueue.addNotificationJob('sendPushNotificationToUser', {
+            key: `${receiver}`,
+            value: { title: 'New Message', body: body.substring(0, 30) }
+          });
+        }
+      }
     } catch (err) {
       log.error(err);
     }

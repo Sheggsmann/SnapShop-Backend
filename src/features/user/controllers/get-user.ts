@@ -17,7 +17,6 @@ class Get {
     if (!user) {
       throw new BadRequestError('Details not found');
     }
-
     res.status(HTTP_STATUS.OK).json({ message: 'User profile', user });
   }
 

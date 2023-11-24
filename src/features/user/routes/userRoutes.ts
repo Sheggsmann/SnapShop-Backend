@@ -23,6 +23,12 @@ class UserRoutes {
     this.router.put('/user', authMiddleware.checkAuth, updateUser.user);
     this.router.post('/user/like-product', authMiddleware.checkAuth, updateUser.likeProduct);
     this.router.post('/user/save-store', authMiddleware.checkAuth, updateUser.saveStore);
+    this.router.post(
+      '/user/store-expo-push-token',
+      authMiddleware.checkAuth,
+      authMiddleware.restrictTo(['User']),
+      updateUser.savePushNotificationToken
+    );
 
     if (config.NODE_ENV! === 'development') {
       this.router.delete('/user/:userId', deleteUser.user);
