@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likedProductSchema = exports.saveStoreSchema = exports.userSchema = void 0;
+exports.savePushTokenSchema = exports.likedProductSchema = exports.saveStoreSchema = exports.userSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 const userSchema = joi_1.default.object().keys({
     email: joi_1.default.string().email().optional().allow(null, '').min(2).max(100).messages({
@@ -29,3 +29,10 @@ const likedProductSchema = joi_1.default.object().keys({
     })
 });
 exports.likedProductSchema = likedProductSchema;
+const savePushTokenSchema = joi_1.default.object().keys({
+    pushToken: joi_1.default.string().required().messages({
+        'string.base': 'pushToken must be a string',
+        'string.empty': 'pushToken is required'
+    })
+});
+exports.savePushTokenSchema = savePushTokenSchema;

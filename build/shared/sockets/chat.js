@@ -12,6 +12,7 @@ const chat_queue_1 = require("../services/queues/chat.queue");
 const chat_service_1 = require("../services/db/chat.service");
 const order_queue_1 = require("../services/queues/order.queue");
 const user_service_1 = require("../services/db/user.service");
+const notification_queue_1 = require("../services/queues/notification.queue");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const log = config_1.config.createLogger('CHAT-SOCKET');
@@ -132,6 +133,26 @@ class SocketIOChatHandler {
             };
             // console.log('\nADDING MESSAGE TO DB:', messageData);
             chat_queue_1.chatQueue.addChatJob('addChatMessageToDB', messageData);
+            if (isOrder) {
+                notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
+                    key: `${receiver}`,
+                    value: { title: 'New Order 🥳🎉', body: 'You just received a new order' }
+                });
+            }
+            else {
+                if (senderType === 'User') {
+                    notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
+                        key: `${receiver}`,
+                        value: { title: 'New Message', body: body.substring(0, 30) }
+                    });
+                }
+                if (senderType === 'Store') {
+                    notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToUser', {
+                        key: `${receiver}`,
+                        value: { title: 'New Message', body: body.substring(0, 30) }
+                    });
+                }
+            }
         }
         catch (err) {
             log.error(err);

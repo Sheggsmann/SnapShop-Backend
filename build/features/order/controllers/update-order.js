@@ -12,6 +12,7 @@ const order_queue_1 = require("../../../shared/services/queues/order.queue");
 const helpers_1 = require("../../../shared/globals/helpers/helpers");
 const store_service_1 = require("../../../shared/services/db/store.service");
 const chat_1 = require("../../../shared/sockets/chat");
+const notification_queue_1 = require("../../../shared/services/queues/notification.queue");
 // import crypto from 'crypto';
 // import mongoose from 'mongoose';
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
@@ -47,6 +48,15 @@ class UpdateOrder {
                     // TODO: emit event using socket.io
                     chat_1.socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });
                     // TODO: send push notification to the user and the store
+                    notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
+                        key: storeId,
+                        value: {
+                            title: `Order Payment 🥳`,
+                            body: `${order.user.name} just paid ₦${amountPaid} for order #${order._id
+                                .toString()
+                                .substring(0, 8)}`
+                        }
+                    });
                 }
             }
         }
@@ -59,13 +69,42 @@ class UpdateOrder {
         const order = await order_service_1.orderService.getOrderByOrderId(orderId);
         if (!order)
             throw new error_handler_1.NotFoundError('Order not found');
-        if (order.store._id.toString() !== req.currentUser?.storeId?.toString() &&
-            order.user.userId.toString() !== req.currentUser?.userId.toString()) {
+        const isOrderStore = order.store._id.toString() === req.currentUser.storeId?.toString();
+        const isOrderUser = order.user.userId.toString() === req.currentUser.userId.toString();
+        if (!isOrderStore || !isOrderUser) {
             throw new error_handler_1.NotAuthorizedError('You are not authorized to make this request');
         }
         order.deliveryFee = deliveryFee;
         order.products = products;
         order_queue_1.orderQueue.addOrderJob('updateOrderInDB', { key: orderId, value: order });
+        chat_1.socketIOChatObject
+            .to(`${req.currentUser.storeId}`)
+            .to(order.user.userId)
+            .emit('order:update', { order });
+        // TODO: if update is from user, send notification to store
+        if (isOrderUser) {
+            notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
+                key: order.store._id,
+                value: {
+                    title: `Order Updated`,
+                    body: `${order.user.name} just updated the product quantity for order #${order._id
+                        .toString()
+                        .substring(0, 8)}`
+                }
+            });
+        }
+        // if update is from store, send update to user
+        if (isOrderStore) {
+            notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToUser', {
+                key: order.user.userId,
+                value: {
+                    title: 'Order Updated',
+                    body: `${order.store.name} added a delivery fee for order #${order._id
+                        .toString()
+                        .substring(0, 8)}`
+                }
+            });
+        }
         res.status(http_status_codes_1.default.OK).json({ message: 'Order updated successfully' });
     }
     async completeOrder(req, res) {

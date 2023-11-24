@@ -24,6 +24,7 @@ class UserRoutes {
         this.router.put('/user', auth_middleware_1.authMiddleware.checkAuth, update_user_1.updateUser.user);
         this.router.post('/user/like-product', auth_middleware_1.authMiddleware.checkAuth, update_user_1.updateUser.likeProduct);
         this.router.post('/user/save-store', auth_middleware_1.authMiddleware.checkAuth, update_user_1.updateUser.saveStore);
+        this.router.post('/user/store-expo-push-token', auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['User']), update_user_1.updateUser.savePushNotificationToken);
         if (config_1.config.NODE_ENV === 'development') {
             this.router.delete('/user/:userId', delete_user_1.deleteUser.user);
         }

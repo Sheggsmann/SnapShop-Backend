@@ -19,6 +19,7 @@ const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-
 const store_service_1 = require("../../../shared/services/db/store.service");
 const store_queue_1 = require("../../../shared/services/queues/store.queue");
 const store_scheme_1 = require("../schemes/store.scheme");
+const user_scheme_1 = require("../../user/schemes/user.scheme");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class Update {
     async store(req, res) {
@@ -62,6 +63,12 @@ class Update {
         store_queue_1.storeQueue.addStoreJob('updateStoreInDB', { key: storeId, value: updatedStore });
         res.status(http_status_codes_1.default.OK).json({ message: 'Store verified successfully' });
     }
+    async savePushNotificationToken(req, res) {
+        const { pushToken } = req.body;
+        const updatedStore = { expoPushToken: pushToken };
+        store_queue_1.storeQueue.addStoreJob('updateStoreInDB', { key: req.currentUser.storeId, value: updatedStore });
+        res.status(http_status_codes_1.default.OK).json({ message: 'PushToken saved successfully' });
+    }
 }
 __decorate([
     (0, joi_validation_decorator_1.validator)(store_scheme_1.storeUpdateSchema),
@@ -69,4 +76,10 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], Update.prototype, "store", null);
+__decorate([
+    (0, joi_validation_decorator_1.validator)(user_scheme_1.savePushTokenSchema),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], Update.prototype, "savePushNotificationToken", null);
 exports.updateStore = new Update();

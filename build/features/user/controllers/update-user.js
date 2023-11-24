@@ -84,6 +84,16 @@ class Update {
             .status(http_status_codes_1.default.OK)
             .json({ message: 'Product liked successfully', likedProducts: updatedUser.likedProducts });
     }
+    /**
+     * @param
+     * @desc defines the endpoint to store expo push token
+     */
+    async savePushNotificationToken(req, res) {
+        const { pushToken } = req.body;
+        const updatedUser = { expoPushToken: pushToken };
+        user_queue_1.userQueue.addUserJob('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
+        res.status(http_status_codes_1.default.OK).json({ message: 'PushToken saved successfully' });
+    }
 }
 __decorate([
     (0, joi_validation_decorator_1.validator)(user_scheme_1.userSchema),
@@ -103,4 +113,10 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], Update.prototype, "likeProduct", null);
+__decorate([
+    (0, joi_validation_decorator_1.validator)(user_scheme_1.savePushTokenSchema),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], Update.prototype, "savePushNotificationToken", null);
 exports.updateUser = new Update();

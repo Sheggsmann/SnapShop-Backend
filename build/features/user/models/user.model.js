@@ -17,7 +17,8 @@ const userSchema = new mongoose_1.Schema({
     notifications: {
         messages: { type: Boolean, default: true }
     },
-    storeCount: { type: Number, default: 0 }
+    storeCount: { type: Number, default: 0 },
+    expoPushToken: String
 }, {
     timestamps: true,
     minimize: false
