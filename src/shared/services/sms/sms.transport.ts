@@ -1,5 +1,6 @@
 import { config } from '@root/config';
 import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
+import axios from 'axios';
 import Logger from 'bunyan';
 
 const log: Logger = config.createLogger('SMS');
@@ -11,7 +12,7 @@ const snsClient = new SNSClient({
 });
 
 class SmsTransport {
-  private async devSmsSender(receiverMobileNumber: string, body: string, type: string): Promise<MsgResponse> {
+  private async awsDevSmsSender(receiverMobileNumber: string, body: string): Promise<MsgResponse> {
     try {
       await snsClient.send(
         new PublishCommand({
@@ -27,12 +28,7 @@ class SmsTransport {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private async prodSmsSender(
-    receiverMobileNumber: string,
-    body: string,
-    type: string
-  ): Promise<MsgResponse> {
+  private async awsProdSmsSender(receiverMobileNumber: string, body: string): Promise<MsgResponse> {
     try {
       await snsClient.send(
         new PublishCommand({
@@ -40,6 +36,44 @@ class SmsTransport {
           PhoneNumber: receiverMobileNumber
         })
       );
+
+      return Promise.resolve('success');
+    } catch (err) {
+      log.error(err);
+      return Promise.resolve('error');
+    }
+  }
+
+  private async devSmsSender(receiverMobileNumber: string, body: string, type: string): Promise<MsgResponse> {
+    try {
+      const response = await axios.post('https://www.bulksmsnigeria.com/api/v2/sms', {
+        from: 'SnapShup',
+        body,
+        to: receiverMobileNumber,
+        api_token: config.BULKSMS_API_KEY
+      });
+
+      log.info('\nSMS RESPONSE:', response.data);
+      return Promise.resolve('success');
+    } catch (err) {
+      log.error(err);
+      return Promise.resolve('error');
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private async prodSmsSender(
+    receiverMobileNumber: string,
+    body: string,
+    type: string
+  ): Promise<MsgResponse> {
+    try {
+      const response = await axios.post('https://www.bulksmsnigeria.com/api/v2/sms', {
+        from: 'SnapShup',
+        body,
+        to: receiverMobileNumber,
+        api_token: config.BULKSMS_API_KEY
+      });
 
       return Promise.resolve('success');
     } catch (err) {

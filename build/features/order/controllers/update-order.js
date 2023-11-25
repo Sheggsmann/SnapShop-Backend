@@ -120,6 +120,10 @@ class UpdateOrder {
         }
         order.status = order_interface_1.OrderStatus.DELIVERED;
         order_queue_1.orderQueue.addOrderJob('updateOrderInDB', { key: orderId, value: order });
+        chat_1.socketIOChatObject
+            .to(order.user.userId.toString())
+            .to(order.store._id.toString())
+            .emit('order:update', { order });
         // TODO: implement logic to move balance from escrow to main balance.
         res.status(http_status_codes_1.default.OK).json({ message: 'Order completed' });
     }

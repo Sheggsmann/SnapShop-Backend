@@ -23,7 +23,7 @@
     "@aws-sdk/client-sns": "^3.388.0",
     "@bull-board/express": "^5.0.0",
     "@socket.io/redis-adapter": "^8.1.0",
-    "axios": "^1.4.0",
+    "axios": "^1.6.2",
     "bcryptjs": "^2.4.3",
     "bull": "^4.10.4",
     "bunyan": "^1.8.15",
