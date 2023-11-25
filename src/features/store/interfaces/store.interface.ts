@@ -14,6 +14,7 @@ export interface IStoreDocument extends Document {
   owner: string | ObjectId;
   escrowBalance: number;
   mainBalance: number;
+  mobileNumber?: string;
   uId: string;
   name: string;
   bgImage: string;

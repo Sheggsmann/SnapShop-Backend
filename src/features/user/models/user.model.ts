@@ -7,6 +7,7 @@ const userSchema: Schema = new Schema(
     firstname: String,
     lastname: String,
     email: String,
+    mobileNumber: String,
     source: String,
     roles: { type: [], default: [Role.User] },
     savedStores: [{ type: Types.ObjectId, ref: 'Store' }],

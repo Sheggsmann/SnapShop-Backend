@@ -37,7 +37,8 @@ class Create {
       uId: `${Helpers.genrateRandomIntegers(12)}`,
       locations: [{ location: { type: 'Point', coordinates: [parseFloat(lng), parseFloat(lat)] }, address }],
       badges: [],
-      verified: false
+      verified: false,
+      mobileNumber: req.currentUser!.mobileNumber
     } as unknown as IStoreDocument;
 
     storeQueue.addStoreJob('addStoreToDB', { value: store, userId: req.currentUser!.userId });

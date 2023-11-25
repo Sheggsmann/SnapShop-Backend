@@ -8,6 +8,7 @@ const userSchema = new mongoose_1.Schema({
     firstname: String,
     lastname: String,
     email: String,
+    mobileNumber: String,
     source: String,
     roles: { type: [], default: [user_interface_1.Role.User] },
     savedStores: [{ type: mongoose_1.Types.ObjectId, ref: 'Store' }],

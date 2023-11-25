@@ -69,12 +69,14 @@ class ChatService {
                                 _id: { $arrayElemAt: ['$userSenderData._id', 0] },
                                 firstname: { $arrayElemAt: ['$userSenderData.firstname', 0] },
                                 lastname: { $arrayElemAt: ['$userSenderData.lastname', 0] },
-                                profilePicture: { $arrayElemAt: ['$userSenderData.profilePicture', 0] }
+                                profilePicture: { $arrayElemAt: ['$userSenderData.profilePicture', 0] },
+                                mobileNumber: { $arrayElemAt: ['$userSenderData.mobileNumber', 0] }
                             },
                             else: {
                                 _id: { $arrayElemAt: ['$storeSenderData._id', 0] },
                                 name: { $arrayElemAt: ['$storeSenderData.name', 0] },
-                                image: { $arrayElemAt: ['$storeSenderData.image', 0] }
+                                image: { $arrayElemAt: ['$storeSenderData.image', 0] },
+                                mobileNumber: { $arrayElemAt: ['$storeSenderData.mobileNumber', 0] }
                             }
                         }
                     },
@@ -85,12 +87,14 @@ class ChatService {
                                 _id: { $arrayElemAt: ['$userReceiverData._id', 0] },
                                 firstname: { $arrayElemAt: ['$userReceiverData.firstname', 0] },
                                 lastname: { $arrayElemAt: ['$userReceiverData.lastname', 0] },
-                                profilePicture: { $arrayElemAt: ['$userReceiverData.profilePicture', 0] }
+                                profilePicture: { $arrayElemAt: ['$userReceiverData.profilePicture', 0] },
+                                mobileNumber: { $arrayElemAt: ['$userReceiverData.mobileNumber', 0] }
                             },
                             else: {
                                 _id: { $arrayElemAt: ['$storeReceiverData._id', 0] },
                                 name: { $arrayElemAt: ['$storeReceiverData.name', 0] },
-                                image: { $arrayElemAt: ['$storeReceiverData.image', 0] }
+                                image: { $arrayElemAt: ['$storeReceiverData.image', 0] },
+                                mobileNumber: { $arrayElemAt: ['$storeReceiverData.mobileNumber', 0] }
                             }
                         }
                     },
