@@ -38,7 +38,7 @@ class SmsTransport {
             return Promise.resolve('error');
         }
     }
-    async devSmsSender(receiverMobileNumber, body, type) {
+    async devBulkSmsSender(receiverMobileNumber, body) {
         try {
             const response = await axios_1.default.post('https://www.bulksmsnigeria.com/api/v2/sms', {
                 from: 'SnapShup',
@@ -54,15 +54,35 @@ class SmsTransport {
             return Promise.resolve('error');
         }
     }
+    async devSmsSender(receiverMobileNumber, body, type) {
+        try {
+            const response = await axios_1.default.post('https://api.ng.termii.com/api/sms/send', {
+                api_key: config_1.config.TERMII_API_KEY,
+                to: receiverMobileNumber,
+                from: 'N-Alert',
+                sms: body,
+                type: 'plain',
+                channel: 'generic'
+            });
+            log.info('\nSMS RESPONSE', response.data);
+            return Promise.resolve('success');
+        }
+        catch (err) {
+            log.error(err);
+            return Promise.resolve('error');
+        }
+    }
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     async prodSmsSender(receiverMobileNumber, body, type) {
         try {
-            const response = await axios_1.default.post('https://www.bulksmsnigeria.com/api/v2/sms', {
-                from: 'SnapShup',
-                body,
+            const response = await axios_1.default.post('https://api.ng.termii.com/api/sms/send', {
+                api_key: config_1.config.TERMII_API_KEY,
                 to: receiverMobileNumber,
-                api_token: config_1.config.BULKSMS_API_KEY
+                from: 'N-Alert',
+                sms: body,
+                channel: 'generic'
             });
+            log.info('\nSMS RESPONSE', response.data);
             return Promise.resolve('success');
         }
         catch (err) {

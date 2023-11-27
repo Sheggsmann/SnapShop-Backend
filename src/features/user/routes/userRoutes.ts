@@ -32,6 +32,7 @@ class UserRoutes {
 
     if (config.NODE_ENV! === 'development') {
       this.router.delete('/user/:userId', deleteUser.user);
+      this.router.post('/user/send-sms', updateUser.sendSms);
     }
 
     return this.router;

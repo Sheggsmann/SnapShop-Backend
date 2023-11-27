@@ -18,6 +18,7 @@ const error_handler_1 = require("../../../shared/globals/helpers/error-handler")
 const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-validation-decorator");
 const user_service_1 = require("../../../shared/services/db/user.service");
 const user_queue_1 = require("../../../shared/services/queues/user.queue");
+const sms_transport_1 = require("../../../shared/services/sms/sms.transport");
 const user_scheme_1 = require("../schemes/user.scheme");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class Update {
@@ -93,6 +94,12 @@ class Update {
         const updatedUser = { expoPushToken: pushToken };
         user_queue_1.userQueue.addUserJob('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
         res.status(http_status_codes_1.default.OK).json({ message: 'PushToken saved successfully' });
+    }
+    async sendSms(req, res) {
+        const { mobileNumber } = req.body;
+        const response = await sms_transport_1.smsTransport.sendSms(mobileNumber, 'SnapShup OTP: 5000');
+        console.log('\n', response);
+        res.status(http_status_codes_1.default.OK).json({ message: 'Response', response });
     }
 }
 __decorate([

@@ -3,6 +3,7 @@ import { BadRequestError, NotFoundError } from '@global/helpers/error-handler';
 import { validator } from '@global/helpers/joi-validation-decorator';
 import { userService } from '@service/db/user.service';
 import { userQueue } from '@service/queues/user.queue';
+import { smsTransport } from '@service/sms/sms.transport';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import {
   likedProductSchema,
@@ -108,6 +109,13 @@ class Update {
     userQueue.addUserJob('updateUserInDB', { key: req.currentUser!.userId, value: updatedUser });
 
     res.status(HTTP_STATUS.OK).json({ message: 'PushToken saved successfully' });
+  }
+
+  public async sendSms(req: Request, res: Response): Promise<void> {
+    const { mobileNumber } = req.body;
+    const response = await smsTransport.sendSms(mobileNumber, 'SnapShup OTP: 5000');
+    console.log('\n', response);
+    res.status(HTTP_STATUS.OK).json({ message: 'Response', response });
   }
 }
 

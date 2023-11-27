@@ -27,6 +27,7 @@ class UserRoutes {
         this.router.post('/user/store-expo-push-token', auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['User']), update_user_1.updateUser.savePushNotificationToken);
         if (config_1.config.NODE_ENV === 'development') {
             this.router.delete('/user/:userId', delete_user_1.deleteUser.user);
+            this.router.post('/user/send-sms', update_user_1.updateUser.sendSms);
         }
         return this.router;
     }

@@ -44,7 +44,7 @@ class SmsTransport {
     }
   }
 
-  private async devSmsSender(receiverMobileNumber: string, body: string, type: string): Promise<MsgResponse> {
+  private async devBulkSmsSender(receiverMobileNumber: string, body: string): Promise<MsgResponse> {
     try {
       const response = await axios.post('https://www.bulksmsnigeria.com/api/v2/sms', {
         from: 'SnapShup',
@@ -61,6 +61,25 @@ class SmsTransport {
     }
   }
 
+  private async devSmsSender(receiverMobileNumber: string, body: string, type: string): Promise<MsgResponse> {
+    try {
+      const response = await axios.post('https://api.ng.termii.com/api/sms/send', {
+        api_key: config.TERMII_API_KEY,
+        to: receiverMobileNumber,
+        from: 'N-Alert',
+        sms: body,
+        type: 'plain',
+        channel: 'generic'
+      });
+
+      log.info('\nSMS RESPONSE', response.data);
+      return Promise.resolve('success');
+    } catch (err) {
+      log.error(err);
+      return Promise.resolve('error');
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private async prodSmsSender(
     receiverMobileNumber: string,
@@ -68,13 +87,15 @@ class SmsTransport {
     type: string
   ): Promise<MsgResponse> {
     try {
-      const response = await axios.post('https://www.bulksmsnigeria.com/api/v2/sms', {
-        from: 'SnapShup',
-        body,
+      const response = await axios.post('https://api.ng.termii.com/api/sms/send', {
+        api_key: config.TERMII_API_KEY,
         to: receiverMobileNumber,
-        api_token: config.BULKSMS_API_KEY
+        from: 'N-Alert',
+        sms: body,
+        channel: 'generic'
       });
 
+      log.info('\nSMS RESPONSE', response.data);
       return Promise.resolve('success');
     } catch (err) {
       log.error(err);
