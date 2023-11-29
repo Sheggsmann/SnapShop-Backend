@@ -38,7 +38,9 @@ class Create {
       locations: [{ location: { type: 'Point', coordinates: [parseFloat(lng), parseFloat(lat)] }, address }],
       badges: [],
       verified: false,
-      mobileNumber: req.currentUser!.mobileNumber
+      mobileNumber: req.currentUser!.mobileNumber,
+      escrowBalance: 0,
+      mainBalance: 0
     } as unknown as IStoreDocument;
 
     storeQueue.addStoreJob('addStoreToDB', { value: store, userId: req.currentUser!.userId });
