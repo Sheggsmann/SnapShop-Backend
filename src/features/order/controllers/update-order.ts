@@ -102,8 +102,8 @@ class UpdateOrder {
     orderQueue.addOrderJob('updateOrderInDB', { key: orderId, value: order });
 
     socketIOChatObject
-      .to(`${req.currentUser!.storeId}`)
-      .to(order.user.userId as string)
+      .to((order.store as IStoreDocument)._id.toString())
+      .to(order.user.userId.toString())
       .emit('order:update', { order });
 
     // TODO: if update is from user, send notification to store

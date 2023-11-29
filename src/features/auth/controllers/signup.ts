@@ -38,7 +38,8 @@ class SignUp {
     // TODO: Send OTP to user via otp method
     const msg = await smsTransport.sendSms(mobileNumber, `SnapShup OTP: ${otp}`, otpProvider);
     // notify me about our sms service
-    if (msg === 'error') throw new BadRequestError('Error sending sms');
+    if (msg === 'error')
+      throw new BadRequestError(`Account not created, we couldn't send your otp at this time.`);
 
     const authData: IAuthDocument = {
       _id: authObjectId,

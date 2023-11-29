@@ -1,6 +1,6 @@
 import { config } from '@root/config';
 import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import Logger from 'bunyan';
 
 const log: Logger = config.createLogger('SMS');
@@ -61,27 +61,7 @@ class SmsTransport {
     }
   }
 
-  private async devSmsSender(receiverMobileNumber: string, body: string, type: string): Promise<MsgResponse> {
-    try {
-      const response = await axios.post('https://api.ng.termii.com/api/sms/send', {
-        api_key: config.TERMII_API_KEY,
-        to: receiverMobileNumber,
-        from: 'N-Alert',
-        sms: body,
-        type: 'plain',
-        channel: 'generic'
-      });
-
-      log.info('\nSMS RESPONSE', response.data);
-      return Promise.resolve('success');
-    } catch (err) {
-      log.error(err);
-      return Promise.resolve('error');
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private async prodSmsSender(
+  private async termiiSmsSender(
     receiverMobileNumber: string,
     body: string,
     type: string
@@ -90,17 +70,37 @@ class SmsTransport {
       const response = await axios.post('https://api.ng.termii.com/api/sms/send', {
         api_key: config.TERMII_API_KEY,
         to: receiverMobileNumber,
-        from: 'N-Alert',
+        from: 'Billings',
         sms: body,
-        channel: 'generic'
+        type: 'plain',
+        route: {
+          type: 'corporate',
+          country: 'NG'
+        }
       });
 
       log.info('\nSMS RESPONSE', response.data);
       return Promise.resolve('success');
     } catch (err) {
       log.error(err);
+      if (isAxiosError(err)) {
+        log.error(err.response?.data);
+      }
       return Promise.resolve('error');
     }
+  }
+
+  private async devSmsSender(receiverMobileNumber: string, body: string, type: string): Promise<MsgResponse> {
+    return this.awsDevSmsSender(receiverMobileNumber, body);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private async prodSmsSender(
+    receiverMobileNumber: string,
+    body: string,
+    type: string
+  ): Promise<MsgResponse> {
+    return this.awsProdSmsSender(receiverMobileNumber, body);
   }
 
   public async sendSms(receiverMobileNumber: string, body: string, type = 'sms'): Promise<MsgResponse> {
