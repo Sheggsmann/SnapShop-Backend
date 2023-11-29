@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start:dev": "tspc && pm2 start ./build/app.js -i 2 --attach --watch | bunyan",
+    "start:dev": "pm2 start ./build/app.js -i 2 --attach --watch | bunyan",
     "start:staging": "node build/app.js | bunyan",
     "dev": "nodemon -r tsconfig-paths/register src/app.ts | bunyan",
     "stop": "pm2 stop all",
@@ -45,6 +45,7 @@
     "multer": "^1.4.5-lts.1",
     "multer-storage-cloudinary": "^4.0.0",
     "nodemon": "^3.0.1",
+    "pm2": "^5.3.0",
     "redis": "^4.6.10",
     "socket.io": "^4.6.1",
     "swagger-stats": "^0.99.5",
