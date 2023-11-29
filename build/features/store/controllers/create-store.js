@@ -46,7 +46,9 @@ class Create {
             locations: [{ location: { type: 'Point', coordinates: [parseFloat(lng), parseFloat(lat)] }, address }],
             badges: [],
             verified: false,
-            mobileNumber: req.currentUser.mobileNumber
+            mobileNumber: req.currentUser.mobileNumber,
+            escrowBalance: 0,
+            mainBalance: 0
         };
         store_queue_1.storeQueue.addStoreJob('addStoreToDB', { value: store, userId: req.currentUser.userId });
         // sign a new jwt token appending the storeId to it
