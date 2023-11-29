@@ -11,7 +11,7 @@ const signupSchema = joi_1.default.object().keys({
         'string.length': 'invalid number',
         'string.empty': 'mobile number is required'
     }),
-    password: joi_1.default.string().min(4).max(10).messages({
+    password: joi_1.default.string().min(4).max(100).messages({
         'string.base': 'password must be of type string',
         'string.min': 'invalid password',
         'string.max': 'invalid password',
