@@ -23,7 +23,7 @@ const product_constants_1 = require("../constants/product.constants");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class Create {
     async product(req, res) {
-        const { name, videos, description, images, price, priceDiscount, quantity, category } = req.body;
+        const { name, videos, description, images, price, priceDiscount, quantity, category, tags } = req.body;
         if (!req.currentUser?.storeId)
             throw new error_handler_1.BadRequestError("User doesn't own a store");
         const productObjectId = new mongodb_1.ObjectId();
@@ -51,7 +51,8 @@ class Create {
             store: req.currentUser.storeId,
             videos: uploadedVideos,
             priceDiscount: priceDiscount ?? 0,
-            quantity: quantity ?? 0
+            quantity: quantity ?? 1,
+            tags: tags?.length ? tags : []
         };
         product_queue_1.productQueue.addProductJob('addProductToDB', { value: product, key: req.currentUser.storeId });
         res.status(http_status_codes_1.default.OK).json({ message: 'Product created successfully', product });

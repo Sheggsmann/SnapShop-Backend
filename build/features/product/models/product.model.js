@@ -11,6 +11,7 @@ const productSchema = new mongoose_1.Schema({
     images: [{ url: String, public_id: String }],
     videos: [{ url: String, public_id: String }],
     purchaseCount: { type: Number, default: 0 },
+    tags: [String],
     priceDiscount: Number,
     quantity: Number
 }, { timestamps: true });

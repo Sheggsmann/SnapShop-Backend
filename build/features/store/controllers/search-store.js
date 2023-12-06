@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchStore = void 0;
 const error_handler_1 = require("../../../shared/globals/helpers/error-handler");
-const helpers_1 = require("../../../shared/globals/helpers/helpers");
 const store_service_1 = require("../../../shared/services/db/store.service");
 const searches_queue_1 = require("../../../shared/services/queues/searches.queue");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
@@ -20,7 +19,8 @@ class SearchStore {
             const { center } = req.params;
             if (!req.query.searchParam)
                 throw new error_handler_1.BadRequestError('Search param is required');
-            const searchParam = new RegExp(helpers_1.Helpers.escapeRegExp(`${req.query.searchParam}`), 'i');
+            if (`${req.query.searchParam}`.length > 100)
+                throw new error_handler_1.BadRequestError('Search param is too long');
             const maxPrice = req.query.maxPrice ?? this.MAX_PRICE;
             const minPrice = req.query.minPrice ?? this.MIN_PRICE;
             const unit = req.query.unit ?? this.UNIT;
@@ -37,7 +37,7 @@ class SearchStore {
                 searchParam: `${req.query.searchParam}`,
                 location: [parseFloat(lat), parseFloat(lng)]
             });
-            const products = await store_service_1.storeService.getNearbyStores(searchParam, parseFloat(lat), parseFloat(lng), radius, minPrice * 1, maxPrice * 1);
+            const products = await store_service_1.storeService.getNearbyStores(`${req.query.searchParam}`, parseFloat(lat), parseFloat(lng), radius, minPrice * 1, maxPrice * 1);
             res.status(http_status_codes_1.default.OK).json({ message: 'Search results', products });
         };
         this.clampDistance = (distance, unit = 'km') => {

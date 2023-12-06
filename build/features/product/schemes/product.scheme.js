@@ -34,7 +34,11 @@ const productSchema = joi_1.default.object().keys({
     }),
     priceDiscount: joi_1.default.number().optional().allow(null, 0),
     quantity: joi_1.default.number().optional().allow(null, 0),
-    videos: joi_1.default.array().max(1).optional()
+    videos: joi_1.default.array().max(1).optional(),
+    tags: joi_1.default.array().max(7).optional().messages({
+        'array.base': 'tags must be of type array',
+        'array.max': 'too many tags'
+    })
 });
 exports.productSchema = productSchema;
 const updateProductSchema = joi_1.default.object().keys({
@@ -66,7 +70,11 @@ const updateProductSchema = joi_1.default.object().keys({
     }),
     priceDiscount: joi_1.default.number().optional().allow(null, 0),
     quantity: joi_1.default.number().optional().allow(null, 0),
-    videos: joi_1.default.array().max(1).optional()
+    videos: joi_1.default.array().max(1).optional(),
+    tags: joi_1.default.array().max(7).optional().messages({
+        'array.base': 'tags must be of type array',
+        'array.max': 'too many tags'
+    })
 });
 exports.updateProductSchema = updateProductSchema;
 const updateProductMediaSchema = joi_1.default.object().keys({
