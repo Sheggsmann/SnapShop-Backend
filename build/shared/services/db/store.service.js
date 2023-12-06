@@ -39,11 +39,7 @@ class StoreService {
                                     query: searchParam,
                                     path: 'name',
                                     fuzzy: { maxEdits: 2 },
-                                    score: {
-                                        boost: {
-                                            value: 5
-                                        }
-                                    }
+                                    score: { boost: { value: 7 } }
                                 }
                             },
                             {
@@ -51,7 +47,7 @@ class StoreService {
                                     query: searchParam,
                                     path: 'tags',
                                     fuzzy: { maxEdits: 1 },
-                                    score: { boost: { value: 3 } }
+                                    score: { boost: { value: 4 } }
                                 }
                             },
                             {
@@ -59,11 +55,7 @@ class StoreService {
                                     query: searchParam,
                                     path: 'description',
                                     fuzzy: { maxEdits: 1 },
-                                    score: {
-                                        boost: {
-                                            value: 2
-                                        }
-                                    }
+                                    score: { boost: { value: 2 } }
                                 }
                             }
                         ],
