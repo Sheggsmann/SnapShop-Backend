@@ -44,7 +44,7 @@ class StoreService {
     minPrice: number,
     maxPrice: number
   ): Promise<IProductDocument[]> {
-    // const searchRegex = new RegExp(Helpers.escapeRegExp(`${searchParam}`), 'ig');
+    searchParam = Helpers.escapeRegExp(`${searchParam}`);
     const products: IProductDocument[] = await ProductModel.aggregate([
       {
         $search: {
@@ -106,6 +106,11 @@ class StoreService {
         }
       },
       { $unwind: '$store' },
+      {
+        $match: {
+          'store.locations.location': { $geoWithin: { $centerSphere: [[longitude, latitude], radius] } }
+        }
+      },
       {
         $project: {
           name: 1,
