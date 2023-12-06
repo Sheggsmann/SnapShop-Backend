@@ -110,6 +110,7 @@
       "@product/*": ["./src/features/product/*"],
       "@order/*": ["./src/features/order/*"],
       "@chat/*": ["./src/features/chat/*"],
+      "@feedback/*": ["./src/features/feedback/*"],
       "@searches/*": ["./src/features/searches/*"],
       "@versioning/*": ["./src/features/versioning/*"],
       "@global/*": ["./src/shared/globals/*"],
