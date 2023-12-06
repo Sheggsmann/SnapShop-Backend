@@ -82,17 +82,15 @@ class StoreService {
                     }
                   }
                 }
-              },
-              {
-                filter: {
-                  range: {
-                    path: 'price',
-                    gte: minPrice,
-                    lte: maxPrice
-                  }
-                }
               }
-            ]
+            ],
+            filter: {
+              range: {
+                path: 'price',
+                gte: minPrice,
+                lte: maxPrice
+              }
+            }
           }
         }
       },
