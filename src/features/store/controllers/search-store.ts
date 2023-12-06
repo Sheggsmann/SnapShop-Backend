@@ -1,5 +1,4 @@
 import { BadRequestError } from '@global/helpers/error-handler';
-import { Helpers } from '@global/helpers/helpers';
 import { IProductDocument } from '@product/interfaces/product.interface';
 import { storeService } from '@service/db/store.service';
 import { searchesQueue } from '@service/queues/searches.queue';
@@ -17,8 +16,7 @@ class SearchStore {
     const { center } = req.params;
 
     if (!req.query.searchParam) throw new BadRequestError('Search param is required');
-
-    const searchParam = new RegExp(Helpers.escapeRegExp(`${req.query.searchParam}`), 'i');
+    if (`${req.query.searchParam}`.length > 100) throw new BadRequestError('Search param is too long');
 
     const maxPrice = req.query.maxPrice ?? this.MAX_PRICE;
     const minPrice = req.query.minPrice ?? this.MIN_PRICE;
@@ -42,7 +40,7 @@ class SearchStore {
     });
 
     const products: IProductDocument[] = await storeService.getNearbyStores(
-      searchParam,
+      `${req.query.searchParam}`,
       parseFloat(lat),
       parseFloat(lng),
       radius,

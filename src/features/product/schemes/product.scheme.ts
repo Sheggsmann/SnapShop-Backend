@@ -29,7 +29,11 @@ const productSchema: ObjectSchema = Joi.object().keys({
   }),
   priceDiscount: Joi.number().optional().allow(null, 0),
   quantity: Joi.number().optional().allow(null, 0),
-  videos: Joi.array().max(1).optional()
+  videos: Joi.array().max(1).optional(),
+  tags: Joi.array().max(7).optional().messages({
+    'array.base': 'tags must be of type array',
+    'array.max': 'too many tags'
+  })
 });
 
 const updateProductSchema: ObjectSchema = Joi.object().keys({
@@ -61,7 +65,11 @@ const updateProductSchema: ObjectSchema = Joi.object().keys({
   }),
   priceDiscount: Joi.number().optional().allow(null, 0),
   quantity: Joi.number().optional().allow(null, 0),
-  videos: Joi.array().max(1).optional()
+  videos: Joi.array().max(1).optional(),
+  tags: Joi.array().max(7).optional().messages({
+    'array.base': 'tags must be of type array',
+    'array.max': 'too many tags'
+  })
 });
 
 const updateProductMediaSchema: ObjectSchema = Joi.object().keys({

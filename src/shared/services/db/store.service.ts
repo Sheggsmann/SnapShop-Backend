@@ -6,6 +6,7 @@ import { IUserDocument, Role } from '@user/interfaces/user.interface';
 import { UserModel } from '@user/models/user.model';
 import { ObjectId } from 'mongodb';
 import { UpdateQuery } from 'mongoose';
+import { Helpers } from '@global/helpers/helpers';
 
 class StoreService {
   public async addStoreToDB(userId: string, store: IStoreDocument): Promise<void> {
@@ -36,16 +37,20 @@ class StoreService {
   }
 
   public async getNearbyStores(
-    searchParam: RegExp,
+    searchParam: string,
     latitude: number,
     longitude: number,
     radius: number,
     minPrice: number,
     maxPrice: number
   ): Promise<IProductDocument[]> {
+    const searchRegex = new RegExp(Helpers.escapeRegExp(`${searchParam}`), 'ig');
     const products: IProductDocument[] = await ProductModel.aggregate([
-      { $match: { name: searchParam } },
+      {
+        $match: { $or: [{ name: searchRegex }, { $text: { $search: searchParam, $caseSensitive: false } }] }
+      },
       { $match: { $and: [{ price: { $gte: minPrice } }, { price: { $lte: maxPrice } }] } },
+      { $sort: { score: { $meta: 'textScore' } } },
       { $lookup: { from: 'Store', localField: 'store', foreignField: '_id', as: 'store' } },
       { $unwind: '$store' },
       {
@@ -55,6 +60,7 @@ class StoreService {
       },
       { $limit: 1000 }
     ]);
+
     return products;
   }
 

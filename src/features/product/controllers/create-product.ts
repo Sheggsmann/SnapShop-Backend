@@ -13,7 +13,7 @@ import HTTP_STATUS from 'http-status-codes';
 class Create {
   @validator(productSchema)
   public async product(req: Request, res: Response): Promise<void> {
-    const { name, videos, description, images, price, priceDiscount, quantity, category } = req.body;
+    const { name, videos, description, images, price, priceDiscount, quantity, category, tags } = req.body;
 
     if (!req.currentUser?.storeId) throw new BadRequestError("User doesn't own a store");
 
@@ -54,7 +54,8 @@ class Create {
       store: req.currentUser!.storeId,
       videos: uploadedVideos,
       priceDiscount: priceDiscount ?? 0,
-      quantity: quantity ?? 0
+      quantity: quantity ?? 1,
+      tags: tags?.length ? tags : []
     } as IProductDocument;
 
     productQueue.addProductJob('addProductToDB', { value: product, key: req.currentUser!.storeId });
