@@ -44,21 +44,83 @@ class StoreService {
     minPrice: number,
     maxPrice: number
   ): Promise<IProductDocument[]> {
-    const searchRegex = new RegExp(Helpers.escapeRegExp(`${searchParam}`), 'ig');
+    // const searchRegex = new RegExp(Helpers.escapeRegExp(`${searchParam}`), 'ig');
     const products: IProductDocument[] = await ProductModel.aggregate([
       {
-        $match: { $or: [{ name: searchRegex }, { $text: { $search: searchParam, $caseSensitive: false } }] }
-      },
-      { $match: { $and: [{ price: { $gte: minPrice } }, { price: { $lte: maxPrice } }] } },
-      { $sort: { score: { $meta: 'textScore' } } },
-      { $lookup: { from: 'Store', localField: 'store', foreignField: '_id', as: 'store' } },
-      { $unwind: '$store' },
-      {
-        $match: {
-          'store.locations.location': { $geoWithin: { $centerSphere: [[longitude, latitude], radius] } }
+        $search: {
+          index: 'searchProducts',
+          compound: {
+            should: [
+              {
+                text: {
+                  query: searchParam,
+                  path: 'name',
+                  fuzzy: { maxEdits: 2 },
+                  score: {
+                    boost: {
+                      value: 5
+                    }
+                  }
+                }
+              },
+              {
+                text: {
+                  query: searchParam,
+                  path: 'tags',
+                  fuzzy: { maxEdits: 1 },
+                  score: { boost: { value: 3 } }
+                }
+              },
+              {
+                text: {
+                  query: searchParam,
+                  path: 'description',
+                  fuzzy: { maxEdits: 1 },
+                  score: {
+                    boost: {
+                      value: 2
+                    }
+                  }
+                }
+              },
+              {
+                filter: {
+                  range: {
+                    path: 'price',
+                    gte: minPrice,
+                    lte: maxPrice
+                  }
+                }
+              }
+            ]
+          }
         }
       },
-      { $limit: 1000 }
+      { $limit: 200 },
+      {
+        $lookup: {
+          from: 'Store',
+          localField: 'store',
+          foreignField: '_id',
+          as: 'store'
+        }
+      },
+      { $unwind: '$store' },
+      {
+        $project: {
+          name: 1,
+          description: 1,
+          store: 1,
+          price: 1,
+          priceDiscount: 1,
+          quantity: 1,
+          images: 1,
+          videos: 1,
+          tags: 1,
+          productsCount: 1,
+          score: { $meta: 'searchScore' }
+        }
+      }
     ]);
 
     return products;
