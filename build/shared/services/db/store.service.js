@@ -69,7 +69,7 @@ class StoreService {
                     }
                 }
             },
-            { $limit: 50 },
+            { $limit: 200 },
             {
                 $lookup: {
                     from: 'Store',
