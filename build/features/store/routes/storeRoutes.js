@@ -14,6 +14,7 @@ class StoreRoutes {
         this.router = express_1.default.Router();
     }
     routes() {
+        this.router.get('/store/me', auth_middleware_1.authMiddleware.checkAuth, get_store_1.getStores.myStore);
         this.router.get('/stores/all/:page', auth_middleware_1.authMiddleware.checkAuth, get_store_1.getStores.all);
         this.router.get('/store/product-categories', auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['StoreOwner']), get_store_1.getStores.productCategories);
         this.router.get('/store/products', auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['StoreOwner']), get_store_1.getStores.products);

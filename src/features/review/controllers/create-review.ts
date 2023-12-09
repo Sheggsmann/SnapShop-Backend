@@ -12,6 +12,7 @@ import { validator } from '@global/helpers/joi-validation-decorator';
 import { reviewSchema } from '../schemes/review.scheme';
 import { storeService } from '@service/db/store.service';
 import { storeQueue } from '@service/queues/store.queue';
+import { orderService } from '@service/db/order.service';
 import HTTP_STATUS from 'http-status-codes';
 
 class Create {
@@ -36,6 +37,20 @@ class Create {
 
     if (existingReview) {
       throw new BadRequestError(`You already reviewed this ${type}`);
+    }
+
+    if (type === 'store') {
+      const hasPurchaseFromStore = await orderService.getOrderByUserId(req.currentUser!.userId);
+      if (!hasPurchaseFromStore) {
+        throw new BadRequestError("You haven't purchased any product from this store.");
+      }
+    }
+
+    if (type === 'product') {
+      const hasPurchasedProduct = await orderService.getOrderByProductId(productId);
+      if (!hasPurchasedProduct) {
+        throw new BadRequestError("You haven't purchased this product");
+      }
     }
 
     const user: IUserDocument = await userService.getUserById(req.currentUser!.userId);

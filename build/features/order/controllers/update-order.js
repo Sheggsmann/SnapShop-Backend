@@ -54,7 +54,14 @@ class UpdateOrder {
                                 title: `Order Payment 🥳`,
                                 body: `${order.user.name} just paid ₦${amountPaid} for order #${order._id
                                     .toString()
-                                    .substring(0, 8)}`
+                                    .substring(0, 8)}.\nOrder delivery code is: ${deliveryCode}`
+                            }
+                        });
+                        notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToUser', {
+                            key: userId,
+                            value: {
+                                title: `Payment Completed 🥳`,
+                                body: 'Enter the 4 digit code from the merchant to validate the order on delivery.'
                             }
                         });
                     }

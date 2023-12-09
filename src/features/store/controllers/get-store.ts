@@ -20,6 +20,12 @@ class Get {
     res.status(HTTP_STATUS.OK).json({ message: 'Stores', stores });
   };
 
+  public myStore = async (req: Request, res: Response): Promise<void> => {
+    const store = await storeService.getStoreByStoreId(`${req.currentUser!.storeId}`);
+    if (!store) throw new NotFoundError('Store not found');
+    res.status(HTTP_STATUS.OK).json({ message: 'Store', store });
+  };
+
   // Accepts a store id and returns all the store products and categories
   public storeByStoreId = async (req: Request, res: Response): Promise<void> => {
     const { storeId } = req.params;
@@ -40,6 +46,12 @@ class Get {
     };
 
     res.status(HTTP_STATUS.OK).json({ message: 'Store details', store: queryResult });
+  };
+
+  public storeByStoreName = async (req: Request, res: Response): Promise<void> => {
+    const { name } = req.params;
+    const store = await storeService.getStoreByName(name);
+    res.status(HTTP_STATUS.OK).json({ message: 'Store details', store });
   };
 
   public productCategories = async (req: Request, res: Response): Promise<void> => {

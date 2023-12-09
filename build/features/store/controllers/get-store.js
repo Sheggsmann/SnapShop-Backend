@@ -19,6 +19,12 @@ class Get {
             const stores = await store_service_1.storeService.getStores(skip, limit);
             res.status(http_status_codes_1.default.OK).json({ message: 'Stores', stores });
         };
+        this.myStore = async (req, res) => {
+            const store = await store_service_1.storeService.getStoreByStoreId(`${req.currentUser.storeId}`);
+            if (!store)
+                throw new error_handler_1.NotFoundError('Store not found');
+            res.status(http_status_codes_1.default.OK).json({ message: 'Store', store });
+        };
         // Accepts a store id and returns all the store products and categories
         this.storeByStoreId = async (req, res) => {
             const { storeId } = req.params;
@@ -35,6 +41,11 @@ class Get {
                 categories: [...categorizedProducts]
             };
             res.status(http_status_codes_1.default.OK).json({ message: 'Store details', store: queryResult });
+        };
+        this.storeByStoreName = async (req, res) => {
+            const { name } = req.params;
+            const store = await store_service_1.storeService.getStoreByName(name);
+            res.status(http_status_codes_1.default.OK).json({ message: 'Store details', store });
         };
         this.productCategories = async (req, res) => {
             const storeId = req.currentUser.storeId;

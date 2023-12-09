@@ -24,6 +24,12 @@ class OrderService {
             .populate('store', '_id name description image bgImage owner')
             .populate('products.product', '-quantity -store');
     }
+    async getOrderByUserId(userId) {
+        return await order_model_1.OrderModel.findOne({ 'user.userId': userId });
+    }
+    async getOrderByProductId(productId) {
+        return await order_model_1.OrderModel.findOne({ 'products.product._id': productId });
+    }
     async updateOrder(orderId, updatedOrder) {
         await order_model_1.OrderModel.updateOne({ _id: orderId }, { $set: updatedOrder });
     }

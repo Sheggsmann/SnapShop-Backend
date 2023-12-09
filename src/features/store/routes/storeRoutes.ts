@@ -12,6 +12,7 @@ class StoreRoutes {
   }
 
   public routes(): Router {
+    this.router.get('/store/me', authMiddleware.checkAuth, getStores.myStore);
     this.router.get('/stores/all/:page', authMiddleware.checkAuth, getStores.all);
     this.router.get(
       '/store/product-categories',

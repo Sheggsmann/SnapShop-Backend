@@ -2,6 +2,7 @@ import express, { Router } from 'express';
 import { signup } from '@auth/controllers/signup';
 import { password } from '@auth/controllers/password';
 import { siginin } from '@auth/controllers/signin';
+import { getStores } from '@store/controllers/get-store';
 
 class AuthRoutes {
   private router: Router;
@@ -16,6 +17,7 @@ class AuthRoutes {
     this.router.post('/store-signin', siginin.readStore);
     this.router.post('/validate-number', signup.exists);
     this.router.put('/verify-account', signup.verifyAccount);
+    this.router.get('/validate-store-name/:name', getStores.storeByStoreName);
 
     this.router.post('/resend-otp', signup.resendOtp);
     this.router.post('/forgot-password', password.create);

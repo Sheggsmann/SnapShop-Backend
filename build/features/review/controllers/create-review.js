@@ -22,6 +22,7 @@ const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-
 const review_scheme_1 = require("../schemes/review.scheme");
 const store_service_1 = require("../../../shared/services/db/store.service");
 const store_queue_1 = require("../../../shared/services/queues/store.queue");
+const order_service_1 = require("../../../shared/services/db/order.service");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class Create {
     async review(req, res) {
@@ -41,6 +42,18 @@ class Create {
         });
         if (existingReview) {
             throw new error_handler_1.BadRequestError(`You already reviewed this ${type}`);
+        }
+        if (type === 'store') {
+            const hasPurchaseFromStore = await order_service_1.orderService.getOrderByUserId(req.currentUser.userId);
+            if (!hasPurchaseFromStore) {
+                throw new error_handler_1.BadRequestError("You haven't purchased any product from this store.");
+            }
+        }
+        if (type === 'product') {
+            const hasPurchasedProduct = await order_service_1.orderService.getOrderByProductId(productId);
+            if (!hasPurchasedProduct) {
+                throw new error_handler_1.BadRequestError("You haven't purchased this product");
+            }
         }
         const user = await user_service_1.userService.getUserById(req.currentUser.userId);
         const review = {
