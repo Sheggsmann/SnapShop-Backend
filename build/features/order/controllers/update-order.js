@@ -43,7 +43,7 @@ class UpdateOrder {
                     console.log('AMOUNT PAID:', amountPaid);
                     if (total === amountPaid) {
                         const deliveryCode = helpers_1.Helpers.generateOtp(4);
-                        await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, deliveryCode);
+                        await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
                         await store_service_1.storeService.updateStoreEscrowBalance(storeId, amountPaid);
                         // TODO: emit event using socket.io
                         chat_1.socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });
@@ -73,6 +73,7 @@ class UpdateOrder {
         }
         res.sendStatus(200);
     }
+    // TODO: add validator for update order
     async order(req, res) {
         const { orderId } = req.params;
         const { deliveryFee, products } = req.body;

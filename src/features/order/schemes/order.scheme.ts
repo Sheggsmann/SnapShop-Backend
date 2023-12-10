@@ -9,4 +9,6 @@ const orderSchema: ObjectSchema = Joi.object().keys({
   })
 });
 
-export { orderSchema };
+const updateOrderSchema: ObjectSchema = Joi.object().keys({});
+
+export { orderSchema, updateOrderSchema };

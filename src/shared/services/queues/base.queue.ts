@@ -11,8 +11,8 @@ import { IOrderJob } from '@order/interfaces/order.interface';
 import { IMessageData, IMessageDocument } from '@chat/interfaces/chat.interface';
 import { IReviewJob } from '@root/features/review/interfaces/review.interface';
 import { ISearchesJob } from '@searches/interfaces/searches.interfaces';
-import Logger from 'bunyan';
 import { INotificationJob } from '@root/features/notification/interfaces/notification.interface';
+import Logger from 'bunyan';
 
 export let bullAdapters: BullAdapter[] = [];
 export const serverAdapter: ExpressAdapter = new ExpressAdapter().setBasePath('/queues');

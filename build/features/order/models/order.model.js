@@ -13,6 +13,7 @@ const orderSchema = new mongoose_1.Schema({
         enum: [order_interface_1.OrderStatus.PENDING, order_interface_1.OrderStatus.ACTIVE, order_interface_1.OrderStatus.DELIVERED, order_interface_1.OrderStatus.CANCELLED]
     },
     paid: { type: Boolean, default: false },
+    amountPaid: { type: Number, default: 0 },
     deliveryFee: Number,
     deliveryCode: String,
     reason: String,

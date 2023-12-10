@@ -29,6 +29,7 @@ export interface IOrderDocument extends Document {
 
   status: OrderStatus.PENDING | OrderStatus.ACTIVE | OrderStatus.DELIVERED | OrderStatus.CANCELLED;
   paid: boolean;
+  amountPaid: number;
 
   deliveryFee?: number;
   deliveryCode?: string;

@@ -12,6 +12,7 @@ const orderSchema: Schema = new Schema(
       enum: [OrderStatus.PENDING, OrderStatus.ACTIVE, OrderStatus.DELIVERED, OrderStatus.CANCELLED]
     },
     paid: { type: Boolean, default: false },
+    amountPaid: { type: Number, default: 0 },
     deliveryFee: Number,
     deliveryCode: String,
     reason: String,

@@ -5,13 +5,18 @@ import Logger from 'bunyan';
 export type RedisClient = ReturnType<typeof createClient>;
 
 export abstract class BaseCache {
-  client: RedisClient;
+  client!: RedisClient;
   log: Logger;
 
   constructor(cacheName: string) {
-    this.client = createClient({ url: config.REDIS_HOST });
     this.log = config.createLogger(cacheName);
-    this.cacheError();
+    try {
+      this.client = createClient({ url: config.REDIS_HOST });
+      this.cacheError();
+    } catch (err) {
+      this.log.error(err);
+      process.exit(1);
+    }
   }
 
   private cacheError(): void {

@@ -154,7 +154,7 @@ class StoreService {
 
   public async updateStoreEscrowBalance(storeId: string, balance: number): Promise<void> {
     if (Number(balance) > 0) {
-      await StoreModel.updateOne({ _id: storeId }, { $set: { escrowBalance: Number(balance) } });
+      await StoreModel.updateOne({ _id: storeId }, { $inc: { escrowBalance: Number(balance) } });
     }
   }
 }

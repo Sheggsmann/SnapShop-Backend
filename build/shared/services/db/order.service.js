@@ -33,8 +33,8 @@ class OrderService {
     async updateOrder(orderId, updatedOrder) {
         await order_model_1.OrderModel.updateOne({ _id: orderId }, { $set: updatedOrder });
     }
-    async updateOrderPaymentStatus(orderId, paid, deliveryCode) {
-        await order_model_1.OrderModel.updateOne({ _id: orderId }, { $set: { paid, deliveryCode, status: order_interface_1.OrderStatus.ACTIVE } });
+    async updateOrderPaymentStatus(orderId, paid, amountPaid, deliveryCode) {
+        await order_model_1.OrderModel.updateOne({ _id: orderId }, { $set: { paid, amountPaid, deliveryCode, status: order_interface_1.OrderStatus.ACTIVE } });
     }
 }
 exports.orderService = new OrderService();

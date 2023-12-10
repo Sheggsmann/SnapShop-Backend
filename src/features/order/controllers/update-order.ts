@@ -55,7 +55,7 @@ class UpdateOrder {
 
           if (total === amountPaid) {
             const deliveryCode = Helpers.generateOtp(4);
-            await orderService.updateOrderPaymentStatus(orderId, true, deliveryCode);
+            await orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
             await storeService.updateStoreEscrowBalance(storeId, amountPaid);
 
             // TODO: emit event using socket.io
@@ -89,6 +89,7 @@ class UpdateOrder {
     res.sendStatus(200);
   }
 
+  // TODO: add validator for update order
   public async order(req: Request, res: Response): Promise<void> {
     const { orderId } = req.params;
     const { deliveryFee, products } = req.body;
