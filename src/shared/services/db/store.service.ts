@@ -25,7 +25,7 @@ class StoreService {
   }
 
   public async getStoreByName(name: string): Promise<IStoreDocument | null> {
-    return await StoreModel.findOne({ name });
+    return (await StoreModel.findOne({ name }).select('name image verified')) as IStoreDocument;
   }
 
   public async getStoreByUserId(userId: string): Promise<IStoreDocument | null> {

@@ -10,9 +10,11 @@ import { Helpers } from '@global/helpers/helpers';
 import { storeService } from '@service/db/store.service';
 import { socketIOChatObject } from '@socket/chat';
 import { notificationQueue } from '@service/queues/notification.queue';
+import { transactionQueue } from '@service/queues/transaction.queue';
+import { ITransactionDocument, TransactionType } from '@transactions/interfaces/transaction.interface';
 import crypto from 'crypto';
-// import mongoose from 'mongoose';
 import HTTP_STATUS from 'http-status-codes';
+// import mongoose from 'mongoose';
 
 const KOBO_IN_NAIRA = 100;
 
@@ -57,6 +59,14 @@ class UpdateOrder {
             const deliveryCode = Helpers.generateOtp(4);
             await orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
             await storeService.updateStoreEscrowBalance(storeId, amountPaid);
+
+            transactionQueue.addTransactionJob('addTransactionToDB', {
+              store: storeId,
+              order: orderId,
+              user: userId,
+              amount: amountPaid,
+              type: TransactionType.ORDER_PAYMENT
+            } as unknown as ITransactionDocument);
 
             // TODO: emit event using socket.io
             socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });

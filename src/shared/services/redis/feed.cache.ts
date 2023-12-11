@@ -16,7 +16,7 @@ export class FeedCache extends BaseCache {
   public async saveFeedDataToCache(userId: string, feedData: IFeed[]): Promise<void> {
     try {
       if (!this.client.isOpen) await this.client.connect();
-      await this.client.setEx(`feed:${userId}`, 60 * 60 * 2, JSON.stringify(feedData));
+      await this.client.setEx(`feed:${userId}`, 60 * 60 * 1, JSON.stringify(feedData));
     } catch (err) {
       logger.error(err);
       throw new ServerError('Server Error, Try Again.');

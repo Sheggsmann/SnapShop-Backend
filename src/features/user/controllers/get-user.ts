@@ -51,7 +51,9 @@ class Get {
         content: frequentlyPurchasedProducts
       });
 
-      await feedCache.saveFeedDataToCache(req.currentUser!.userId, feedData);
+      if (feedData.length) {
+        await feedCache.saveFeedDataToCache(req.currentUser!.userId, feedData);
+      }
 
       res.status(HTTP_STATUS.OK).json({ message: 'Feed', feed: feedData });
     }
