@@ -14,7 +14,7 @@ class FeedCache extends base_cache_1.BaseCache {
         try {
             if (!this.client.isOpen)
                 await this.client.connect();
-            await this.client.setEx(`feed:${userId}`, 60 * 60 * 2, JSON.stringify(feedData));
+            await this.client.setEx(`feed:${userId}`, 60 * 60 * 1, JSON.stringify(feedData));
         }
         catch (err) {
             logger.error(err);

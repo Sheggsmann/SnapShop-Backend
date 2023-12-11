@@ -43,7 +43,9 @@ class Get {
                 subtitle: 'Close to you',
                 content: frequentlyPurchasedProducts
             });
-            await feedCache.saveFeedDataToCache(req.currentUser.userId, feedData);
+            if (feedData[0].content.length && feedData[1].content.length) {
+                await feedCache.saveFeedDataToCache(req.currentUser.userId, feedData);
+            }
             res.status(http_status_codes_1.default.OK).json({ message: 'Feed', feed: feedData });
         }
     }
