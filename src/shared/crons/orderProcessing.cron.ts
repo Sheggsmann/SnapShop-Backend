@@ -18,21 +18,21 @@ export async function orderProcessingJob() {
   try {
     const ordersToProcess: IOrderDocument[] = await orderService.getDeliveredOrders();
 
-    for (const order of ordersToProcess) {
-      const timeDelta = Date.now() - order.paidAt.getTime();
+    // for (const order of ordersToProcess) {
+    //   const timeDelta = Date.now() - order.paidAt.getTime();
 
-      if (timeDelta > ESCROW_TO_BALANCE_TIME_IN_MS) {
-        const store: IStoreDocument | null = await storeService.getStoreByStoreId(order.store as string);
-        if (store) {
-          store.escrowBalance -= order.amountPaid;
-          store.mainBalance += order.amountPaid;
+    //   if (timeDelta > ESCROW_TO_BALANCE_TIME_IN_MS) {
+    //     const store: IStoreDocument | null = await storeService.getStoreByStoreId(order.store as string);
+    //     if (store) {
+    //       store.escrowBalance -= order.amountPaid;
+    //       store.mainBalance += order.amountPaid;
 
-          order.status = OrderStatus.COMPLETED;
+    //       order.status = OrderStatus.COMPLETED;
 
-          await Promise.all([store.save(), order.save()]);
-        }
-      }
-    }
+    //       await Promise.all([store.save(), order.save()]);
+    //     }
+    //   }
+    // }
   } catch (err) {
     log.error(`Error processing order payment movemnt`, err);
   }
