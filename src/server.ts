@@ -84,6 +84,7 @@ export class SnapShopServer {
 
       this.startHttpServer(httpServer);
       this.socketIOConnections(socketIo);
+      this.startCronJobs();
     } catch (err) {
       log.error(err);
     }
