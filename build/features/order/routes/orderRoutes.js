@@ -9,6 +9,7 @@ const auth_middleware_1 = require("../../../shared/globals/middlewares/auth-midd
 const create_order_1 = require("../controllers/create-order");
 const get_order_1 = require("../controllers/get-order");
 const update_order_1 = require("../controllers/update-order");
+const config_1 = require("../../../config");
 class OrderRoutes {
     constructor() {
         this.router = express_1.default.Router();
@@ -20,6 +21,9 @@ class OrderRoutes {
         this.router.put('/order/:orderId', auth_middleware_1.authMiddleware.checkAuth, update_order_1.updateOrder.order);
         this.router.post('/order/store/:storeId', auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['User']), create_order_1.createOrder.order);
         this.router.put('/order/verify/:orderId', auth_middleware_1.authMiddleware.checkAuth, update_order_1.updateOrder.completeOrder);
+        if (config_1.config.NODE_ENV === 'development') {
+            this.router.post('/dev/order/payment', auth_middleware_1.authMiddleware.checkAuth, update_order_1.updateOrder.devOrderPayment);
+        }
         return this.router;
     }
 }

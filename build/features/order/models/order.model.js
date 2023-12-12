@@ -10,7 +10,13 @@ const orderSchema = new mongoose_1.Schema({
     status: {
         type: String,
         default: order_interface_1.OrderStatus.PENDING,
-        enum: [order_interface_1.OrderStatus.PENDING, order_interface_1.OrderStatus.ACTIVE, order_interface_1.OrderStatus.DELIVERED, order_interface_1.OrderStatus.CANCELLED]
+        enum: [
+            order_interface_1.OrderStatus.PENDING,
+            order_interface_1.OrderStatus.ACTIVE,
+            order_interface_1.OrderStatus.DELIVERED,
+            order_interface_1.OrderStatus.CANCELLED,
+            order_interface_1.OrderStatus.COMPLETED
+        ]
     },
     paid: { type: Boolean, default: false },
     amountPaid: { type: Number, default: 0 },
@@ -21,7 +27,9 @@ const orderSchema = new mongoose_1.Schema({
         street: String,
         city: String,
         state: String
-    }
+    },
+    paidAt: Date,
+    cancelledAt: Date
 }, { timestamps: true });
 const OrderModel = (0, mongoose_1.model)('Order', orderSchema, 'Order');
 exports.OrderModel = OrderModel;

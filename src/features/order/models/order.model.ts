@@ -9,7 +9,13 @@ const orderSchema: Schema = new Schema(
     status: {
       type: String,
       default: OrderStatus.PENDING,
-      enum: [OrderStatus.PENDING, OrderStatus.ACTIVE, OrderStatus.DELIVERED, OrderStatus.CANCELLED]
+      enum: [
+        OrderStatus.PENDING,
+        OrderStatus.ACTIVE,
+        OrderStatus.DELIVERED,
+        OrderStatus.CANCELLED,
+        OrderStatus.COMPLETED
+      ]
     },
     paid: { type: Boolean, default: false },
     amountPaid: { type: Number, default: 0 },
@@ -20,7 +26,9 @@ const orderSchema: Schema = new Schema(
       street: String,
       city: String,
       state: String
-    }
+    },
+    paidAt: Date,
+    cancelledAt: Date
   },
   { timestamps: true }
 );

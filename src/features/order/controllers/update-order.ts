@@ -99,6 +99,34 @@ class UpdateOrder {
     res.sendStatus(200);
   }
 
+  public async devOrderPayment(req: Request, res: Response): Promise<void> {
+    const { amountPaid, orderId, storeId } = req.body;
+
+    const order: IOrderDocument | null = await orderService.getOrderByOrderId(orderId);
+    if (order) {
+      const total: number = order.products.reduce(
+        (acc, item) => (acc += (item.product as IProductDocument).price * item.quantity),
+        0
+      );
+
+      if (total !== amountPaid) throw new BadRequestError('Incorrect amount');
+
+      const deliveryCode = Helpers.generateOtp(4);
+      await orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
+      await storeService.updateStoreEscrowBalance(storeId, amountPaid);
+
+      transactionQueue.addTransactionJob('addTransactionToDB', {
+        store: storeId,
+        order: orderId,
+        user: req.currentUser!.userId,
+        amount: Number(amountPaid),
+        type: TransactionType.ORDER_PAYMENT
+      } as unknown as ITransactionDocument);
+    }
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Payment Success' });
+  }
+
   // TODO: add validator for update order
   public async order(req: Request, res: Response): Promise<void> {
     const { orderId } = req.params;
@@ -171,8 +199,6 @@ class UpdateOrder {
       .to(order.user.userId.toString())
       .to((order.store as IStoreDocument)._id.toString())
       .emit('order:update', { order });
-
-    // TODO: implement logic to move balance from escrow to main balance.
 
     res.status(HTTP_STATUS.OK).json({ message: 'Order completed' });
   }
