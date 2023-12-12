@@ -18,7 +18,7 @@ class StoreService {
         return stores;
     }
     async getStoreByName(name) {
-        return await store_model_1.StoreModel.findOne({ name });
+        return (await store_model_1.StoreModel.findOne({ name }).select('name image verified'));
     }
     async getStoreByUserId(userId) {
         return await store_model_1.StoreModel.findOne({ owner: userId });

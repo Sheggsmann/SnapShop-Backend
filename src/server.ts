@@ -5,6 +5,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { config } from '@root/config';
 import { CustomError, IErrorResponse } from '@global/helpers/error-handler';
 import { SocketIOChatHandler } from '@socket/chat';
+import { BaseCronJob } from '@cronJobs/base.cron';
 import applicationRoutes from '@root/routes';
 import apiStats from 'swagger-stats';
 import http from 'http';
@@ -33,6 +34,7 @@ export class SnapShopServer {
     this.apiMonitoring(this.app);
     this.globalErrorHandler(this.app);
     this.startServer(this.app);
+    this.startCronJobs();
   }
 
   private securityMiddleware(app: Application): void {
@@ -110,12 +112,17 @@ export class SnapShopServer {
       subClient.quit();
     });
 
+    process.on('SIGINT', () => {
+      log.debug('CLOSING REDIS CONNECTION');
+      pubClient.quit();
+      subClient.quit();
+    });
+
     return io;
   }
 
   private socketIOConnections(io: Server): void {
     const chatSocketHandler: SocketIOChatHandler = new SocketIOChatHandler(io);
-
     chatSocketHandler.listen();
   }
 
@@ -133,5 +140,10 @@ export class SnapShopServer {
         log.info(`Server running on PORT:${config.SERVER_PORT}`);
       });
     }
+  }
+
+  private startCronJobs(): void {
+    log.info('STARTING CRON JOBS');
+    BaseCronJob.startAllJobs();
   }
 }

@@ -10,9 +10,11 @@ import { Helpers } from '@global/helpers/helpers';
 import { storeService } from '@service/db/store.service';
 import { socketIOChatObject } from '@socket/chat';
 import { notificationQueue } from '@service/queues/notification.queue';
+import { transactionQueue } from '@service/queues/transaction.queue';
+import { ITransactionDocument, TransactionType } from '@transactions/interfaces/transaction.interface';
 import crypto from 'crypto';
-// import mongoose from 'mongoose';
 import HTTP_STATUS from 'http-status-codes';
+// import mongoose from 'mongoose';
 
 const KOBO_IN_NAIRA = 100;
 
@@ -58,6 +60,14 @@ class UpdateOrder {
             await orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
             await storeService.updateStoreEscrowBalance(storeId, amountPaid);
 
+            transactionQueue.addTransactionJob('addTransactionToDB', {
+              store: storeId,
+              order: orderId,
+              user: userId,
+              amount: amountPaid,
+              type: TransactionType.ORDER_PAYMENT
+            } as unknown as ITransactionDocument);
+
             // TODO: emit event using socket.io
             socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });
 
@@ -87,6 +97,34 @@ class UpdateOrder {
     }
 
     res.sendStatus(200);
+  }
+
+  public async devOrderPayment(req: Request, res: Response): Promise<void> {
+    const { amountPaid, orderId, storeId } = req.body;
+
+    const order: IOrderDocument | null = await orderService.getOrderByOrderId(orderId);
+    if (order) {
+      const total: number = order.products.reduce(
+        (acc, item) => (acc += (item.product as IProductDocument).price * item.quantity),
+        0
+      );
+
+      if (total !== amountPaid) throw new BadRequestError('Incorrect amount');
+
+      const deliveryCode = Helpers.generateOtp(4);
+      await orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
+      await storeService.updateStoreEscrowBalance(storeId, amountPaid);
+
+      transactionQueue.addTransactionJob('addTransactionToDB', {
+        store: storeId,
+        order: orderId,
+        user: req.currentUser!.userId,
+        amount: Number(amountPaid),
+        type: TransactionType.ORDER_PAYMENT
+      } as unknown as ITransactionDocument);
+    }
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Payment Success' });
   }
 
   // TODO: add validator for update order
@@ -161,8 +199,6 @@ class UpdateOrder {
       .to(order.user.userId.toString())
       .to((order.store as IStoreDocument)._id.toString())
       .emit('order:update', { order });
-
-    // TODO: implement logic to move balance from escrow to main balance.
 
     res.status(HTTP_STATUS.OK).json({ message: 'Order completed' });
   }

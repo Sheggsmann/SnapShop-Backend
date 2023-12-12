@@ -33,6 +33,10 @@ export class Helpers {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
   }
 
+  static formatDate(date: Date): string {
+    return `${date.getFullYear()}/${date.getMonth()}/${date.getUTCDay()} - ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+  }
+
   static calculateServiceFee(totalPrice: number) {
     if (totalPrice >= 0 && totalPrice <= 50000) {
       return Math.round(totalPrice * 0.04);

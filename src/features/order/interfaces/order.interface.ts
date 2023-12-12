@@ -7,7 +7,8 @@ export enum OrderStatus {
   PENDING = 'pending',
   ACTIVE = 'active',
   DELIVERED = 'delivered',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
+  COMPLETED = 'completed'
 }
 
 export interface ICartItem {
@@ -27,7 +28,12 @@ export interface IOrderDocument extends Document {
   products: ICartItem[];
   amount: number;
 
-  status: OrderStatus.PENDING | OrderStatus.ACTIVE | OrderStatus.DELIVERED | OrderStatus.CANCELLED;
+  status:
+    | OrderStatus.PENDING
+    | OrderStatus.ACTIVE
+    | OrderStatus.DELIVERED
+    | OrderStatus.CANCELLED
+    | OrderStatus.COMPLETED;
   paid: boolean;
   amountPaid: number;
 
@@ -42,8 +48,10 @@ export interface IOrderDocument extends Document {
     state: string;
   };
 
-  createdAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
   cancelledAt?: Date;
+  paidAt: Date;
 }
 
 export interface IOrderData {

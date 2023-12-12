@@ -111,12 +111,14 @@
       "@order/*": ["./src/features/order/*"],
       "@chat/*": ["./src/features/chat/*"],
       "@feedback/*": ["./src/features/feedback/*"],
+      "@transactions/*": ["./src/features/transactions/*"],
       "@searches/*": ["./src/features/searches/*"],
       "@versioning/*": ["./src/features/versioning/*"],
       "@global/*": ["./src/shared/globals/*"],
       "@service/*": ["./src/shared/services/*"],
       "@socket/*": ["./src/shared/sockets/*"],
       "@worker/*": ["./src/shared/workers/*"],
+      "@cronJobs/*": ["./src/shared/crons/*"],
       "@root/*": ["./src/*"]
     }
   }

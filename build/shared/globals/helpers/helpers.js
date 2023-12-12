@@ -31,6 +31,9 @@ class Helpers {
     static escapeRegExp(text) {
         return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
     }
+    static formatDate(date) {
+        return `${date.getFullYear()}/${date.getMonth()}/${date.getUTCDay()} - ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    }
     static calculateServiceFee(totalPrice) {
         if (totalPrice >= 0 && totalPrice <= 50000) {
             return Math.round(totalPrice * 0.04);

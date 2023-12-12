@@ -10,6 +10,7 @@ class OrderService {
     }
     async getUserOrders(userId) {
         const orders = (await order_model_1.OrderModel.find({ 'user.userId': userId })
+            .sort({ createdAt: -1 })
             .populate('store', '_id name description image bgImage owner')
             .populate('products.product', '-quantity -store'));
         return orders;
@@ -24,6 +25,9 @@ class OrderService {
             .populate('store', '_id name description image bgImage owner')
             .populate('products.product', '-quantity -store');
     }
+    async getDeliveredOrders() {
+        return await order_model_1.OrderModel.find({ paid: true, status: order_interface_1.OrderStatus.DELIVERED });
+    }
     async getOrderByUserId(userId) {
         return await order_model_1.OrderModel.findOne({ 'user.userId': userId });
     }
@@ -34,7 +38,7 @@ class OrderService {
         await order_model_1.OrderModel.updateOne({ _id: orderId }, { $set: updatedOrder });
     }
     async updateOrderPaymentStatus(orderId, paid, amountPaid, deliveryCode) {
-        await order_model_1.OrderModel.updateOne({ _id: orderId }, { $set: { paid, amountPaid, deliveryCode, status: order_interface_1.OrderStatus.ACTIVE } });
+        await order_model_1.OrderModel.updateOne({ _id: orderId }, { $set: { paid, amountPaid, deliveryCode, status: order_interface_1.OrderStatus.ACTIVE, paidAt: Date.now() } });
     }
 }
 exports.orderService = new OrderService();

@@ -13,9 +13,11 @@ const helpers_1 = require("../../../shared/globals/helpers/helpers");
 const store_service_1 = require("../../../shared/services/db/store.service");
 const chat_1 = require("../../../shared/sockets/chat");
 const notification_queue_1 = require("../../../shared/services/queues/notification.queue");
+const transaction_queue_1 = require("../../../shared/services/queues/transaction.queue");
+const transaction_interface_1 = require("../../transactions/interfaces/transaction.interface");
 const crypto_1 = __importDefault(require("crypto"));
-// import mongoose from 'mongoose';
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
+// import mongoose from 'mongoose';
 const KOBO_IN_NAIRA = 100;
 class UpdateOrder {
     async orderPayment(req, res) {
@@ -45,6 +47,13 @@ class UpdateOrder {
                         const deliveryCode = helpers_1.Helpers.generateOtp(4);
                         await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
                         await store_service_1.storeService.updateStoreEscrowBalance(storeId, amountPaid);
+                        transaction_queue_1.transactionQueue.addTransactionJob('addTransactionToDB', {
+                            store: storeId,
+                            order: orderId,
+                            user: userId,
+                            amount: amountPaid,
+                            type: transaction_interface_1.TransactionType.ORDER_PAYMENT
+                        });
                         // TODO: emit event using socket.io
                         chat_1.socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });
                         // TODO: send push notification to the user and the store
@@ -72,6 +81,26 @@ class UpdateOrder {
             console.error('\n\n COULD NOT VALIDATE PAYSTACK WEBHOOK');
         }
         res.sendStatus(200);
+    }
+    async devOrderPayment(req, res) {
+        const { amountPaid, orderId, storeId } = req.body;
+        const order = await order_service_1.orderService.getOrderByOrderId(orderId);
+        if (order) {
+            const total = order.products.reduce((acc, item) => (acc += item.product.price * item.quantity), 0);
+            if (total !== amountPaid)
+                throw new error_handler_1.BadRequestError('Incorrect amount');
+            const deliveryCode = helpers_1.Helpers.generateOtp(4);
+            await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
+            await store_service_1.storeService.updateStoreEscrowBalance(storeId, amountPaid);
+            transaction_queue_1.transactionQueue.addTransactionJob('addTransactionToDB', {
+                store: storeId,
+                order: orderId,
+                user: req.currentUser.userId,
+                amount: Number(amountPaid),
+                type: transaction_interface_1.TransactionType.ORDER_PAYMENT
+            });
+        }
+        res.status(http_status_codes_1.default.OK).json({ message: 'Payment Success' });
     }
     // TODO: add validator for update order
     async order(req, res) {
@@ -132,7 +161,6 @@ class UpdateOrder {
             .to(order.user.userId.toString())
             .to(order.store._id.toString())
             .emit('order:update', { order });
-        // TODO: implement logic to move balance from escrow to main balance.
         res.status(http_status_codes_1.default.OK).json({ message: 'Order completed' });
     }
 }

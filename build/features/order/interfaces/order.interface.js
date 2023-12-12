@@ -7,4 +7,5 @@ var OrderStatus;
     OrderStatus["ACTIVE"] = "active";
     OrderStatus["DELIVERED"] = "delivered";
     OrderStatus["CANCELLED"] = "cancelled";
+    OrderStatus["COMPLETED"] = "completed";
 })(OrderStatus || (exports.OrderStatus = OrderStatus = {}));

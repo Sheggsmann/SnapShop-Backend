@@ -12,6 +12,7 @@ import { IMessageData, IMessageDocument } from '@chat/interfaces/chat.interface'
 import { IReviewJob } from '@root/features/review/interfaces/review.interface';
 import { ISearchesJob } from '@searches/interfaces/searches.interfaces';
 import { INotificationJob } from '@root/features/notification/interfaces/notification.interface';
+import { ITransactionDocument } from '@transactions/interfaces/transaction.interface';
 import Logger from 'bunyan';
 
 export let bullAdapters: BullAdapter[] = [];
@@ -27,7 +28,8 @@ type IBaseJobData =
   | IMessageDocument
   | ISearchesJob
   | IReviewJob
-  | INotificationJob;
+  | INotificationJob
+  | ITransactionDocument;
 
 export abstract class BaseQueue {
   protected queue: Queue.Queue;

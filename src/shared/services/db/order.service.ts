@@ -10,6 +10,7 @@ class OrderService {
 
   public async getUserOrders(userId: string): Promise<IOrderDocument[]> {
     const orders: IOrderDocument[] = (await OrderModel.find({ 'user.userId': userId })
+      .sort({ createdAt: -1 })
       .populate('store', '_id name description image bgImage owner')
       .populate('products.product', '-quantity -store')) as IOrderDocument[];
     return orders;
@@ -25,6 +26,10 @@ class OrderService {
     return await OrderModel.find({ store: storeId })
       .populate('store', '_id name description image bgImage owner')
       .populate('products.product', '-quantity -store');
+  }
+
+  public async getDeliveredOrders(): Promise<IOrderDocument[]> {
+    return await OrderModel.find({ paid: true, status: OrderStatus.DELIVERED });
   }
 
   public async getOrderByUserId(userId: string): Promise<IOrderDocument | null> {
@@ -47,7 +52,7 @@ class OrderService {
   ): Promise<void> {
     await OrderModel.updateOne(
       { _id: orderId },
-      { $set: { paid, amountPaid, deliveryCode, status: OrderStatus.ACTIVE } }
+      { $set: { paid, amountPaid, deliveryCode, status: OrderStatus.ACTIVE, paidAt: Date.now() } }
     );
   }
 }

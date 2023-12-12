@@ -51,7 +51,7 @@ class Get {
         content: frequentlyPurchasedProducts
       });
 
-      if (feedData[0].content.length && feedData[1].content.length) {
+      if (feedData.length) {
         await feedCache.saveFeedDataToCache(req.currentUser!.userId, feedData);
       }
 
