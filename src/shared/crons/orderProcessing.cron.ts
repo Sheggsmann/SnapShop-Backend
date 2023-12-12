@@ -13,10 +13,10 @@ const ESCROW_TO_BALANCE_TIME_IN_MS = 1000 * 60 * 3;
 
 export async function orderProcessingJob() {
   n++;
-  console.log('\n ORDER PROCESSING JOB:', n);
 
   try {
-    const ordersToProcess: IOrderDocument[] = await orderService.getDeliveredOrders();
+    console.log('\n ORDER PROCESSING JOB:', n);
+    // const ordersToProcess: IOrderDocument[] = await orderService.getDeliveredOrders();
 
     // for (const order of ordersToProcess) {
     //   const timeDelta = Date.now() - order.paidAt.getTime();
