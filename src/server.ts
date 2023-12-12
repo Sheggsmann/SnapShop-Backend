@@ -34,7 +34,6 @@ export class SnapShopServer {
     this.apiMonitoring(this.app);
     this.globalErrorHandler(this.app);
     this.startServer(this.app);
-    this.startCronJobs();
   }
 
   private securityMiddleware(app: Application): void {
@@ -85,6 +84,7 @@ export class SnapShopServer {
 
       this.startHttpServer(httpServer);
       this.socketIOConnections(socketIo);
+      this.startCronJobs();
     } catch (err) {
       log.error(err);
     }

@@ -34,7 +34,6 @@ class SnapShopServer {
         this.apiMonitoring(this.app);
         this.globalErrorHandler(this.app);
         this.startServer(this.app);
-        this.startCronJobs();
     }
     securityMiddleware(app) {
         app.use((0, hpp_1.default)());
@@ -76,6 +75,7 @@ class SnapShopServer {
             const socketIo = await this.createSocketIO(httpServer);
             this.startHttpServer(httpServer);
             this.socketIOConnections(socketIo);
+            this.startCronJobs();
         }
         catch (err) {
             log.error(err);
