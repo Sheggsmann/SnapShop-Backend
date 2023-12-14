@@ -36,17 +36,22 @@ export abstract class BaseQueue {
   log: Logger;
 
   constructor(queueName: string) {
-    this.queue = new Queue(queueName, `${config.REDIS_HOST}`);
-    this.log = config.createLogger(`${queueName} Queue`);
+    try {
+      this.queue = new Queue(queueName, `${config.REDIS_HOST}`);
+      this.log = config.createLogger(`${queueName} Queue`);
 
-    bullAdapters.push(new BullAdapter(this.queue));
-    bullAdapters = [...new Set(bullAdapters)];
+      bullAdapters.push(new BullAdapter(this.queue));
+      bullAdapters = [...new Set(bullAdapters)];
 
-    createBullBoard({ queues: bullAdapters, serverAdapter });
+      createBullBoard({ queues: bullAdapters, serverAdapter });
 
-    this.queue.on('completed', (job: Job) => job.remove());
-    this.queue.on('global:completed', (jobId: string) => this.log.info(`Job ${jobId} is completed`));
-    this.queue.on('global:stalled', (jobId: string) => this.log.info(`Job ${jobId} is stalled`));
+      this.queue.on('completed', (job: Job) => job.remove());
+      this.queue.on('global:completed', (jobId: string) => this.log.info(`Job ${jobId} is completed`));
+      this.queue.on('global:stalled', (jobId: string) => this.log.info(`Job ${jobId} is stalled`));
+    } catch (err) {
+      console.error(`\nERROR CREATING QUEUE:`, err);
+      process.exit(1);
+    }
   }
 
   protected addJob(name: string, data: IBaseJobData): void {

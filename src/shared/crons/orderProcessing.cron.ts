@@ -34,6 +34,6 @@ export async function orderProcessingJob() {
       }
     }
   } catch (err) {
-    log.error(`Error processing order payment movemnt`, err);
+    log.error(`Error processing order payment movement`, err);
   }
 }
