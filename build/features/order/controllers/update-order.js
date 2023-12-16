@@ -34,6 +34,13 @@ class UpdateOrder {
                 const [orderId, userId, storeId] = eventData.data.reference.split('-');
                 // Amount in Kobo, change to naira
                 const amountPaid = eventData.data.amount / KOBO_IN_NAIRA;
+                transaction_queue_1.transactionQueue.addTransactionJob('addTransactionToDB', {
+                    store: storeId,
+                    order: orderId,
+                    user: userId,
+                    amount: amountPaid,
+                    type: transaction_interface_1.TransactionType.ORDER_PAYMENT
+                });
                 // TODO: Check if the amount paid is the same as the total of all the products
                 const order = await order_service_1.orderService.getOrderByOrderId(orderId);
                 if (order) {
@@ -47,13 +54,6 @@ class UpdateOrder {
                         const deliveryCode = helpers_1.Helpers.generateOtp(4);
                         await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
                         await store_service_1.storeService.updateStoreEscrowBalance(storeId, amountPaid);
-                        transaction_queue_1.transactionQueue.addTransactionJob('addTransactionToDB', {
-                            store: storeId,
-                            order: orderId,
-                            user: userId,
-                            amount: amountPaid,
-                            type: transaction_interface_1.TransactionType.ORDER_PAYMENT
-                        });
                         // TODO: emit event using socket.io
                         chat_1.socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });
                         // TODO: send push notification to the user and the store

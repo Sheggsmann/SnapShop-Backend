@@ -13,14 +13,20 @@ exports.bullAdapters = [];
 exports.serverAdapter = new express_1.ExpressAdapter().setBasePath('/queues');
 class BaseQueue {
     constructor(queueName) {
-        this.queue = new bull_1.default(queueName, `${config_1.config.REDIS_HOST}`);
-        this.log = config_1.config.createLogger(`${queueName} Queue`);
-        exports.bullAdapters.push(new bullAdapter_1.BullAdapter(this.queue));
-        exports.bullAdapters = [...new Set(exports.bullAdapters)];
-        (0, api_1.createBullBoard)({ queues: exports.bullAdapters, serverAdapter: exports.serverAdapter });
-        this.queue.on('completed', (job) => job.remove());
-        this.queue.on('global:completed', (jobId) => this.log.info(`Job ${jobId} is completed`));
-        this.queue.on('global:stalled', (jobId) => this.log.info(`Job ${jobId} is stalled`));
+        try {
+            this.queue = new bull_1.default(queueName, `${config_1.config.REDIS_HOST}`);
+            this.log = config_1.config.createLogger(`${queueName} Queue`);
+            exports.bullAdapters.push(new bullAdapter_1.BullAdapter(this.queue));
+            exports.bullAdapters = [...new Set(exports.bullAdapters)];
+            (0, api_1.createBullBoard)({ queues: exports.bullAdapters, serverAdapter: exports.serverAdapter });
+            this.queue.on('completed', (job) => job.remove());
+            this.queue.on('global:completed', (jobId) => this.log.info(`Job ${jobId} is completed`));
+            this.queue.on('global:stalled', (jobId) => this.log.info(`Job ${jobId} is stalled`));
+        }
+        catch (err) {
+            console.error(`\nERROR CREATING QUEUE:`, err);
+            process.exit(1);
+        }
     }
     addJob(name, data) {
         this.queue.add(name, data, { attempts: 3, backoff: { type: 'fixed', delay: 50000 } });

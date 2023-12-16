@@ -17,6 +17,7 @@ const addChatSchema = joi_1.default.object().keys({
     isReply: joi_1.default.boolean().optional(),
     isOrder: joi_1.default.boolean().optional(),
     reply: joi_1.default.object().optional(),
-    order: joi_1.default.object().optional()
+    order: joi_1.default.object().optional(),
+    createdAt: joi_1.default.date().optional()
 });
 exports.addChatSchema = addChatSchema;

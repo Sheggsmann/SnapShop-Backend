@@ -10,6 +10,7 @@ const chat_scheme_1 = require("../../features/chat/schemes/chat.scheme");
 const mongodb_1 = require("mongodb");
 const chat_queue_1 = require("../services/queues/chat.queue");
 const chat_service_1 = require("../services/db/chat.service");
+const order_interface_1 = require("../../features/order/interfaces/order.interface");
 const order_queue_1 = require("../services/queues/order.queue");
 const user_service_1 = require("../services/db/user.service");
 const notification_queue_1 = require("../services/queues/notification.queue");
@@ -54,6 +55,7 @@ class SocketIOChatHandler {
                 const conversationObjectId = message?.conversationId
                     ? message.conversationId
                     : `${new mongoose_1.default.Types.ObjectId()}`;
+                message.createdAt = Date.now();
                 await this.addChatMessage(message, conversationObjectId, socket);
                 if (!message?.conversationId) {
                     socket.emit('new:conversationId', {
@@ -79,7 +81,7 @@ class SocketIOChatHandler {
                 log.error('Validation Error:', error.details);
                 throw new Error('Message validation failed');
             }
-            const { sender, receiver, senderType, receiverType, body, isReply, reply, isOrder, order, images } = message;
+            const { sender, receiver, senderType, receiverType, body, isReply, reply, isOrder, order, images, createdAt } = message;
             const messageId = new mongodb_1.ObjectId();
             /**
              * If it is an order, create the order here
@@ -113,6 +115,17 @@ class SocketIOChatHandler {
                             products: order.products
                         }
                     });
+                    socket.to(receiver.toString()).emit('order:created', {
+                        _id: orderId,
+                        store: receiver,
+                        user: {
+                            userId: user._id,
+                            name: `${user.firstname} ${user.lastname}`,
+                            mobileNumber: socket.user.mobileNumber
+                        },
+                        products: order.products,
+                        status: order_interface_1.OrderStatus.PENDING
+                    });
                 }
             }
             const messageData = {
@@ -129,7 +142,8 @@ class SocketIOChatHandler {
                 order: orderId,
                 images: images ? images : [],
                 reply,
-                deleted: false
+                deleted: false,
+                createdAt
             };
             // console.log('\nADDING MESSAGE TO DB:', messageData);
             chat_queue_1.chatQueue.addChatJob('addChatMessageToDB', messageData);
