@@ -24,7 +24,9 @@ class OrderService {
 
   public async getOrdersByStoreId(storeId: string): Promise<IOrderDocument[]> {
     return await OrderModel.find({ store: storeId })
+      .sort({ createdAt: -1 })
       .populate('store', '_id name description image bgImage owner')
+      .populate('user.userId', '_id firstname lastname mobileNumber profilePicture')
       .populate('products.product', '-quantity -store');
   }
 
@@ -42,6 +44,10 @@ class OrderService {
 
   public async updateOrder(orderId: string, updatedOrder: IOrderDocument): Promise<void> {
     await OrderModel.updateOne({ _id: orderId }, { $set: updatedOrder });
+  }
+
+  public async updateOrderStatus(orderId: string, status: string): Promise<void> {
+    await OrderModel.updateOne({ _id: orderId }, { $set: { status } });
   }
 
   public async updateOrderPaymentStatus(

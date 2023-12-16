@@ -35,7 +35,7 @@ export interface IMessageData {
   deleted: boolean;
   order?: IOrderData;
   reply?: { messageId: ObjectId; body: string; images: []; sender: ObjectId; receiver: ObjectId };
-  createdAt?: Date;
+  createdAt?: Date | number;
 }
 
 export interface IChatUsers {

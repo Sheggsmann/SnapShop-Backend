@@ -50,7 +50,7 @@ export interface IOrderDocument extends Document {
 
   createdAt: Date;
   updatedAt: Date;
-  cancelledAt?: Date;
+  cancelledAt?: Date | number;
   paidAt: Date;
 }
 

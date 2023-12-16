@@ -2,7 +2,10 @@ import { IOrderDocument, OrderStatus } from '@order/interfaces/order.interface';
 import { config } from '@root/config';
 import { orderService } from '@service/db/order.service';
 import { storeService } from '@service/db/store.service';
+import { notificationQueue } from '@service/queues/notification.queue';
+import { transactionQueue } from '@service/queues/transaction.queue';
 import { IStoreDocument } from '@store/interfaces/store.interface';
+import { ITransactionDocument, TransactionType } from '@transactions/interfaces/transaction.interface';
 import Logger from 'bunyan';
 
 let n = 0;
@@ -28,8 +31,24 @@ export async function orderProcessingJob() {
           store.mainBalance += order.amountPaid;
 
           order.status = OrderStatus.COMPLETED;
-
           await Promise.all([store.save(), order.save()]);
+
+          transactionQueue.addTransactionJob('addTransactionToDB', {
+            storeId: store._id,
+            order: order._id,
+            user: order.user.userId,
+            amount: Number(order.amountPaid),
+            type: TransactionType.DEPOSIT
+          } as unknown as ITransactionDocument);
+
+          // SEND NOTIFICATION TO STORE:
+          notificationQueue.addNotificationJob('sendPushNotificationToStore', {
+            key: `${store._id}`,
+            value: {
+              title: 'Payment 🥳🎉',
+              body: `₦${order.amountPaid} has been moved to your main balance.`
+            }
+          });
         }
       }
     }

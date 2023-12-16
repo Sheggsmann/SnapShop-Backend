@@ -7,7 +7,7 @@ import { addChatSchema } from '@chat/schemes/chat.scheme';
 import { ObjectId } from 'mongodb';
 import { chatQueue } from '@service/queues/chat.queue';
 import { chatService } from '@service/db/chat.service';
-import { IOrderDocument } from '@order/interfaces/order.interface';
+import { IOrderDocument, OrderStatus } from '@order/interfaces/order.interface';
 import { orderQueue } from '@service/queues/order.queue';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { userService } from '@service/db/user.service';
@@ -78,6 +78,7 @@ export class SocketIOChatHandler {
           ? (message.conversationId as string)
           : `${new mongoose.Types.ObjectId()}`;
 
+        message.createdAt = Date.now();
         await this.addChatMessage(message, conversationObjectId, socket);
 
         if (!message?.conversationId) {
@@ -114,8 +115,19 @@ export class SocketIOChatHandler {
         throw new Error('Message validation failed');
       }
 
-      const { sender, receiver, senderType, receiverType, body, isReply, reply, isOrder, order, images } =
-        message;
+      const {
+        sender,
+        receiver,
+        senderType,
+        receiverType,
+        body,
+        isReply,
+        reply,
+        isOrder,
+        order,
+        images,
+        createdAt
+      } = message;
 
       const messageId: ObjectId = new ObjectId();
 
@@ -154,6 +166,17 @@ export class SocketIOChatHandler {
               products: order!.products
             } as IOrderDocument
           });
+          socket.to(receiver.toString()).emit('order:created', {
+            _id: orderId,
+            store: receiver,
+            user: {
+              userId: user._id,
+              name: `${user.firstname} ${user.lastname}`,
+              mobileNumber: socket.user!.mobileNumber
+            },
+            products: order!.products,
+            status: OrderStatus.PENDING
+          });
         }
       }
 
@@ -171,7 +194,8 @@ export class SocketIOChatHandler {
         order: orderId,
         images: images ? images : [],
         reply,
-        deleted: false
+        deleted: false,
+        createdAt
       } as unknown as IMessageDocument;
 
       // console.log('\nADDING MESSAGE TO DB:', messageData);

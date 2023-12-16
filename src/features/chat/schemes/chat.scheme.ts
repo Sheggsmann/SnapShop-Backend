@@ -12,7 +12,8 @@ const addChatSchema: ObjectSchema = Joi.object().keys({
   isReply: Joi.boolean().optional(),
   isOrder: Joi.boolean().optional(),
   reply: Joi.object().optional(),
-  order: Joi.object().optional()
+  order: Joi.object().optional(),
+  createdAt: Joi.date().optional()
 });
 
 export { addChatSchema };
