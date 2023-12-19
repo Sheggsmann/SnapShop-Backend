@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction, Application, json, urlencoded } from 'express';
 import { Server } from 'socket.io';
-import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { config } from '@root/config';
+import { RedisSingleton } from '@service/redis/connection';
 import { CustomError, IErrorResponse } from '@global/helpers/error-handler';
 import { SocketIOChatHandler } from '@socket/chat';
 import { BaseCronJob } from '@cronJobs/base.cron';
@@ -20,10 +20,11 @@ import 'express-async-errors';
 
 const log: Logger = config.createLogger('server');
 
-export class SnapShopServer {
+export class SnapShopServer extends RedisSingleton {
   private app: Application;
 
   constructor(app: Application) {
+    super();
     this.app = app;
   }
 
@@ -98,24 +99,33 @@ export class SnapShopServer {
       }
     });
 
-    const pubClient = createClient({ url: config.REDIS_HOST });
+    const pubClient = this.client;
     const subClient = pubClient.duplicate();
 
     if (!pubClient.isOpen) {
-      await Promise.all([pubClient.connect(), subClient.connect()]);
+      try {
+        await Promise.all([pubClient.connect(), subClient.connect()]);
+        log.info('Successfully connected to REDIS!');
+      } catch (err) {
+        log.error('Failed to connect to Redis:', err);
+        process.exit();
+      }
     }
+
     io.adapter(createAdapter(pubClient, subClient));
 
     process.on('beforeExit', () => {
       log.debug('CLOSING REDIS CONNECTION');
       pubClient.quit();
       subClient.quit();
+      process.exit();
     });
 
     process.on('SIGINT', () => {
       log.debug('CLOSING REDIS CONNECTION');
       pubClient.quit();
       subClient.quit();
+      process.exit();
     });
 
     return io;
