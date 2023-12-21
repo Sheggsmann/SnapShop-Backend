@@ -51,10 +51,13 @@ class SocketIOChatHandler {
             const conversationList = await chat_service_1.chatService.getConversationList(new mongoose_1.default.Types.ObjectId(currentAuthId));
             socket.emit('conversation:list', conversationList);
             // Listen for private message
-            socket.on('private:message', async ({ message, to }) => {
+            socket.on('private:message', async (data, callback) => {
+                const { message, to } = data;
+                const messageId = new mongodb_1.ObjectId();
                 const conversationObjectId = message?.conversationId
                     ? message.conversationId
                     : `${new mongoose_1.default.Types.ObjectId()}`;
+                message._id = `${messageId}`;
                 message.createdAt = Date.now();
                 await this.addChatMessage(message, conversationObjectId, socket);
                 if (!message?.conversationId) {
@@ -67,6 +70,9 @@ class SocketIOChatHandler {
                     .to(to)
                     .to(currentAuthId)
                     .emit('private:message', { message, from: currentAuthId, conversationId: conversationObjectId });
+                if (callback) {
+                    callback({ messageId });
+                }
             });
             socket.on('disconnect', async () => {
                 await chatCache.userIsOffline(currentAuthId);
@@ -81,8 +87,7 @@ class SocketIOChatHandler {
                 log.error('Validation Error:', error.details);
                 throw new Error('Message validation failed');
             }
-            const { sender, receiver, senderType, receiverType, body, isReply, reply, isOrder, order, images, createdAt } = message;
-            const messageId = new mongodb_1.ObjectId();
+            const { sender, receiver, senderType, receiverType, body, isReply, status, reply, isOrder, order, images, createdAt } = message;
             /**
              * If it is an order, create the order here
              *
@@ -129,7 +134,8 @@ class SocketIOChatHandler {
                 }
             }
             const messageData = {
-                _id: `${messageId}`,
+                _id: `${message._id}`,
+                status,
                 conversationId,
                 sender,
                 receiver,

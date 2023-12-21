@@ -73,26 +73,40 @@ export class SocketIOChatHandler {
       socket.emit('conversation:list', conversationList);
 
       // Listen for private message
-      socket.on('private:message', async ({ message, to }: { message: IMessageData; to: string }) => {
-        const conversationObjectId: string = message?.conversationId
-          ? (message.conversationId as string)
-          : `${new mongoose.Types.ObjectId()}`;
+      socket.on(
+        'private:message',
+        async (
+          data: { message: IMessageData; to: string },
+          callback: ({ messageId }: { messageId: ObjectId }) => void
+        ) => {
+          const { message, to } = data;
+          const messageId: ObjectId = new ObjectId();
 
-        message.createdAt = Date.now();
-        await this.addChatMessage(message, conversationObjectId, socket);
+          const conversationObjectId: string = message?.conversationId
+            ? (message.conversationId as string)
+            : `${new mongoose.Types.ObjectId()}`;
 
-        if (!message?.conversationId) {
-          socket.emit('new:conversationId', {
-            conversationId: conversationObjectId,
-            lastMessage: message.body
-          });
+          message._id = `${messageId}`;
+          message.createdAt = Date.now();
+          await this.addChatMessage(message, conversationObjectId, socket);
+
+          if (!message?.conversationId) {
+            socket.emit('new:conversationId', {
+              conversationId: conversationObjectId,
+              lastMessage: message.body
+            });
+          }
+
+          socket
+            .to(to)
+            .to(currentAuthId)
+            .emit('private:message', { message, from: currentAuthId, conversationId: conversationObjectId });
+
+          if (callback) {
+            callback({ messageId });
+          }
         }
-
-        socket
-          .to(to)
-          .to(currentAuthId)
-          .emit('private:message', { message, from: currentAuthId, conversationId: conversationObjectId });
-      });
+      );
 
       socket.on('disconnect', async () => {
         await chatCache.userIsOffline(currentAuthId);
@@ -122,14 +136,13 @@ export class SocketIOChatHandler {
         receiverType,
         body,
         isReply,
+        status,
         reply,
         isOrder,
         order,
         images,
         createdAt
       } = message;
-
-      const messageId: ObjectId = new ObjectId();
 
       /**
        * If it is an order, create the order here
@@ -181,7 +194,8 @@ export class SocketIOChatHandler {
       }
 
       const messageData: IMessageDocument = {
-        _id: `${messageId}`,
+        _id: `${message._id}`,
+        status,
         conversationId,
         sender,
         receiver,

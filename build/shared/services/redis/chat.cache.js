@@ -8,16 +8,19 @@ class ChatCache extends base_cache_1.BaseCache {
         super(CACHE_NAME);
     }
     async userIsOnline(userId) {
-        if (!this.client.isOpen) {
+        if (!this.client.isOpen)
             await this.client.connect();
-        }
         await this.client.sAdd('online_users', userId);
     }
     async userIsOffline(userId) {
-        if (!this.client.isOpen) {
+        if (!this.client.isOpen)
             await this.client.connect();
-        }
         await this.client.sRem('online_users', userId);
+    }
+    async isUerOnline(userId) {
+        if (!this.client.isOpen)
+            await this.client.connect();
+        return await this.client.sIsMember('online_users', userId);
     }
 }
 exports.ChatCache = ChatCache;

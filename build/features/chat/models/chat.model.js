@@ -15,6 +15,7 @@ const messageSchema = new mongoose_1.Schema({
     isOrder: { type: Boolean, default: false },
     deleted: { type: Boolean, default: false },
     order: { type: mongoose_1.Types.ObjectId, ref: 'Order', index: true },
+    status: { type: String, enum: ['pending', 'delivered', 'read'], default: 'pending' },
     reply: {
         messageId: mongoose_1.Types.ObjectId,
         body: String,

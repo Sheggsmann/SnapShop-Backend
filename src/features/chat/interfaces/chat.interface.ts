@@ -2,6 +2,8 @@ import { IOrderData } from '@order/interfaces/order.interface';
 import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 
+export type MessageStatus = 'pending' | 'delivered' | 'read';
+
 export interface IMessageDocument extends Document {
   _id: ObjectId;
   sender: ObjectId;
@@ -15,6 +17,7 @@ export interface IMessageDocument extends Document {
   isOrder: boolean;
   isReply: boolean;
   deleted: boolean;
+  status: MessageStatus;
   order?: ObjectId;
   reply?: { messageId: ObjectId; body: string; images: []; sender: ObjectId; receiver: ObjectId };
   createdAt?: Date;
@@ -33,6 +36,7 @@ export interface IMessageData {
   isOrder: boolean;
   isReply: boolean;
   deleted: boolean;
+  status: MessageStatus;
   order?: IOrderData;
   reply?: { messageId: ObjectId; body: string; images: []; sender: ObjectId; receiver: ObjectId };
   createdAt?: Date | number;

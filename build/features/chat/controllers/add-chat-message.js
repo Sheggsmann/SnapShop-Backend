@@ -64,6 +64,7 @@ class Add {
             receiverType,
             userName,
             storeName,
+            status: 'pending',
             body,
             isRead: !!isRead,
             isReply: !!isReply,
