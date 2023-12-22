@@ -14,7 +14,8 @@ const orderSchema: Schema = new Schema(
         OrderStatus.ACTIVE,
         OrderStatus.DELIVERED,
         OrderStatus.CANCELLED,
-        OrderStatus.COMPLETED
+        OrderStatus.COMPLETED,
+        OrderStatus.DISPUTE
       ]
     },
     paid: { type: Boolean, default: false },

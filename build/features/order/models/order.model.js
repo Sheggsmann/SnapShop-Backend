@@ -15,7 +15,8 @@ const orderSchema = new mongoose_1.Schema({
             order_interface_1.OrderStatus.ACTIVE,
             order_interface_1.OrderStatus.DELIVERED,
             order_interface_1.OrderStatus.CANCELLED,
-            order_interface_1.OrderStatus.COMPLETED
+            order_interface_1.OrderStatus.COMPLETED,
+            order_interface_1.OrderStatus.DISPUTE
         ]
     },
     paid: { type: Boolean, default: false },

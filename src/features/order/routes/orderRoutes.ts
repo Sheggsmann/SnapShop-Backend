@@ -5,6 +5,7 @@ import { getOrders } from '@order/controllers/get-order';
 import { updateOrder } from '@order/controllers/update-order';
 import { config } from '@root/config';
 import { declineOrder } from '@order/controllers/decline-order';
+import { reportOrder } from '@order/controllers/report-order';
 
 class OrderRoutes {
   private router: Router;
@@ -35,8 +36,6 @@ class OrderRoutes {
       getOrders.order
     );
 
-    this.router.put('/order/:orderId', authMiddleware.checkAuth, updateOrder.order);
-
     this.router.post(
       '/order/store/:storeId',
       authMiddleware.checkAuth,
@@ -44,12 +43,19 @@ class OrderRoutes {
       createOrder.order
     );
 
+    this.router.put('/order/:orderId', authMiddleware.checkAuth, updateOrder.order);
     this.router.put('/order/verify/:orderId', authMiddleware.checkAuth, updateOrder.completeOrder);
     this.router.put(
       '/order/decline/:orderId',
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),
       declineOrder.byStore
+    );
+    this.router.put(
+      '/order/report/:orderId',
+      authMiddleware.checkAuth,
+      authMiddleware.restrictTo(['User']),
+      reportOrder.report
     );
 
     if (config.NODE_ENV === 'development') {

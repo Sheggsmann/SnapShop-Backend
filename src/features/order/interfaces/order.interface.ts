@@ -8,7 +8,8 @@ export enum OrderStatus {
   ACTIVE = 'active',
   DELIVERED = 'delivered',
   CANCELLED = 'cancelled',
-  COMPLETED = 'completed'
+  COMPLETED = 'completed',
+  DISPUTE = 'dispute'
 }
 
 export interface ICartItem {
@@ -33,7 +34,8 @@ export interface IOrderDocument extends Document {
     | OrderStatus.ACTIVE
     | OrderStatus.DELIVERED
     | OrderStatus.CANCELLED
-    | OrderStatus.COMPLETED;
+    | OrderStatus.COMPLETED
+    | OrderStatus.DISPUTE;
   paid: boolean;
   amountPaid: number;
 

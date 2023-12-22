@@ -11,4 +11,11 @@ const orderSchema: ObjectSchema = Joi.object().keys({
 
 const updateOrderSchema: ObjectSchema = Joi.object().keys({});
 
-export { orderSchema, updateOrderSchema };
+const reportOrderSchema: ObjectSchema = Joi.object().keys({
+  reason: Joi.string().min(1).max(1500).required().messages({
+    'string.base': 'reason must be a string',
+    'string.empty': 'reason cannot be empty'
+  })
+});
+
+export { orderSchema, updateOrderSchema, reportOrderSchema };
