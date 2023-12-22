@@ -8,9 +8,11 @@ class OrderService {
     await OrderModel.create(data);
   }
 
-  public async getUserOrders(userId: string): Promise<IOrderDocument[]> {
+  public async getUserOrders(userId: string, skip: number, limit: number): Promise<IOrderDocument[]> {
     const orders: IOrderDocument[] = (await OrderModel.find({ 'user.userId': userId })
       .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .populate('store', '_id name description image bgImage owner')
       .populate('products.product', '-quantity -store')) as IOrderDocument[];
     return orders;
@@ -22,9 +24,11 @@ class OrderService {
       .populate('products.product', '-quantity -store');
   }
 
-  public async getOrdersByStoreId(storeId: string): Promise<IOrderDocument[]> {
+  public async getOrdersByStoreId(storeId: string, skip: number, limit: number): Promise<IOrderDocument[]> {
     return await OrderModel.find({ store: storeId })
       .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .populate('store', '_id name description image bgImage owner')
       .populate('user.userId', '_id firstname lastname mobileNumber profilePicture')
       .populate('products.product', '-quantity -store');

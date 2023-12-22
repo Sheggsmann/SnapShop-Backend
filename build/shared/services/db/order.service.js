@@ -8,9 +8,11 @@ class OrderService {
     async addOrderToDB(data) {
         await order_model_1.OrderModel.create(data);
     }
-    async getUserOrders(userId) {
+    async getUserOrders(userId, skip, limit) {
         const orders = (await order_model_1.OrderModel.find({ 'user.userId': userId })
             .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
             .populate('store', '_id name description image bgImage owner')
             .populate('products.product', '-quantity -store'));
         return orders;
@@ -20,9 +22,11 @@ class OrderService {
             .populate('store', '_id name description image bgImage owner')
             .populate('products.product', '-quantity -store');
     }
-    async getOrdersByStoreId(storeId) {
+    async getOrdersByStoreId(storeId, skip, limit) {
         return await order_model_1.OrderModel.find({ store: storeId })
             .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
             .populate('store', '_id name description image bgImage owner')
             .populate('user.userId', '_id firstname lastname mobileNumber profilePicture')
             .populate('products.product', '-quantity -store');
