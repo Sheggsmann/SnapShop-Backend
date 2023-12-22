@@ -42,8 +42,48 @@ class OrderService {
     return await OrderModel.findOne({ 'user.userId': userId });
   }
 
+  public async getFinalizedOrdersByUserId(userId: string): Promise<IOrderDocument[] | null> {
+    return await OrderModel.find({
+      $and: [
+        { 'user.userId': userId },
+        { $or: [{ status: OrderStatus.COMPLETED }, { status: OrderStatus.CANCELLED }] }
+      ]
+    });
+  }
+
+  public async userHasFinalizedOrder(userId: string): Promise<IOrderDocument | null> {
+    return await OrderModel.findOne({
+      $and: [
+        { 'user.userId': userId },
+        { $or: [{ status: OrderStatus.COMPLETED }, { status: OrderStatus.CANCELLED }] }
+      ]
+    });
+  }
+
   public async getOrderByProductId(productId: string): Promise<IOrderDocument | null> {
     return await OrderModel.findOne({ 'products.product._id': productId });
+  }
+
+  public async getCompletedOrdersByProductId(productId: string): Promise<IOrderDocument | null> {
+    return await OrderModel.findOne({ 'products.product._id': productId, status: OrderStatus.COMPLETED });
+  }
+
+  public async getFinalizedOrdersByProductId(productId: string): Promise<IOrderDocument[] | null> {
+    return await OrderModel.find({
+      $and: [
+        { 'products.product._id': productId },
+        { $or: [{ status: OrderStatus.COMPLETED }, { status: OrderStatus.CANCELLED }] }
+      ]
+    });
+  }
+
+  public async productHasFinalizedOrder(productId: string): Promise<IOrderDocument[] | null> {
+    return await OrderModel.findOne({
+      $and: [
+        { 'products.product._id': productId },
+        { $or: [{ status: OrderStatus.COMPLETED }, { status: OrderStatus.CANCELLED }] }
+      ]
+    });
   }
 
   public async updateOrder(orderId: string, updatedOrder: IOrderDocument): Promise<void> {
