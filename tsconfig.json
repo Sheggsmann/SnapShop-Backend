@@ -113,6 +113,7 @@
       "@feedback/*": ["./src/features/feedback/*"],
       "@transactions/*": ["./src/features/transactions/*"],
       "@searches/*": ["./src/features/searches/*"],
+      "@balanceWithdrawal/*": ["./src/features/balanceWithdrawal/*"],
       "@versioning/*": ["./src/features/versioning/*"],
       "@global/*": ["./src/shared/globals/*"],
       "@service/*": ["./src/shared/services/*"],
