@@ -55,6 +55,10 @@ class UpdateOrder {
                         await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
                         await store_service_1.storeService.updateStoreEscrowBalance(storeId, amountPaid);
                         // TODO: emit event using socket.io
+                        order.paid = true;
+                        order.amountPaid = amountPaid;
+                        order.deliveryCode = deliveryCode;
+                        order.status = order_interface_1.OrderStatus.ACTIVE;
                         chat_1.socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });
                         // TODO: send push notification to the user and the store
                         notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
@@ -161,6 +165,13 @@ class UpdateOrder {
             .to(order.user.userId.toString())
             .to(order.store._id.toString())
             .emit('order:update', { order });
+        notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
+            key: order.store._id,
+            value: {
+                title: `Order Completed`,
+                body: `${order.user.name} marked order #${order._id.toString().substring(0, 8)} as complete`
+            }
+        });
         res.status(http_status_codes_1.default.OK).json({ message: 'Order completed' });
     }
 }

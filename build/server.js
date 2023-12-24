@@ -76,7 +76,7 @@ class SnapShopServer extends connection_1.RedisSingleton {
             const socketIo = await this.createSocketIO(httpServer);
             this.startHttpServer(httpServer);
             this.socketIOConnections(socketIo);
-            // this.startCronJobs();
+            this.startCronJobs();
         }
         catch (err) {
             log.error(err);

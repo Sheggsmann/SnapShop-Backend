@@ -5,9 +5,9 @@ import { orderService } from '@service/db/order.service';
 import { orderQueue } from '@service/queues/order.queue';
 import { validator } from '@global/helpers/joi-validation-decorator';
 import { reportOrderSchema } from '@order/schemes/order.scheme';
-import HTTP_STATUS from 'http-status-codes';
 import { notificationQueue } from '@service/queues/notification.queue';
 import { IStoreDocument } from '@store/interfaces/store.interface';
+import HTTP_STATUS from 'http-status-codes';
 
 class ReportOrder {
   @validator(reportOrderSchema)
@@ -38,8 +38,8 @@ class ReportOrder {
     notificationQueue.addNotificationJob('sendPushNotificationToStore', {
       key: `${(order.store as IStoreDocument)._id}`,
       value: {
-        title: `Order Dispute 😞`,
-        body: `${order.user.name} raised a dispute.`
+        title: `${order.user.name} reported an issue with their order 😞`,
+        body: `${reason}`
       }
     });
 

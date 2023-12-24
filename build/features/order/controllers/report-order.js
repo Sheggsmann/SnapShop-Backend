@@ -19,8 +19,8 @@ const order_service_1 = require("../../../shared/services/db/order.service");
 const order_queue_1 = require("../../../shared/services/queues/order.queue");
 const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-validation-decorator");
 const order_scheme_1 = require("../schemes/order.scheme");
-const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const notification_queue_1 = require("../../../shared/services/queues/notification.queue");
+const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class ReportOrder {
     async report(req, res) {
         // Get the order Id and reason(body)
@@ -45,8 +45,8 @@ class ReportOrder {
         notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
             key: `${order.store._id}`,
             value: {
-                title: `Order Dispute 😞`,
-                body: `${order.user.name} raised a dispute.`
+                title: `${order.user.name} reported an issue with their order 😞`,
+                body: `${reason}`
             }
         });
         res.status(http_status_codes_1.default.OK).json({ message: 'Order report success', order });
