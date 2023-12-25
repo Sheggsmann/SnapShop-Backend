@@ -129,7 +129,8 @@ class SocketIOChatHandler {
                             mobileNumber: socket.user.mobileNumber
                         },
                         products: order.products,
-                        status: order_interface_1.OrderStatus.PENDING
+                        status: order_interface_1.OrderStatus.PENDING,
+                        createdAt
                     });
                 }
             }

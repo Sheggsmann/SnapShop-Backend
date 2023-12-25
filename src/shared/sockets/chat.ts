@@ -188,7 +188,8 @@ export class SocketIOChatHandler {
               mobileNumber: socket.user!.mobileNumber
             },
             products: order!.products,
-            status: OrderStatus.PENDING
+            status: OrderStatus.PENDING,
+            createdAt
           });
         }
       }
