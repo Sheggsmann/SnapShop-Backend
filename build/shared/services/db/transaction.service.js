@@ -6,5 +6,15 @@ class TransactionService {
     async addTransactionToDB(transaction) {
         await transaction_model_1.TransactionsModel.create(transaction);
     }
+    async getUserTransactions(userId) {
+        return await transaction_model_1.TransactionsModel.find({ user: userId })
+            .sort({ createdAt: 1 })
+            .populate('store', '_id name image mobileNumber');
+    }
+    async getStoreTransactions(storeId) {
+        return await transaction_model_1.TransactionsModel.find({ store: storeId })
+            .sort({ createdAt: 1 })
+            .populate('user', '_id name profilePicture mobileNumber');
+    }
 }
 exports.transactionService = new TransactionService();

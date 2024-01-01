@@ -7,6 +7,7 @@ import { validator } from '@global/helpers/joi-validation-decorator';
 import { reportOrderSchema } from '@order/schemes/order.scheme';
 import { notificationQueue } from '@service/queues/notification.queue';
 import { IStoreDocument } from '@store/interfaces/store.interface';
+import { socketIOChatObject } from '@socket/chat';
 import HTTP_STATUS from 'http-status-codes';
 
 class ReportOrder {
@@ -34,6 +35,11 @@ class ReportOrder {
     order.reason = reason;
 
     orderQueue.addOrderJob('updateOrderInDB', { key: orderId, value: order });
+
+    socketIOChatObject
+      .to((order.store as IStoreDocument)._id.toString())
+      .to(order.user.userId.toString())
+      .emit('order:update', { order });
 
     notificationQueue.addNotificationJob('sendPushNotificationToStore', {
       key: `${(order.store as IStoreDocument)._id}`,

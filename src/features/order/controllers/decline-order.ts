@@ -6,6 +6,7 @@ import { notificationQueue } from '@service/queues/notification.queue';
 import { orderQueue } from '@service/queues/order.queue';
 import { storeQueue } from '@service/queues/store.queue';
 import { transactionQueue } from '@service/queues/transaction.queue';
+import { socketIOChatObject } from '@socket/chat';
 import { IStoreDocument } from '@store/interfaces/store.interface';
 import { ITransactionDocument, TransactionType } from '@transactions/interfaces/transaction.interface';
 import { Request, Response } from 'express';
@@ -69,6 +70,11 @@ class DeclineOrder {
 
       // TODO: Implement logic to refund people
     }
+
+    socketIOChatObject
+      .to((order.store as IStoreDocument)._id.toString())
+      .to(order.user.userId.toString())
+      .emit('order:update', { order });
 
     res.status(HTTP_STATUS.OK).json({ message: 'Order Cancelled', order });
   }

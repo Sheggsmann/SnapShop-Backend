@@ -20,6 +20,7 @@ const order_queue_1 = require("../../../shared/services/queues/order.queue");
 const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-validation-decorator");
 const order_scheme_1 = require("../schemes/order.scheme");
 const notification_queue_1 = require("../../../shared/services/queues/notification.queue");
+const chat_1 = require("../../../shared/sockets/chat");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class ReportOrder {
     async report(req, res) {
@@ -42,6 +43,10 @@ class ReportOrder {
         order.status = order_interface_1.OrderStatus.DISPUTE;
         order.reason = reason;
         order_queue_1.orderQueue.addOrderJob('updateOrderInDB', { key: orderId, value: order });
+        chat_1.socketIOChatObject
+            .to(order.store._id.toString())
+            .to(order.user.userId.toString())
+            .emit('order:update', { order });
         notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
             key: `${order.store._id}`,
             value: {

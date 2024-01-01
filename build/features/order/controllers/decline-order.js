@@ -12,6 +12,7 @@ const notification_queue_1 = require("../../../shared/services/queues/notificati
 const order_queue_1 = require("../../../shared/services/queues/order.queue");
 const store_queue_1 = require("../../../shared/services/queues/store.queue");
 const transaction_queue_1 = require("../../../shared/services/queues/transaction.queue");
+const chat_1 = require("../../../shared/sockets/chat");
 const transaction_interface_1 = require("../../transactions/interfaces/transaction.interface");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class DeclineOrder {
@@ -66,6 +67,10 @@ class DeclineOrder {
             });
             // TODO: Implement logic to refund people
         }
+        chat_1.socketIOChatObject
+            .to(order.store._id.toString())
+            .to(order.user.userId.toString())
+            .emit('order:update', { order });
         res.status(http_status_codes_1.default.OK).json({ message: 'Order Cancelled', order });
     }
 }

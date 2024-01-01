@@ -12,6 +12,8 @@ import { socketIOChatObject } from '@socket/chat';
 import { notificationQueue } from '@service/queues/notification.queue';
 import { transactionQueue } from '@service/queues/transaction.queue';
 import { ITransactionDocument, TransactionType } from '@transactions/interfaces/transaction.interface';
+import { validator } from '@global/helpers/joi-validation-decorator';
+import { updateOrderSchema } from '@order/schemes/order.scheme';
 import crypto from 'crypto';
 import HTTP_STATUS from 'http-status-codes';
 // import mongoose from 'mongoose';
@@ -132,6 +134,7 @@ class UpdateOrder {
   }
 
   // TODO: add validator for update order
+  @validator(updateOrderSchema)
   public async order(req: Request, res: Response): Promise<void> {
     const { orderId } = req.params;
     const { deliveryFee, products } = req.body;
