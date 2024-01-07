@@ -12,7 +12,7 @@ class Get {
         res.status(http_status_codes_1.default.OK).json({ message: 'Transactions fetched successfully', transactions });
     }
     async storeTransactions(req, res) {
-        const transactions = await transaction_service_1.transactionService.getUserTransactions(req.params.storeId);
+        const transactions = await transaction_service_1.transactionService.getStoreTransactions(req.params.storeId);
         res.status(http_status_codes_1.default.OK).json({ message: 'Transactions fetched successfully', transactions });
     }
 }

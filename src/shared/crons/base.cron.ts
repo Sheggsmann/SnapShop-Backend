@@ -55,4 +55,4 @@ export class BaseCronJob {
   }
 }
 
-BaseCronJob.addCronJob('* * * * *', orderProcessingJob);
+BaseCronJob.addCronJob('*/5 * * * *', orderProcessingJob);

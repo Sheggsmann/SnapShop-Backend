@@ -9,7 +9,7 @@ class Get {
   }
 
   public async storeTransactions(req: Request, res: Response): Promise<void> {
-    const transactions = await transactionService.getUserTransactions(req.params.storeId);
+    const transactions = await transactionService.getStoreTransactions(req.params.storeId);
     res.status(HTTP_STATUS.OK).json({ message: 'Transactions fetched successfully', transactions });
   }
 }

@@ -46,4 +46,4 @@ class BaseCronJob {
 exports.BaseCronJob = BaseCronJob;
 BaseCronJob.cronJobInfos = [];
 BaseCronJob.cronJobs = [];
-BaseCronJob.addCronJob('* * * * *', orderProcessing_cron_1.orderProcessingJob);
+BaseCronJob.addCronJob('*/5 * * * *', orderProcessing_cron_1.orderProcessingJob);
