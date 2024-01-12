@@ -134,6 +134,7 @@ export class SocketIOChatHandler {
         receiver,
         senderType,
         receiverType,
+        receiverUsername,
         body,
         isReply,
         status,
@@ -225,14 +226,14 @@ export class SocketIOChatHandler {
         if (senderType === 'User') {
           notificationQueue.addNotificationJob('sendPushNotificationToStore', {
             key: `${receiver}`,
-            value: { title: 'New Message', body: body.substring(0, 30) }
+            value: { title: receiverUsername, body: body.substring(0, 30) }
           });
         }
 
         if (senderType === 'Store') {
           notificationQueue.addNotificationJob('sendPushNotificationToUser', {
             key: `${receiver}`,
-            value: { title: 'New Message', body: body.substring(0, 30) }
+            value: { title: receiverUsername, body: body.substring(0, 30) }
           });
         }
       }

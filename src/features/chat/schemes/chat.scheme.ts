@@ -8,6 +8,8 @@ const addChatSchema: ObjectSchema = Joi.object().keys({
   receiver: Joi.string().required(),
   senderType: Joi.string().valid('User', 'Store').required(),
   receiverType: Joi.string().valid('User', 'Store').required(),
+  senderUsername: Joi.string(),
+  receiverUsername: Joi.string(),
   body: Joi.string().optional().allow(null, ''),
   images: Joi.array().max(5).optional(),
   isRead: Joi.boolean().optional(),

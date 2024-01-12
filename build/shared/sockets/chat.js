@@ -87,7 +87,7 @@ class SocketIOChatHandler {
                 log.error('Validation Error:', error.details);
                 throw new Error('Message validation failed');
             }
-            const { sender, receiver, senderType, receiverType, body, isReply, status, reply, isOrder, order, images, createdAt } = message;
+            const { sender, receiver, senderType, receiverType, receiverUsername, body, isReply, status, reply, isOrder, order, images, createdAt } = message;
             /**
              * If it is an order, create the order here
              *
@@ -164,13 +164,13 @@ class SocketIOChatHandler {
                 if (senderType === 'User') {
                     notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
                         key: `${receiver}`,
-                        value: { title: 'New Message', body: body.substring(0, 30) }
+                        value: { title: receiverUsername, body: body.substring(0, 30) }
                     });
                 }
                 if (senderType === 'Store') {
                     notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToUser', {
                         key: `${receiver}`,
-                        value: { title: 'New Message', body: body.substring(0, 30) }
+                        value: { title: receiverUsername, body: body.substring(0, 30) }
                     });
                 }
             }

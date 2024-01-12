@@ -13,6 +13,8 @@ const addChatSchema = joi_1.default.object().keys({
     receiver: joi_1.default.string().required(),
     senderType: joi_1.default.string().valid('User', 'Store').required(),
     receiverType: joi_1.default.string().valid('User', 'Store').required(),
+    senderUsername: joi_1.default.string(),
+    receiverUsername: joi_1.default.string(),
     body: joi_1.default.string().optional().allow(null, ''),
     images: joi_1.default.array().max(5).optional(),
     isRead: joi_1.default.boolean().optional(),
