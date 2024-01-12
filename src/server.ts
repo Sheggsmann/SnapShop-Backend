@@ -16,6 +16,8 @@ import mongosanitize from 'express-mongo-sanitize';
 import compression from 'compression';
 import Logger from 'bunyan';
 import HTTP_STATUS from 'http-status-codes';
+import { adminService } from '@service/db/admin.service';
+import { AdminRole, IAdminDocument } from '@admin/interfaces/admin.interface';
 import 'express-async-errors';
 
 const log: Logger = config.createLogger('server');
@@ -86,6 +88,7 @@ export class SnapShopServer extends RedisSingleton {
       this.startHttpServer(httpServer);
       this.socketIOConnections(socketIo);
       this.startCronJobs();
+      this.createAppServiceAdmin();
     } catch (err) {
       log.error(err);
     }
@@ -155,5 +158,18 @@ export class SnapShopServer extends RedisSingleton {
   private startCronJobs(): void {
     log.info('STARTING CRON JOBS');
     BaseCronJob.startAllJobs();
+  }
+
+  private async createAppServiceAdmin(): Promise<void> {
+    const serviceAdmin = await adminService.getAdminByRole('Service');
+    if (!serviceAdmin) {
+      await adminService.createAdmin({
+        name: 'Service Admin',
+        role: AdminRole.Service,
+        password: '',
+        serviceChargeFromStores: 0,
+        serviceChargeFromUsers: 0
+      } as unknown as IAdminDocument);
+    }
   }
 }

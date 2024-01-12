@@ -21,6 +21,8 @@ const cors_1 = __importDefault(require("cors"));
 const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize"));
 const compression_1 = __importDefault(require("compression"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
+const admin_service_1 = require("./shared/services/db/admin.service");
+const admin_interface_1 = require("./features/admin/interfaces/admin.interface");
 require("express-async-errors");
 const log = config_1.config.createLogger('server');
 class SnapShopServer extends connection_1.RedisSingleton {
@@ -77,6 +79,7 @@ class SnapShopServer extends connection_1.RedisSingleton {
             this.startHttpServer(httpServer);
             this.socketIOConnections(socketIo);
             this.startCronJobs();
+            this.createAppServiceAdmin();
         }
         catch (err) {
             log.error(err);
@@ -138,6 +141,18 @@ class SnapShopServer extends connection_1.RedisSingleton {
     startCronJobs() {
         log.info('STARTING CRON JOBS');
         base_cron_1.BaseCronJob.startAllJobs();
+    }
+    async createAppServiceAdmin() {
+        const serviceAdmin = await admin_service_1.adminService.getAdminByRole('Service');
+        if (!serviceAdmin) {
+            await admin_service_1.adminService.createAdmin({
+                name: 'Service Admin',
+                role: admin_interface_1.AdminRole.Service,
+                password: '',
+                serviceChargeFromStores: 0,
+                serviceChargeFromUsers: 0
+            });
+        }
     }
 }
 exports.SnapShopServer = SnapShopServer;

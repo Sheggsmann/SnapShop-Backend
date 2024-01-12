@@ -1,3 +1,6 @@
+import { IProductDocument } from '@product/interfaces/product.interface';
+import { IOrderDocument } from '@order/interfaces/order.interface';
+
 export class Helpers {
   static genrateRandomIntegers(len: number): number {
     const characters = '0123456789';
@@ -45,5 +48,25 @@ export class Helpers {
     } else {
       return Math.round(totalPrice * 0.02);
     }
+  }
+
+  static calculateOrderTotal(order: IOrderDocument): number {
+    let total = order.products.reduce(
+      (acc, item) => (acc += (item.product as IProductDocument).price * item.quantity),
+      0
+    );
+
+    total += Helpers.calculateServiceFee(total);
+    total += order?.deliveryFee || 0;
+
+    return total;
+  }
+
+  static calculateOrderServiceFee(order: IOrderDocument): number {
+    const total = order.products.reduce(
+      (acc, item) => (acc += (item.product as IProductDocument).price * item.quantity),
+      0
+    );
+    return Helpers.calculateServiceFee(total);
   }
 }

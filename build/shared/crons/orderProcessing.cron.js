@@ -8,6 +8,8 @@ const store_service_1 = require("../services/db/store.service");
 const notification_queue_1 = require("../services/queues/notification.queue");
 const transaction_queue_1 = require("../services/queues/transaction.queue");
 const transaction_interface_1 = require("../../features/transactions/interfaces/transaction.interface");
+const helpers_1 = require("../globals/helpers/helpers");
+const admin_service_1 = require("../services/db/admin.service");
 let n = 0;
 const log = config_1.config.createLogger('ORDER PROCESSING JOB');
 const ESCROW_TO_BALANCE_TIME_IN_MS = 1000 * 60 * 3;
@@ -20,11 +22,21 @@ async function orderProcessingJob() {
             const timeDelta = Date.now() - order.paidAt.getTime();
             if (timeDelta > ESCROW_TO_BALANCE_TIME_IN_MS) {
                 const store = await store_service_1.storeService.getStoreByStoreId(order.store);
+                // TODO: remove service fee and 4% here
                 if (store) {
-                    store.escrowBalance -= order.amountPaid;
-                    store.mainBalance += order.amountPaid;
+                    const userServiceCharge = helpers_1.Helpers.calculateOrderServiceFee(order);
+                    const amountCreditedToStore = order.amountPaid - userServiceCharge;
+                    store.escrowBalance -= amountCreditedToStore;
+                    // We collect 4%
+                    const storeServiceCharge = 0.04 * amountCreditedToStore;
+                    const storeMainBalance = amountCreditedToStore - storeServiceCharge;
+                    store.mainBalance += storeMainBalance;
                     order.status = order_interface_1.OrderStatus.COMPLETED;
-                    await Promise.all([store.save(), order.save()]);
+                    await Promise.all([
+                        store.save(),
+                        order.save(),
+                        admin_service_1.adminService.updateServiceAdminStoreCharge(storeMainBalance)
+                    ]);
                     transaction_queue_1.transactionQueue.addTransactionJob('addTransactionToDB', {
                         storeId: store._id,
                         order: order._id,

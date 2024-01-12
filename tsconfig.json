@@ -104,6 +104,7 @@
         {"transform": "typescript-transform-paths", "afterDeclarations": true}
     ],
     "paths": {
+      "@admin/*": ["./src/features/admin/*"],
       "@auth/*": ["./src/features/auth/*"],
       "@user/*": ["./src/features/user/*"],
       "@store/*": ["./src/features/store/*"],

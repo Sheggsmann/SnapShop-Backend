@@ -45,5 +45,15 @@ class Helpers {
             return Math.round(totalPrice * 0.02);
         }
     }
+    static calculateOrderTotal(order) {
+        let total = order.products.reduce((acc, item) => (acc += item.product.price * item.quantity), 0);
+        total += Helpers.calculateServiceFee(total);
+        total += order?.deliveryFee || 0;
+        return total;
+    }
+    static calculateOrderServiceFee(order) {
+        const total = order.products.reduce((acc, item) => (acc += item.product.price * item.quantity), 0);
+        return Helpers.calculateServiceFee(total);
+    }
 }
 exports.Helpers = Helpers;

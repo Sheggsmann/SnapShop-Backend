@@ -26,11 +26,19 @@ const transaction_queue_1 = require("../../../shared/services/queues/transaction
 const transaction_interface_1 = require("../../transactions/interfaces/transaction.interface");
 const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-validation-decorator");
 const order_scheme_1 = require("../schemes/order.scheme");
+const admin_service_1 = require("../../../shared/services/db/admin.service");
 const crypto_1 = __importDefault(require("crypto"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 // import mongoose from 'mongoose';
 const KOBO_IN_NAIRA = 100;
 class UpdateOrder {
+    async confirmOrderPayment(req, res) {
+        const order = await order_service_1.orderService.getOrderByOrderId(req.params.orderId);
+        if (!order)
+            throw new error_handler_1.BadRequestError('Could not confirm order');
+        const amountToPay = helpers_1.Helpers.calculateOrderTotal(order);
+        res.status(http_status_codes_1.default.OK).json({ message: 'Order confirmed successfully', order, amountToPay });
+    }
     async orderPayment(req, res) {
         // OUS => Order Id, User Id, Store Id
         const hash = crypto_1.default
@@ -56,22 +64,23 @@ class UpdateOrder {
                 const order = await order_service_1.orderService.getOrderByOrderId(orderId);
                 if (order) {
                     // sum the price of all the products and their quantities and check if the amount paid is equal
-                    let total = order.products.reduce((acc, item) => (acc += item.product.price * item.quantity), 0);
-                    total += helpers_1.Helpers.calculateServiceFee(total);
-                    total += order?.deliveryFee || 0;
+                    const total = helpers_1.Helpers.calculateOrderTotal(order);
                     console.log('ORDER TOTAL:', total);
                     console.log('AMOUNT PAID:', amountPaid);
                     if (total === amountPaid) {
                         const deliveryCode = helpers_1.Helpers.generateOtp(4);
                         await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
-                        await store_service_1.storeService.updateStoreEscrowBalance(storeId, amountPaid);
-                        // TODO: emit event using socket.io
+                        // Subtract service fee from the amount paid and credit to store
+                        const serviceCharge = helpers_1.Helpers.calculateOrderServiceFee(order);
+                        const storeCreditAmount = amountPaid - serviceCharge;
+                        await store_service_1.storeService.updateStoreEscrowBalance(storeId, storeCreditAmount);
+                        // TODO: store the service fee in our admin account
+                        await admin_service_1.adminService.updateServiceAdminUserCharge(serviceCharge);
                         order.paid = true;
                         order.amountPaid = amountPaid;
                         order.deliveryCode = deliveryCode;
                         order.status = order_interface_1.OrderStatus.ACTIVE;
                         chat_1.socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });
-                        // TODO: send push notification to the user and the store
                         notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
                             key: storeId,
                             value: {
@@ -101,12 +110,18 @@ class UpdateOrder {
         const { amountPaid, orderId, storeId } = req.body;
         const order = await order_service_1.orderService.getOrderByOrderId(orderId);
         if (order) {
-            const total = order.products.reduce((acc, item) => (acc += item.product.price * item.quantity), 0);
+            const total = helpers_1.Helpers.calculateOrderTotal(order);
+            console.log('\nYOU SHOULD PAY:', total);
             if (total !== amountPaid)
                 throw new error_handler_1.BadRequestError('Incorrect amount');
             const deliveryCode = helpers_1.Helpers.generateOtp(4);
             await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
-            await store_service_1.storeService.updateStoreEscrowBalance(storeId, amountPaid);
+            // Subtract service fee from the amount paid and credit to store
+            const serviceCharge = helpers_1.Helpers.calculateOrderServiceFee(order);
+            const storeCreditAmount = amountPaid - serviceCharge;
+            await store_service_1.storeService.updateStoreEscrowBalance(storeId, storeCreditAmount);
+            // TODO: store the service fee in our admin account
+            await admin_service_1.adminService.updateServiceAdminUserCharge(serviceCharge);
             transaction_queue_1.transactionQueue.addTransactionJob('addTransactionToDB', {
                 store: storeId,
                 order: orderId,

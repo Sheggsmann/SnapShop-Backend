@@ -43,6 +43,12 @@ class OrderRoutes {
       createOrder.order
     );
 
+    this.router.post(
+      '/order/confirmPayment/:orderId',
+      authMiddleware.checkAuth,
+      updateOrder.confirmOrderPayment
+    );
+
     this.router.put('/order/:orderId', authMiddleware.checkAuth, updateOrder.order);
     this.router.put('/order/verify/:orderId', authMiddleware.checkAuth, updateOrder.completeOrder);
     this.router.put(
