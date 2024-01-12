@@ -3,8 +3,10 @@ import { ObjectId } from 'mongodb';
 import { IProductDocument } from '@product/interfaces/product.interface';
 
 export interface ILocation {
-  type: string;
-  coordinates: number[];
+  location: {
+    type: string;
+    coordinates: number[];
+  };
   address?: string;
   description?: string;
 }
@@ -22,6 +24,7 @@ export interface IStoreDocument extends Document {
   verified: boolean;
   description: string;
   locations: ILocation[];
+  locationUpdatedAt: number;
   badges: string[];
   productsCount: number;
   productCategories: string[];
