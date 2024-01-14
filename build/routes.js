@@ -15,10 +15,12 @@ const paymentRoutes_1 = require("./features/payment/routes/paymentRoutes");
 const feedbackRoutes_1 = require("./features/feedback/routes/feedbackRoutes");
 const balanceWithdrawalRoutes_1 = require("./features/balanceWithdrawal/routes/balanceWithdrawalRoutes");
 const transactionRoutes_1 = require("./features/transactions/routes/transactionRoutes");
+const adminRoutes_1 = require("./features/admin/routes/adminRoutes");
 const BASE_PATH = '/api/v1';
 exports.default = (app) => {
     const routes = () => {
         app.use('/queues', base_queue_1.serverAdapter.getRouter());
+        app.use(BASE_PATH, adminRoutes_1.adminRoutes.routes());
         app.use(BASE_PATH, versionRoutes_1.versionRoutes.routes());
         app.use(BASE_PATH, authRoutes_1.authRoutes.routes());
         app.use(BASE_PATH, searchStoreRoutes_1.searchStoreRoutes.routes());

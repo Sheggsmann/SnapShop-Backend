@@ -14,4 +14,5 @@ export interface IAdminDocument extends Document {
   password?: string;
   serviceChargeFromUsers?: number;
   serviceChargeFromStores?: number;
+  maintenance: boolean;
 }

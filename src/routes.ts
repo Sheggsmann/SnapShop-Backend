@@ -14,12 +14,14 @@ import { paymentRoutes } from './features/payment/routes/paymentRoutes';
 import { feedbackRoutes } from '@feedback/routes/feedbackRoutes';
 import { balanceWithdrawalRoutes } from '@balanceWithdrawal/routes/balanceWithdrawalRoutes';
 import { transactionRoutes } from '@transactions/routes/transactionRoutes';
+import { adminRoutes } from '@admin/routes/adminRoutes';
 
 const BASE_PATH = '/api/v1';
 
 export default (app: Application) => {
   const routes = () => {
     app.use('/queues', serverAdapter.getRouter());
+    app.use(BASE_PATH, adminRoutes.routes());
     app.use(BASE_PATH, versionRoutes.routes());
 
     app.use(BASE_PATH, authRoutes.routes());

@@ -7,7 +7,8 @@ const adminSchema: Schema = new Schema(
     role: { type: String, unique: true },
     password: String,
     serviceChargeFromUsers: Number,
-    serviceChargeFromStores: Number
+    serviceChargeFromStores: Number,
+    maintenance: { type: Boolean, default: false }
   },
   {
     timestamps: true
