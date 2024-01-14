@@ -9,7 +9,6 @@ const chat_cache_1 = require("../services/redis/chat.cache");
 const chat_scheme_1 = require("../../features/chat/schemes/chat.scheme");
 const mongodb_1 = require("mongodb");
 const chat_queue_1 = require("../services/queues/chat.queue");
-const chat_service_1 = require("../services/db/chat.service");
 const order_interface_1 = require("../../features/order/interfaces/order.interface");
 const order_queue_1 = require("../services/queues/order.queue");
 const user_service_1 = require("../services/db/user.service");
@@ -47,9 +46,6 @@ class SocketIOChatHandler {
             socket.join(currentAuthId);
             // Add user to online_users set
             await chatCache.userIsOnline(currentAuthId);
-            // Emit the conversation list to the connected user
-            const conversationList = await chat_service_1.chatService.getConversationList(new mongoose_1.default.Types.ObjectId(currentAuthId));
-            socket.emit('conversation:list', conversationList);
             // Listen for private message
             socket.on('private:message', async (data, callback) => {
                 const { message, to } = data;
@@ -87,7 +83,7 @@ class SocketIOChatHandler {
                 log.error('Validation Error:', error.details);
                 throw new Error('Message validation failed');
             }
-            const { sender, receiver, senderType, receiverType, receiverUsername, body, isReply, status, reply, isOrder, order, images, createdAt } = message;
+            const { sender, receiver, senderType, receiverType, senderUsername, body, isReply, status, reply, isOrder, order, images, createdAt } = message;
             /**
              * If it is an order, create the order here
              *
@@ -164,13 +160,13 @@ class SocketIOChatHandler {
                 if (senderType === 'User') {
                     notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
                         key: `${receiver}`,
-                        value: { title: receiverUsername, body: body.substring(0, 30) }
+                        value: { title: senderUsername, body: body.substring(0, 30) }
                     });
                 }
                 if (senderType === 'Store') {
                     notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToUser', {
                         key: `${receiver}`,
-                        value: { title: receiverUsername, body: body.substring(0, 30) }
+                        value: { title: senderUsername, body: body.substring(0, 30) }
                     });
                 }
             }

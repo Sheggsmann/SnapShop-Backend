@@ -6,7 +6,6 @@ import { IMessageData, IMessageDocument } from '@chat/interfaces/chat.interface'
 import { addChatSchema } from '@chat/schemes/chat.scheme';
 import { ObjectId } from 'mongodb';
 import { chatQueue } from '@service/queues/chat.queue';
-import { chatService } from '@service/db/chat.service';
 import { IOrderDocument, OrderStatus } from '@order/interfaces/order.interface';
 import { orderQueue } from '@service/queues/order.queue';
 import { IUserDocument } from '@user/interfaces/user.interface';
@@ -65,12 +64,6 @@ export class SocketIOChatHandler {
 
       // Add user to online_users set
       await chatCache.userIsOnline(currentAuthId);
-
-      // Emit the conversation list to the connected user
-      const conversationList = await chatService.getConversationList(
-        new mongoose.Types.ObjectId(currentAuthId)
-      );
-      socket.emit('conversation:list', conversationList);
 
       // Listen for private message
       socket.on(
@@ -134,7 +127,7 @@ export class SocketIOChatHandler {
         receiver,
         senderType,
         receiverType,
-        receiverUsername,
+        senderUsername,
         body,
         isReply,
         status,
@@ -226,14 +219,14 @@ export class SocketIOChatHandler {
         if (senderType === 'User') {
           notificationQueue.addNotificationJob('sendPushNotificationToStore', {
             key: `${receiver}`,
-            value: { title: receiverUsername, body: body.substring(0, 30) }
+            value: { title: senderUsername, body: body.substring(0, 30) }
           });
         }
 
         if (senderType === 'Store') {
           notificationQueue.addNotificationJob('sendPushNotificationToUser', {
             key: `${receiver}`,
-            value: { title: receiverUsername, body: body.substring(0, 30) }
+            value: { title: senderUsername, body: body.substring(0, 30) }
           });
         }
       }

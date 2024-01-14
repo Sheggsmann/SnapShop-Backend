@@ -36,7 +36,7 @@ export async function orderProcessingJob() {
           store.escrowBalance -= amountCreditedToStore;
 
           // We collect 4%
-          const storeServiceCharge = 0.04 * amountCreditedToStore;
+          const storeServiceCharge = 0.04 * (amountCreditedToStore - (order?.deliveryFee || 0));
           const storeMainBalance = amountCreditedToStore - storeServiceCharge;
           store.mainBalance += storeMainBalance;
 
@@ -44,7 +44,7 @@ export async function orderProcessingJob() {
           await Promise.all([
             store.save(),
             order.save(),
-            adminService.updateServiceAdminStoreCharge(storeMainBalance)
+            adminService.updateServiceAdminStoreCharge(storeServiceCharge)
           ]);
 
           transactionQueue.addTransactionJob('addTransactionToDB', {

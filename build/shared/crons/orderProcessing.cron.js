@@ -28,14 +28,14 @@ async function orderProcessingJob() {
                     const amountCreditedToStore = order.amountPaid - userServiceCharge;
                     store.escrowBalance -= amountCreditedToStore;
                     // We collect 4%
-                    const storeServiceCharge = 0.04 * amountCreditedToStore;
+                    const storeServiceCharge = 0.04 * (amountCreditedToStore - (order?.deliveryFee || 0));
                     const storeMainBalance = amountCreditedToStore - storeServiceCharge;
                     store.mainBalance += storeMainBalance;
                     order.status = order_interface_1.OrderStatus.COMPLETED;
                     await Promise.all([
                         store.save(),
                         order.save(),
-                        admin_service_1.adminService.updateServiceAdminStoreCharge(storeMainBalance)
+                        admin_service_1.adminService.updateServiceAdminStoreCharge(storeServiceCharge)
                     ]);
                     transaction_queue_1.transactionQueue.addTransactionJob('addTransactionToDB', {
                         storeId: store._id,
