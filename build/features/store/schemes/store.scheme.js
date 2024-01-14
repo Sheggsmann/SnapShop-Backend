@@ -51,6 +51,10 @@ const storeLocationUpdateSchema = joi_1.default.object().keys({
     latlng: joi_1.default.string().required().messages({
         'any.required': 'latlng is a required field',
         'string.empty': 'latlng is not allowed to be empty'
+    }),
+    address: joi_1.default.string().required().messages({
+        'any.required': 'address is a required field',
+        'string.empty': 'address is not allowed to be empty'
     })
 });
 exports.storeLocationUpdateSchema = storeLocationUpdateSchema;
