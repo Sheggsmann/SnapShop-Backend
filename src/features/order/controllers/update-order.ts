@@ -62,6 +62,7 @@ class UpdateOrder {
 
         if (order) {
           // sum the price of all the products and their quantities and check if the amount paid is equal
+          const serviceFee = Helpers.calculateOrderServiceFee(order);
           const total = Helpers.calculateOrderTotal(order);
 
           console.log('ORDER TOTAL:', total);
@@ -72,16 +73,17 @@ class UpdateOrder {
             await orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
 
             // Subtract service fee from the amount paid and credit to store
-            const serviceCharge = Helpers.calculateOrderServiceFee(order);
-            const storeCreditAmount = amountPaid - serviceCharge;
+            const storeCreditAmount = amountPaid - serviceFee;
             await storeService.updateStoreEscrowBalance(storeId, storeCreditAmount);
 
             // TODO: store the service fee in our admin account
-            await adminService.updateServiceAdminUserCharge(serviceCharge);
+            await adminService.updateServiceAdminUserCharge(serviceFee);
 
             order.paid = true;
             order.amountPaid = amountPaid;
+            order.serviceFee = serviceFee;
             order.deliveryCode = deliveryCode;
+            order.paymentProcessor = 'paystack';
             order.status = OrderStatus.ACTIVE;
             socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });
 
@@ -178,9 +180,7 @@ class UpdateOrder {
         key: (order.store as IStoreDocument)._id as string,
         value: {
           title: `Order Updated`,
-          body: `${order.user.name} just updated the product quantity for order #${order._id
-            .toString()
-            .substring(0, 8)}`
+          body: `${order.user.name} just updated order #${order._id.toString().substring(0, 8)}`
         }
       });
     }

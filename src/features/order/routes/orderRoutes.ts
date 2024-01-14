@@ -30,6 +30,12 @@ class OrderRoutes {
     );
 
     this.router.get(
+      '/order/confirmPayment/:orderId',
+      authMiddleware.checkAuth,
+      updateOrder.confirmOrderPayment
+    );
+
+    this.router.get(
       '/order/:orderId',
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['User']),
@@ -41,12 +47,6 @@ class OrderRoutes {
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['User']),
       createOrder.order
-    );
-
-    this.router.post(
-      '/order/confirmPayment/:orderId',
-      authMiddleware.checkAuth,
-      updateOrder.confirmOrderPayment
     );
 
     this.router.put('/order/:orderId', authMiddleware.checkAuth, updateOrder.order);

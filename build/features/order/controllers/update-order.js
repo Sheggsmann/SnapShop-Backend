@@ -64,6 +64,7 @@ class UpdateOrder {
                 const order = await order_service_1.orderService.getOrderByOrderId(orderId);
                 if (order) {
                     // sum the price of all the products and their quantities and check if the amount paid is equal
+                    const serviceFee = helpers_1.Helpers.calculateOrderServiceFee(order);
                     const total = helpers_1.Helpers.calculateOrderTotal(order);
                     console.log('ORDER TOTAL:', total);
                     console.log('AMOUNT PAID:', amountPaid);
@@ -71,14 +72,15 @@ class UpdateOrder {
                         const deliveryCode = helpers_1.Helpers.generateOtp(4);
                         await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
                         // Subtract service fee from the amount paid and credit to store
-                        const serviceCharge = helpers_1.Helpers.calculateOrderServiceFee(order);
-                        const storeCreditAmount = amountPaid - serviceCharge;
+                        const storeCreditAmount = amountPaid - serviceFee;
                         await store_service_1.storeService.updateStoreEscrowBalance(storeId, storeCreditAmount);
                         // TODO: store the service fee in our admin account
-                        await admin_service_1.adminService.updateServiceAdminUserCharge(serviceCharge);
+                        await admin_service_1.adminService.updateServiceAdminUserCharge(serviceFee);
                         order.paid = true;
                         order.amountPaid = amountPaid;
+                        order.serviceFee = serviceFee;
                         order.deliveryCode = deliveryCode;
+                        order.paymentProcessor = 'paystack';
                         order.status = order_interface_1.OrderStatus.ACTIVE;
                         chat_1.socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });
                         notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
@@ -157,9 +159,7 @@ class UpdateOrder {
                 key: order.store._id,
                 value: {
                     title: `Order Updated`,
-                    body: `${order.user.name} just updated the product quantity for order #${order._id
-                        .toString()
-                        .substring(0, 8)}`
+                    body: `${order.user.name} just updated order #${order._id.toString().substring(0, 8)}`
                 }
             });
         }

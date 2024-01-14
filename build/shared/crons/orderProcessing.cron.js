@@ -27,8 +27,8 @@ async function orderProcessingJob() {
                     const userServiceCharge = helpers_1.Helpers.calculateOrderServiceFee(order);
                     const amountCreditedToStore = order.amountPaid - userServiceCharge;
                     store.escrowBalance -= amountCreditedToStore;
-                    // We collect 4%
-                    const storeServiceCharge = 0.04 * (amountCreditedToStore - (order?.deliveryFee || 0));
+                    // We collect our service charge from the store
+                    const storeServiceCharge = helpers_1.Helpers.calculateServiceFee(amountCreditedToStore - (order?.deliveryFee || 0));
                     const storeMainBalance = amountCreditedToStore - storeServiceCharge;
                     store.mainBalance += storeMainBalance;
                     order.status = order_interface_1.OrderStatus.COMPLETED;
@@ -49,7 +49,7 @@ async function orderProcessingJob() {
                         key: `${store._id}`,
                         value: {
                             title: 'Payment 🥳🎉',
-                            body: `₦${order.amountPaid} has been moved to your main balance.`
+                            body: `₦${storeMainBalance} has been moved to your main balance.`
                         }
                     });
                 }

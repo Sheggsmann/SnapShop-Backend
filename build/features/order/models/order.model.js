@@ -21,6 +21,8 @@ const orderSchema = new mongoose_1.Schema({
     },
     paid: { type: Boolean, default: false },
     amountPaid: { type: Number, default: 0 },
+    serviceFee: { type: Number, default: 0 },
+    paymentProcessor: String,
     deliveryFee: Number,
     deliveryCode: String,
     reason: String,

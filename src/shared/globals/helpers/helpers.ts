@@ -41,13 +41,9 @@ export class Helpers {
   }
 
   static calculateServiceFee(totalPrice: number) {
-    if (totalPrice >= 0 && totalPrice <= 50000) {
-      return Math.round(totalPrice * 0.04);
-    } else if (totalPrice > 50000 && totalPrice <= 100000) {
-      return Math.round(totalPrice * 0.03);
-    } else {
-      return Math.round(totalPrice * 0.02);
-    }
+    if (totalPrice >= 0 && totalPrice <= 50000) return Math.round(totalPrice * 0.04);
+    if (totalPrice > 50000 && totalPrice <= 100000) return Math.round(totalPrice * 0.03);
+    return 2000;
   }
 
   static calculateOrderTotal(order: IOrderDocument): number {

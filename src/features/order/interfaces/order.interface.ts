@@ -39,6 +39,7 @@ export interface IOrderDocument extends Document {
   paid: boolean;
   amountPaid: number;
 
+  serviceFee: number;
   deliveryFee?: number;
   deliveryCode?: string;
 
@@ -54,6 +55,7 @@ export interface IOrderDocument extends Document {
   updatedAt: Date;
   cancelledAt?: Date | number;
   paidAt: Date;
+  paymentProcessor: string;
 }
 
 export interface IOrderData {
