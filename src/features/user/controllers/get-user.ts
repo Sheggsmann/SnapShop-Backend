@@ -115,9 +115,9 @@ class Get {
   }
 
   public async likedProducts(req: Request, res: Response): Promise<void> {
-    const user: IUserDocument = await (
-      await userService.getUserById(req.currentUser!.userId)
-    ).populate('likedProducts', '-locations');
+    const user = await (
+      await (await userService.getUserById(req.currentUser!.userId)).populate('likedProducts', '-locations')
+    ).populate('likedProducts.store', '_id name image bgImage');
 
     res.status(HTTP_STATUS.OK).json({ message: 'Liked products', likedProducts: user.likedProducts });
   }

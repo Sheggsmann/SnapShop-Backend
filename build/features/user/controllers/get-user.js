@@ -89,7 +89,7 @@ class Get {
         res.status(http_status_codes_1.default.OK).json({ message: 'Saved stores', savedStores: user.savedStores });
     }
     async likedProducts(req, res) {
-        const user = await (await user_service_1.userService.getUserById(req.currentUser.userId)).populate('likedProducts', '-locations');
+        const user = await (await (await user_service_1.userService.getUserById(req.currentUser.userId)).populate('likedProducts', '-locations')).populate('likedProducts.store', '_id name image bgImage');
         res.status(http_status_codes_1.default.OK).json({ message: 'Liked products', likedProducts: user.likedProducts });
     }
 }
