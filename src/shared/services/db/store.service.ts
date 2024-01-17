@@ -55,8 +55,8 @@ class StoreService {
                 text: {
                   query: searchParam,
                   path: 'name',
-                  fuzzy: { maxEdits: 2, prefixLength: 1 },
-                  score: { boost: { value: 7 } }
+                  fuzzy: { maxEdits: 1, prefixLength: 1 },
+                  score: { boost: { value: 100 } }
                 }
               },
               {
@@ -64,7 +64,7 @@ class StoreService {
                   query: searchParam,
                   path: 'tags',
                   fuzzy: { maxEdits: 1, prefixLength: 1 },
-                  score: { boost: { value: 4 } }
+                  score: { boost: { value: 400 } }
                 }
               },
               {
@@ -72,7 +72,7 @@ class StoreService {
                   query: searchParam,
                   path: 'description',
                   fuzzy: { maxEdits: 1, prefixLength: 1 },
-                  score: { boost: { value: 2 } }
+                  score: { boost: { value: 100 } }
                 }
               }
             ],
@@ -86,7 +86,7 @@ class StoreService {
           }
         }
       },
-      { $limit: 200 },
+      { $limit: 50 },
       {
         $lookup: {
           from: 'Store',
@@ -118,7 +118,17 @@ class StoreService {
       }
     ]);
 
-    return products;
+    const productsWithDistance: IProductDocument[] = products.map((product) => {
+      const storeLocation: number[] = (product.store as IStoreDocument).locations[0].location.coordinates;
+      const distance = Helpers.calculateDistance(latitude, longitude, storeLocation[1], storeLocation[0]);
+
+      return {
+        ...product,
+        distance: distance.toFixed(2)
+      } as unknown as IProductDocument;
+    });
+
+    return productsWithDistance;
   }
 
   public async getStoreProductsByCategory(storeId: string): Promise<IStoreWithCategories[]> {

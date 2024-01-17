@@ -16,6 +16,7 @@ export interface IProductDocument extends Document {
   category?: string;
   locations?: ILocation[];
   tags?: string[];
+  distance?: number;
 }
 
 export interface IProductJob {
