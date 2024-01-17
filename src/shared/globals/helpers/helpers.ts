@@ -1,6 +1,5 @@
 import { IProductDocument } from '@product/interfaces/product.interface';
 import { IOrderDocument } from '@order/interfaces/order.interface';
-import { ILocation } from '@store/interfaces/store.interface';
 
 export class Helpers {
   static genrateRandomIntegers(len: number): number {
