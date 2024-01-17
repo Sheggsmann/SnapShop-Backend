@@ -6,11 +6,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.addChatSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 const addChatSchema = joi_1.default.object().keys({
+    _id: joi_1.default.string().optional(),
+    status: joi_1.default.string().optional(),
     conversationId: joi_1.default.string().optional().allow(null, ''),
     sender: joi_1.default.string().required(),
     receiver: joi_1.default.string().required(),
     senderType: joi_1.default.string().valid('User', 'Store').required(),
     receiverType: joi_1.default.string().valid('User', 'Store').required(),
+    senderUsername: joi_1.default.string(),
+    receiverUsername: joi_1.default.string(),
     body: joi_1.default.string().optional().allow(null, ''),
     images: joi_1.default.array().max(5).optional(),
     isRead: joi_1.default.boolean().optional(),

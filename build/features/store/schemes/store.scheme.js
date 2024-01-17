@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.storeUpdateSchema = exports.storeSchema = void 0;
+exports.storeLocationUpdateSchema = exports.storeUpdateSchema = exports.storeSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 const storeSchema = joi_1.default.object().keys({
     name: joi_1.default.string().required().min(2).max(100).messages({
@@ -47,3 +47,14 @@ const storeUpdateSchema = joi_1.default.object().keys({
     })
 });
 exports.storeUpdateSchema = storeUpdateSchema;
+const storeLocationUpdateSchema = joi_1.default.object().keys({
+    latlng: joi_1.default.string().required().messages({
+        'any.required': 'latlng is a required field',
+        'string.empty': 'latlng is not allowed to be empty'
+    }),
+    address: joi_1.default.string().required().messages({
+        'any.required': 'address is a required field',
+        'string.empty': 'address is not allowed to be empty'
+    })
+});
+exports.storeLocationUpdateSchema = storeLocationUpdateSchema;

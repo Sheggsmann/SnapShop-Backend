@@ -3,7 +3,6 @@ import { IOrderDocument, OrderStatus } from '@order/interfaces/order.interface';
 import { orderService } from '@service/db/order.service';
 import { orderQueue } from '@service/queues/order.queue';
 import { IStoreDocument } from '@store/interfaces/store.interface';
-import { IProductDocument } from '@product/interfaces/product.interface';
 import { Request, Response } from 'express';
 import { config } from '@root/config';
 import { Helpers } from '@global/helpers/helpers';
@@ -12,6 +11,9 @@ import { socketIOChatObject } from '@socket/chat';
 import { notificationQueue } from '@service/queues/notification.queue';
 import { transactionQueue } from '@service/queues/transaction.queue';
 import { ITransactionDocument, TransactionType } from '@transactions/interfaces/transaction.interface';
+import { validator } from '@global/helpers/joi-validation-decorator';
+import { updateOrderSchema } from '@order/schemes/order.scheme';
+import { adminService } from '@service/db/admin.service';
 import crypto from 'crypto';
 import HTTP_STATUS from 'http-status-codes';
 // import mongoose from 'mongoose';
@@ -19,6 +21,14 @@ import HTTP_STATUS from 'http-status-codes';
 const KOBO_IN_NAIRA = 100;
 
 class UpdateOrder {
+  public async confirmOrderPayment(req: Request, res: Response): Promise<void> {
+    const order: IOrderDocument | null = await orderService.getOrderByOrderId(req.params.orderId);
+    if (!order) throw new BadRequestError('Could not confirm order');
+
+    const amountToPay = Helpers.calculateOrderTotal(order);
+    res.status(HTTP_STATUS.OK).json({ message: 'Order confirmed successfully', order, amountToPay });
+  }
+
   public async orderPayment(req: Request, res: Response): Promise<void> {
     // OUS => Order Id, User Id, Store Id
 
@@ -52,13 +62,8 @@ class UpdateOrder {
 
         if (order) {
           // sum the price of all the products and their quantities and check if the amount paid is equal
-          let total: number = order.products.reduce(
-            (acc, item) => (acc += (item.product as IProductDocument).price * item.quantity),
-            0
-          );
-
-          total += Helpers.calculateServiceFee(total);
-          total += order?.deliveryFee || 0;
+          const serviceFee = Helpers.calculateOrderServiceFee(order);
+          const total = Helpers.calculateOrderTotal(order);
 
           console.log('ORDER TOTAL:', total);
           console.log('AMOUNT PAID:', amountPaid);
@@ -66,12 +71,22 @@ class UpdateOrder {
           if (total === amountPaid) {
             const deliveryCode = Helpers.generateOtp(4);
             await orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
-            await storeService.updateStoreEscrowBalance(storeId, amountPaid);
 
-            // TODO: emit event using socket.io
+            // Subtract service fee from the amount paid and credit to store
+            const storeCreditAmount = amountPaid - serviceFee;
+            await storeService.updateStoreEscrowBalance(storeId, storeCreditAmount);
+
+            // TODO: store the service fee in our admin account
+            await adminService.updateServiceAdminUserCharge(serviceFee);
+
+            order.paid = true;
+            order.amountPaid = amountPaid;
+            order.serviceFee = serviceFee;
+            order.deliveryCode = deliveryCode;
+            order.paymentProcessor = 'paystack';
+            order.status = OrderStatus.ACTIVE;
             socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });
 
-            // TODO: send push notification to the user and the store
             notificationQueue.addNotificationJob('sendPushNotificationToStore', {
               key: storeId,
               value: {
@@ -104,16 +119,21 @@ class UpdateOrder {
 
     const order: IOrderDocument | null = await orderService.getOrderByOrderId(orderId);
     if (order) {
-      const total: number = order.products.reduce(
-        (acc, item) => (acc += (item.product as IProductDocument).price * item.quantity),
-        0
-      );
+      const total = Helpers.calculateOrderTotal(order);
 
+      console.log('\nYOU SHOULD PAY:', total);
       if (total !== amountPaid) throw new BadRequestError('Incorrect amount');
 
       const deliveryCode = Helpers.generateOtp(4);
       await orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
-      await storeService.updateStoreEscrowBalance(storeId, amountPaid);
+
+      // Subtract service fee from the amount paid and credit to store
+      const serviceCharge = Helpers.calculateOrderServiceFee(order);
+      const storeCreditAmount = amountPaid - serviceCharge;
+      await storeService.updateStoreEscrowBalance(storeId, storeCreditAmount);
+
+      // TODO: store the service fee in our admin account
+      await adminService.updateServiceAdminUserCharge(serviceCharge);
 
       transactionQueue.addTransactionJob('addTransactionToDB', {
         store: storeId,
@@ -128,6 +148,7 @@ class UpdateOrder {
   }
 
   // TODO: add validator for update order
+  @validator(updateOrderSchema)
   public async order(req: Request, res: Response): Promise<void> {
     const { orderId } = req.params;
     const { deliveryFee, products } = req.body;
@@ -159,9 +180,7 @@ class UpdateOrder {
         key: (order.store as IStoreDocument)._id as string,
         value: {
           title: `Order Updated`,
-          body: `${order.user.name} just updated the product quantity for order #${order._id
-            .toString()
-            .substring(0, 8)}`
+          body: `${order.user.name} just updated order #${order._id.toString().substring(0, 8)}`
         }
       });
     }
@@ -199,6 +218,14 @@ class UpdateOrder {
       .to(order.user.userId.toString())
       .to((order.store as IStoreDocument)._id.toString())
       .emit('order:update', { order });
+
+    notificationQueue.addNotificationJob('sendPushNotificationToStore', {
+      key: (order.store as IStoreDocument)._id as string,
+      value: {
+        title: `Order Completed`,
+        body: `${order.user.name} marked order #${order._id.toString().substring(0, 8)} as complete`
+      }
+    });
 
     res.status(HTTP_STATUS.OK).json({ message: 'Order completed' });
   }

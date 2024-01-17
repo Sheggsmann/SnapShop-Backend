@@ -14,11 +14,14 @@ const orderSchema: Schema = new Schema(
         OrderStatus.ACTIVE,
         OrderStatus.DELIVERED,
         OrderStatus.CANCELLED,
-        OrderStatus.COMPLETED
+        OrderStatus.COMPLETED,
+        OrderStatus.DISPUTE
       ]
     },
     paid: { type: Boolean, default: false },
     amountPaid: { type: Number, default: 0 },
+    serviceFee: { type: Number, default: 0 },
+    paymentProcessor: String,
     deliveryFee: Number,
     deliveryCode: String,
     reason: String,

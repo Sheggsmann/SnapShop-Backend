@@ -27,8 +27,8 @@ exports.ConversationModel = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const conversationSchema = new mongoose_1.Schema({
     _id: mongoose_1.default.Types.ObjectId,
-    user: { type: mongoose_1.default.Types.ObjectId, ref: 'User' },
-    store: { type: mongoose_1.default.Types.ObjectId, ref: 'Store' }
+    user: { type: mongoose_1.default.Types.ObjectId, ref: 'User', index: true },
+    store: { type: mongoose_1.default.Types.ObjectId, ref: 'Store', index: true }
 });
 const ConversationModel = (0, mongoose_1.model)('Conversation', conversationSchema, 'Conversation');
 exports.ConversationModel = ConversationModel;

@@ -5,10 +5,11 @@ import { validator } from '@global/helpers/joi-validation-decorator';
 import { storeService } from '@service/db/store.service';
 import { storeQueue } from '@service/queues/store.queue';
 import { IStoreDocument } from '@store/interfaces/store.interface';
-import { storeUpdateSchema } from '@store/schemes/store.scheme';
+import { storeLocationUpdateSchema, storeUpdateSchema } from '@store/schemes/store.scheme';
 import { Request, Response } from 'express';
 import { savePushTokenSchema } from '@user/schemes/user.scheme';
 import HTTP_STATUS from 'http-status-codes';
+import { storeConstants } from '@store/constants/store.constant';
 
 class Update {
   @validator(storeUpdateSchema)
@@ -45,6 +46,38 @@ class Update {
     storeQueue.addStoreJob('updateStoreInDB', { value: updatedStore, key: storeId });
 
     res.status(HTTP_STATUS.OK).json({ message: 'Store updated successfully.', updatedStore });
+  }
+
+  @validator(storeLocationUpdateSchema)
+  public async storeLocation(req: Request, res: Response): Promise<void> {
+    const { storeId } = req.params;
+    const { latlng, address } = req.body;
+    const [lat, lng] = latlng.split(',');
+
+    const store: IStoreDocument | null = await storeService.getStoreByStoreId(storeId);
+    if (!store) throw new NotFoundError('Store not found');
+
+    if (!store.isOwner(req.currentUser!.userId))
+      throw new NotAuthorizedError('You are not the owner of this store');
+
+    // You can only update store once in 30 days unless you are a pro-user
+    if (
+      store.locationUpdatedAt &&
+      Date.now() - (store.locationUpdatedAt || 0) < storeConstants.LOCATION_UPDATE_INTERVAL_IN_MS
+    ) {
+      throw new BadRequestError(
+        'You cannot update your store location now. Wait 30 days or consider a pro plan'
+      );
+    }
+
+    store.locations = [
+      { location: { type: 'Point', coordinates: [parseFloat(lng), parseFloat(lat)] }, address }
+    ];
+    store.locationUpdatedAt = Date.now();
+
+    storeQueue.addStoreJob('updateStoreInDB', { value: store, key: storeId });
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Location updated successfully' });
   }
 
   public async verify(req: Request, res: Response): Promise<void> {

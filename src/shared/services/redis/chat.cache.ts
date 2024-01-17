@@ -8,16 +8,19 @@ export class ChatCache extends BaseCache {
   }
 
   public async userIsOnline(userId: string): Promise<void> {
-    if (!this.client.isOpen) {
-      await this.client.connect();
-    }
+    if (!this.client.isOpen) await this.client.connect();
+
     await this.client.sAdd('online_users', userId);
   }
 
   public async userIsOffline(userId: string): Promise<void> {
-    if (!this.client.isOpen) {
-      await this.client.connect();
-    }
+    if (!this.client.isOpen) await this.client.connect();
+
     await this.client.sRem('online_users', userId);
+  }
+
+  public async isUerOnline(userId: string): Promise<boolean> {
+    if (!this.client.isOpen) await this.client.connect();
+    return await this.client.sIsMember('online_users', userId);
   }
 }

@@ -5,7 +5,11 @@ import HTTP_STATUS from 'http-status-codes';
 
 class Get {
   public async myOrders(req: Request, res: Response): Promise<void> {
-    const orders: IOrderDocument[] = await orderService.getUserOrders(req.currentUser!.userId);
+    const page = req.query.page ? parseInt(req.query.page as string) : 0;
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+    const skip = page > 0 ? page * limit : 0;
+
+    const orders: IOrderDocument[] = await orderService.getUserOrders(req.currentUser!.userId, skip, limit);
     res.status(HTTP_STATUS.OK).json({ message: 'User orders', orders });
   }
 
@@ -16,8 +20,12 @@ class Get {
   }
 
   public async storeOrders(req: Request, res: Response): Promise<void> {
+    const page = req.query.page ? parseInt(req.query.page as string) : 0;
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+    const skip = page > 0 ? page * limit : 0;
     const { storeId } = req.params;
-    const orders: IOrderDocument[] = await orderService.getOrdersByStoreId(storeId);
+
+    const orders: IOrderDocument[] = await orderService.getOrdersByStoreId(storeId, skip, limit);
     res.status(HTTP_STATUS.OK).json({ message: 'Store orders', orders });
   }
 }

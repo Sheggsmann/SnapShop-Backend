@@ -30,6 +30,21 @@ class Create {
 
     if (!reviewItem) throw new NotFoundError('Item to review not found');
 
+    if (
+      type === 'product' &&
+      ((reviewItem as IProductDocument).store as IStoreDocument)._id.toString() ===
+        req.currentUser?.storeId?.toString()
+    ) {
+      throw new BadRequestError('You cannot review your product');
+    }
+
+    if (
+      type === 'store' &&
+      (reviewItem as IStoreDocument)._id.toString() === req.currentUser?.storeId?.toString()
+    ) {
+      throw new BadRequestError('You cannot review your store');
+    }
+
     const existingReview = await reviewService.getSingleReview({
       user: req.currentUser!.userId,
       $or: [{ product: reviewItem._id }, { store: reviewItem._id }]
@@ -40,14 +55,14 @@ class Create {
     }
 
     if (type === 'store') {
-      const hasPurchaseFromStore = await orderService.getOrderByUserId(req.currentUser!.userId);
+      const hasPurchaseFromStore = await orderService.userHasFinalizedOrder(req.currentUser!.userId);
       if (!hasPurchaseFromStore) {
         throw new BadRequestError("You haven't purchased any product from this store.");
       }
     }
 
     if (type === 'product') {
-      const hasPurchasedProduct = await orderService.getOrderByProductId(productId);
+      const hasPurchasedProduct = await orderService.productHasFinalizedOrder(productId);
       if (!hasPurchasedProduct) {
         throw new BadRequestError("You haven't purchased this product");
       }

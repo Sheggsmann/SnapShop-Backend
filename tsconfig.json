@@ -104,6 +104,7 @@
         {"transform": "typescript-transform-paths", "afterDeclarations": true}
     ],
     "paths": {
+      "@admin/*": ["./src/features/admin/*"],
       "@auth/*": ["./src/features/auth/*"],
       "@user/*": ["./src/features/user/*"],
       "@store/*": ["./src/features/store/*"],
@@ -113,6 +114,7 @@
       "@feedback/*": ["./src/features/feedback/*"],
       "@transactions/*": ["./src/features/transactions/*"],
       "@searches/*": ["./src/features/searches/*"],
+      "@balanceWithdrawal/*": ["./src/features/balanceWithdrawal/*"],
       "@versioning/*": ["./src/features/versioning/*"],
       "@global/*": ["./src/shared/globals/*"],
       "@service/*": ["./src/shared/services/*"],

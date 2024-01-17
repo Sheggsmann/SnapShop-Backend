@@ -6,7 +6,6 @@ import { IMessageData, IMessageDocument } from '@chat/interfaces/chat.interface'
 import { addChatSchema } from '@chat/schemes/chat.scheme';
 import { ObjectId } from 'mongodb';
 import { chatQueue } from '@service/queues/chat.queue';
-import { chatService } from '@service/db/chat.service';
 import { IOrderDocument, OrderStatus } from '@order/interfaces/order.interface';
 import { orderQueue } from '@service/queues/order.queue';
 import { IUserDocument } from '@user/interfaces/user.interface';
@@ -66,33 +65,41 @@ export class SocketIOChatHandler {
       // Add user to online_users set
       await chatCache.userIsOnline(currentAuthId);
 
-      // Emit the conversation list to the connected user
-      const conversationList = await chatService.getConversationList(
-        new mongoose.Types.ObjectId(currentAuthId)
-      );
-      socket.emit('conversation:list', conversationList);
-
       // Listen for private message
-      socket.on('private:message', async ({ message, to }: { message: IMessageData; to: string }) => {
-        const conversationObjectId: string = message?.conversationId
-          ? (message.conversationId as string)
-          : `${new mongoose.Types.ObjectId()}`;
+      socket.on(
+        'private:message',
+        async (
+          data: { message: IMessageData; to: string },
+          callback: ({ messageId }: { messageId: ObjectId }) => void
+        ) => {
+          const { message, to } = data;
+          const messageId: ObjectId = new ObjectId();
 
-        message.createdAt = Date.now();
-        await this.addChatMessage(message, conversationObjectId, socket);
+          const conversationObjectId: string = message?.conversationId
+            ? (message.conversationId as string)
+            : `${new mongoose.Types.ObjectId()}`;
 
-        if (!message?.conversationId) {
-          socket.emit('new:conversationId', {
-            conversationId: conversationObjectId,
-            lastMessage: message.body
-          });
+          message._id = `${messageId}`;
+          message.createdAt = Date.now();
+          await this.addChatMessage(message, conversationObjectId, socket);
+
+          if (!message?.conversationId) {
+            socket.emit('new:conversationId', {
+              conversationId: conversationObjectId,
+              lastMessage: message.body
+            });
+          }
+
+          socket
+            .to(to)
+            .to(currentAuthId)
+            .emit('private:message', { message, from: currentAuthId, conversationId: conversationObjectId });
+
+          if (callback) {
+            callback({ messageId });
+          }
         }
-
-        socket
-          .to(to)
-          .to(currentAuthId)
-          .emit('private:message', { message, from: currentAuthId, conversationId: conversationObjectId });
-      });
+      );
 
       socket.on('disconnect', async () => {
         await chatCache.userIsOffline(currentAuthId);
@@ -120,16 +127,16 @@ export class SocketIOChatHandler {
         receiver,
         senderType,
         receiverType,
+        senderUsername,
         body,
         isReply,
+        status,
         reply,
         isOrder,
         order,
         images,
         createdAt
       } = message;
-
-      const messageId: ObjectId = new ObjectId();
 
       /**
        * If it is an order, create the order here
@@ -175,13 +182,15 @@ export class SocketIOChatHandler {
               mobileNumber: socket.user!.mobileNumber
             },
             products: order!.products,
-            status: OrderStatus.PENDING
+            status: OrderStatus.PENDING,
+            createdAt
           });
         }
       }
 
       const messageData: IMessageDocument = {
-        _id: `${messageId}`,
+        _id: `${message._id}`,
+        status,
         conversationId,
         sender,
         receiver,
@@ -210,14 +219,14 @@ export class SocketIOChatHandler {
         if (senderType === 'User') {
           notificationQueue.addNotificationJob('sendPushNotificationToStore', {
             key: `${receiver}`,
-            value: { title: 'New Message', body: body.substring(0, 30) }
+            value: { title: senderUsername, body: body.substring(0, 30) }
           });
         }
 
         if (senderType === 'Store') {
           notificationQueue.addNotificationJob('sendPushNotificationToUser', {
             key: `${receiver}`,
-            value: { title: 'New Message', body: body.substring(0, 30) }
+            value: { title: senderUsername, body: body.substring(0, 30) }
           });
         }
       }

@@ -21,6 +21,7 @@ const store_queue_1 = require("../../../shared/services/queues/store.queue");
 const store_scheme_1 = require("../schemes/store.scheme");
 const user_scheme_1 = require("../../user/schemes/user.scheme");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
+const store_constant_1 = require("../constants/store.constant");
 class Update {
     async store(req, res) {
         const { storeId } = req.params;
@@ -52,6 +53,27 @@ class Update {
         store_queue_1.storeQueue.addStoreJob('updateStoreInDB', { value: updatedStore, key: storeId });
         res.status(http_status_codes_1.default.OK).json({ message: 'Store updated successfully.', updatedStore });
     }
+    async storeLocation(req, res) {
+        const { storeId } = req.params;
+        const { latlng, address } = req.body;
+        const [lat, lng] = latlng.split(',');
+        const store = await store_service_1.storeService.getStoreByStoreId(storeId);
+        if (!store)
+            throw new error_handler_1.NotFoundError('Store not found');
+        if (!store.isOwner(req.currentUser.userId))
+            throw new error_handler_1.NotAuthorizedError('You are not the owner of this store');
+        // You can only update store once in 30 days unless you are a pro-user
+        if (store.locationUpdatedAt &&
+            Date.now() - (store.locationUpdatedAt || 0) < store_constant_1.storeConstants.LOCATION_UPDATE_INTERVAL_IN_MS) {
+            throw new error_handler_1.BadRequestError('You cannot update your store location now. Wait 30 days or consider a pro plan');
+        }
+        store.locations = [
+            { location: { type: 'Point', coordinates: [parseFloat(lng), parseFloat(lat)] }, address }
+        ];
+        store.locationUpdatedAt = Date.now();
+        store_queue_1.storeQueue.addStoreJob('updateStoreInDB', { value: store, key: storeId });
+        res.status(http_status_codes_1.default.OK).json({ message: 'Location updated successfully' });
+    }
     async verify(req, res) {
         const { storeId } = req.params;
         const store = await store_service_1.storeService.getStoreByStoreId(storeId);
@@ -76,6 +98,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], Update.prototype, "store", null);
+__decorate([
+    (0, joi_validation_decorator_1.validator)(store_scheme_1.storeLocationUpdateSchema),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], Update.prototype, "storeLocation", null);
 __decorate([
     (0, joi_validation_decorator_1.validator)(user_scheme_1.savePushTokenSchema),
     __metadata("design:type", Function),

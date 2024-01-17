@@ -12,12 +12,16 @@ import { userRoutes } from '@user/routes/userRoutes';
 import { versionRoutes } from '@versioning/routes/versionRoutes';
 import { paymentRoutes } from './features/payment/routes/paymentRoutes';
 import { feedbackRoutes } from '@feedback/routes/feedbackRoutes';
+import { balanceWithdrawalRoutes } from '@balanceWithdrawal/routes/balanceWithdrawalRoutes';
+import { transactionRoutes } from '@transactions/routes/transactionRoutes';
+import { adminRoutes } from '@admin/routes/adminRoutes';
 
 const BASE_PATH = '/api/v1';
 
 export default (app: Application) => {
   const routes = () => {
     app.use('/queues', serverAdapter.getRouter());
+    app.use(BASE_PATH, adminRoutes.routes());
     app.use(BASE_PATH, versionRoutes.routes());
 
     app.use(BASE_PATH, authRoutes.routes());
@@ -30,6 +34,8 @@ export default (app: Application) => {
     app.use(BASE_PATH, authMiddleware.protect, chatRoutes.routes());
     app.use(BASE_PATH, authMiddleware.protect, reviewRoutes.routes());
     app.use(BASE_PATH, authMiddleware.protect, feedbackRoutes.routes());
+    app.use(BASE_PATH, authMiddleware.protect, transactionRoutes.routes());
+    app.use(BASE_PATH, authMiddleware.protect, balanceWithdrawalRoutes.routes());
 
     // Store owner routes
     app.use(BASE_PATH, authMiddleware.protect, productRoutes.routes());

@@ -10,6 +10,7 @@ class SearchStore {
   private DEFAULT_DISTANCE = 5; // km
   private MIN_PRICE = 0;
   private MAX_PRICE = 10000000;
+  private EARTH_RADIUS = 6378.1;
   private UNIT: 'km' | 'm' = 'km';
 
   public store = async (req: Request, res: Response): Promise<void> => {
@@ -32,7 +33,7 @@ class SearchStore {
     if (!unit || !['km', 'm'].includes(unit as string))
       throw new BadRequestError('Unit must be km(kilometers) or m(meters)');
 
-    const radius = unit === 'km' ? distance / 6378.1 : distance / (6378.1 * 1000);
+    const radius = unit === 'km' ? distance / this.EARTH_RADIUS : distance / (this.EARTH_RADIUS * 1000);
 
     searchesQueue.addSearchTermJob('addSearchTermToDB', {
       searchParam: `${req.query.searchParam}`,

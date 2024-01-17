@@ -9,7 +9,6 @@ const chat_cache_1 = require("../services/redis/chat.cache");
 const chat_scheme_1 = require("../../features/chat/schemes/chat.scheme");
 const mongodb_1 = require("mongodb");
 const chat_queue_1 = require("../services/queues/chat.queue");
-const chat_service_1 = require("../services/db/chat.service");
 const order_interface_1 = require("../../features/order/interfaces/order.interface");
 const order_queue_1 = require("../services/queues/order.queue");
 const user_service_1 = require("../services/db/user.service");
@@ -47,14 +46,14 @@ class SocketIOChatHandler {
             socket.join(currentAuthId);
             // Add user to online_users set
             await chatCache.userIsOnline(currentAuthId);
-            // Emit the conversation list to the connected user
-            const conversationList = await chat_service_1.chatService.getConversationList(new mongoose_1.default.Types.ObjectId(currentAuthId));
-            socket.emit('conversation:list', conversationList);
             // Listen for private message
-            socket.on('private:message', async ({ message, to }) => {
+            socket.on('private:message', async (data, callback) => {
+                const { message, to } = data;
+                const messageId = new mongodb_1.ObjectId();
                 const conversationObjectId = message?.conversationId
                     ? message.conversationId
                     : `${new mongoose_1.default.Types.ObjectId()}`;
+                message._id = `${messageId}`;
                 message.createdAt = Date.now();
                 await this.addChatMessage(message, conversationObjectId, socket);
                 if (!message?.conversationId) {
@@ -67,6 +66,9 @@ class SocketIOChatHandler {
                     .to(to)
                     .to(currentAuthId)
                     .emit('private:message', { message, from: currentAuthId, conversationId: conversationObjectId });
+                if (callback) {
+                    callback({ messageId });
+                }
             });
             socket.on('disconnect', async () => {
                 await chatCache.userIsOffline(currentAuthId);
@@ -81,8 +83,7 @@ class SocketIOChatHandler {
                 log.error('Validation Error:', error.details);
                 throw new Error('Message validation failed');
             }
-            const { sender, receiver, senderType, receiverType, body, isReply, reply, isOrder, order, images, createdAt } = message;
-            const messageId = new mongodb_1.ObjectId();
+            const { sender, receiver, senderType, receiverType, senderUsername, body, isReply, status, reply, isOrder, order, images, createdAt } = message;
             /**
              * If it is an order, create the order here
              *
@@ -124,12 +125,14 @@ class SocketIOChatHandler {
                             mobileNumber: socket.user.mobileNumber
                         },
                         products: order.products,
-                        status: order_interface_1.OrderStatus.PENDING
+                        status: order_interface_1.OrderStatus.PENDING,
+                        createdAt
                     });
                 }
             }
             const messageData = {
-                _id: `${messageId}`,
+                _id: `${message._id}`,
+                status,
                 conversationId,
                 sender,
                 receiver,
@@ -157,13 +160,13 @@ class SocketIOChatHandler {
                 if (senderType === 'User') {
                     notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
                         key: `${receiver}`,
-                        value: { title: 'New Message', body: body.substring(0, 30) }
+                        value: { title: senderUsername, body: body.substring(0, 30) }
                     });
                 }
                 if (senderType === 'Store') {
                     notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToUser', {
                         key: `${receiver}`,
-                        value: { title: 'New Message', body: body.substring(0, 30) }
+                        value: { title: senderUsername, body: body.substring(0, 30) }
                     });
                 }
             }

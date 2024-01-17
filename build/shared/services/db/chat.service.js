@@ -39,6 +39,19 @@ class ChatService {
             await chat_model_1.MessageModel.create(data);
         }
     }
+    async createConversation(conversationData) {
+        const conversation = await conversation_model_1.ConversationModel.create({
+            _id: new mongoose_1.default.Types.ObjectId(),
+            user: conversationData.user,
+            store: conversationData.store
+        });
+        return conversation;
+    }
+    async getConversation(userId, storeId) {
+        return await conversation_model_1.ConversationModel.findOne({ user: userId, store: storeId })
+            .populate('user', '_id firstname lastname profilePicture mobileNumber')
+            .populate('store', '_id name image mobileNumber');
+    }
     async getConversationList(entityId) {
         const messages = await chat_model_1.MessageModel.aggregate([
             { $match: { $or: [{ sender: entityId }, { receiver: entityId }] } },

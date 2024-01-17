@@ -42,4 +42,15 @@ const storeUpdateSchema: ObjectSchema = Joi.object().keys({
   })
 });
 
-export { storeSchema, storeUpdateSchema };
+const storeLocationUpdateSchema: ObjectSchema = Joi.object().keys({
+  latlng: Joi.string().required().messages({
+    'any.required': 'latlng is a required field',
+    'string.empty': 'latlng is not allowed to be empty'
+  }),
+  address: Joi.string().required().messages({
+    'any.required': 'address is a required field',
+    'string.empty': 'address is not allowed to be empty'
+  })
+});
+
+export { storeSchema, storeUpdateSchema, storeLocationUpdateSchema };

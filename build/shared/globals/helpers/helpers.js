@@ -35,15 +35,21 @@ class Helpers {
         return `${date.getFullYear()}/${date.getMonth()}/${date.getUTCDay()} - ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
     }
     static calculateServiceFee(totalPrice) {
-        if (totalPrice >= 0 && totalPrice <= 50000) {
+        if (totalPrice >= 0 && totalPrice <= 50000)
             return Math.round(totalPrice * 0.04);
-        }
-        else if (totalPrice > 50000 && totalPrice <= 100000) {
+        if (totalPrice > 50000 && totalPrice <= 100000)
             return Math.round(totalPrice * 0.03);
-        }
-        else {
-            return Math.round(totalPrice * 0.02);
-        }
+        return 2000;
+    }
+    static calculateOrderTotal(order) {
+        let total = order.products.reduce((acc, item) => (acc += item.product.price * item.quantity), 0);
+        total += Helpers.calculateServiceFee(total);
+        total += order?.deliveryFee || 0;
+        return total;
+    }
+    static calculateOrderServiceFee(order) {
+        const total = order.products.reduce((acc, item) => (acc += item.product.price * item.quantity), 0);
+        return Helpers.calculateServiceFee(total);
     }
 }
 exports.Helpers = Helpers;

@@ -73,10 +73,7 @@ class SmsTransport {
         from: 'Billings',
         sms: body,
         type: 'plain',
-        route: {
-          type: 'corporate',
-          country: 'NG'
-        }
+        channel: 'generic'
       });
 
       log.info('\nSMS RESPONSE', response.data);
@@ -91,7 +88,11 @@ class SmsTransport {
   }
 
   private async devSmsSender(receiverMobileNumber: string, body: string, type: string): Promise<MsgResponse> {
-    return this.awsDevSmsSender(receiverMobileNumber, body);
+    const response = await this.termiiSmsSender(receiverMobileNumber, body, 'sms');
+    if (response === 'error') {
+      return this.awsDevSmsSender(receiverMobileNumber, body);
+    }
+    return response;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function

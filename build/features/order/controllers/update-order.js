@@ -1,4 +1,13 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -15,11 +24,21 @@ const chat_1 = require("../../../shared/sockets/chat");
 const notification_queue_1 = require("../../../shared/services/queues/notification.queue");
 const transaction_queue_1 = require("../../../shared/services/queues/transaction.queue");
 const transaction_interface_1 = require("../../transactions/interfaces/transaction.interface");
+const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-validation-decorator");
+const order_scheme_1 = require("../schemes/order.scheme");
+const admin_service_1 = require("../../../shared/services/db/admin.service");
 const crypto_1 = __importDefault(require("crypto"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 // import mongoose from 'mongoose';
 const KOBO_IN_NAIRA = 100;
 class UpdateOrder {
+    async confirmOrderPayment(req, res) {
+        const order = await order_service_1.orderService.getOrderByOrderId(req.params.orderId);
+        if (!order)
+            throw new error_handler_1.BadRequestError('Could not confirm order');
+        const amountToPay = helpers_1.Helpers.calculateOrderTotal(order);
+        res.status(http_status_codes_1.default.OK).json({ message: 'Order confirmed successfully', order, amountToPay });
+    }
     async orderPayment(req, res) {
         // OUS => Order Id, User Id, Store Id
         const hash = crypto_1.default
@@ -45,18 +64,25 @@ class UpdateOrder {
                 const order = await order_service_1.orderService.getOrderByOrderId(orderId);
                 if (order) {
                     // sum the price of all the products and their quantities and check if the amount paid is equal
-                    let total = order.products.reduce((acc, item) => (acc += item.product.price * item.quantity), 0);
-                    total += helpers_1.Helpers.calculateServiceFee(total);
-                    total += order?.deliveryFee || 0;
+                    const serviceFee = helpers_1.Helpers.calculateOrderServiceFee(order);
+                    const total = helpers_1.Helpers.calculateOrderTotal(order);
                     console.log('ORDER TOTAL:', total);
                     console.log('AMOUNT PAID:', amountPaid);
                     if (total === amountPaid) {
                         const deliveryCode = helpers_1.Helpers.generateOtp(4);
                         await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
-                        await store_service_1.storeService.updateStoreEscrowBalance(storeId, amountPaid);
-                        // TODO: emit event using socket.io
+                        // Subtract service fee from the amount paid and credit to store
+                        const storeCreditAmount = amountPaid - serviceFee;
+                        await store_service_1.storeService.updateStoreEscrowBalance(storeId, storeCreditAmount);
+                        // TODO: store the service fee in our admin account
+                        await admin_service_1.adminService.updateServiceAdminUserCharge(serviceFee);
+                        order.paid = true;
+                        order.amountPaid = amountPaid;
+                        order.serviceFee = serviceFee;
+                        order.deliveryCode = deliveryCode;
+                        order.paymentProcessor = 'paystack';
+                        order.status = order_interface_1.OrderStatus.ACTIVE;
                         chat_1.socketIOChatObject.to(userId).to(storeId).emit('order:update', { order });
-                        // TODO: send push notification to the user and the store
                         notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
                             key: storeId,
                             value: {
@@ -86,12 +112,18 @@ class UpdateOrder {
         const { amountPaid, orderId, storeId } = req.body;
         const order = await order_service_1.orderService.getOrderByOrderId(orderId);
         if (order) {
-            const total = order.products.reduce((acc, item) => (acc += item.product.price * item.quantity), 0);
+            const total = helpers_1.Helpers.calculateOrderTotal(order);
+            console.log('\nYOU SHOULD PAY:', total);
             if (total !== amountPaid)
                 throw new error_handler_1.BadRequestError('Incorrect amount');
             const deliveryCode = helpers_1.Helpers.generateOtp(4);
             await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
-            await store_service_1.storeService.updateStoreEscrowBalance(storeId, amountPaid);
+            // Subtract service fee from the amount paid and credit to store
+            const serviceCharge = helpers_1.Helpers.calculateOrderServiceFee(order);
+            const storeCreditAmount = amountPaid - serviceCharge;
+            await store_service_1.storeService.updateStoreEscrowBalance(storeId, storeCreditAmount);
+            // TODO: store the service fee in our admin account
+            await admin_service_1.adminService.updateServiceAdminUserCharge(serviceCharge);
             transaction_queue_1.transactionQueue.addTransactionJob('addTransactionToDB', {
                 store: storeId,
                 order: orderId,
@@ -127,9 +159,7 @@ class UpdateOrder {
                 key: order.store._id,
                 value: {
                     title: `Order Updated`,
-                    body: `${order.user.name} just updated the product quantity for order #${order._id
-                        .toString()
-                        .substring(0, 8)}`
+                    body: `${order.user.name} just updated order #${order._id.toString().substring(0, 8)}`
                 }
             });
         }
@@ -161,7 +191,20 @@ class UpdateOrder {
             .to(order.user.userId.toString())
             .to(order.store._id.toString())
             .emit('order:update', { order });
+        notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
+            key: order.store._id,
+            value: {
+                title: `Order Completed`,
+                body: `${order.user.name} marked order #${order._id.toString().substring(0, 8)} as complete`
+            }
+        });
         res.status(http_status_codes_1.default.OK).json({ message: 'Order completed' });
     }
 }
+__decorate([
+    (0, joi_validation_decorator_1.validator)(order_scheme_1.updateOrderSchema),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UpdateOrder.prototype, "order", null);
 exports.updateOrder = new UpdateOrder();

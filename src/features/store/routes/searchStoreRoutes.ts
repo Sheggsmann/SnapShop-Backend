@@ -1,5 +1,6 @@
 import express, { Router } from 'express';
 import { searchStore } from '@store/controllers/search-store';
+import { getUser } from '@user/controllers/get-user';
 
 class SearchStoreRoutes {
   private router: Router;
@@ -10,6 +11,7 @@ class SearchStoreRoutes {
 
   public routes(): Router {
     this.router.get('/nearby-stores/:center', searchStore.store);
+    this.router.get('/guest/feed', getUser.guestFeed);
     return this.router;
   }
 }

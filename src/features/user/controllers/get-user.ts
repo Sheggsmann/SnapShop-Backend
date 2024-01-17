@@ -20,6 +20,34 @@ class Get {
     res.status(HTTP_STATUS.OK).json({ message: 'User profile', user });
   }
 
+  public async guestFeed(req: Request, res: Response): Promise<void> {
+    if (!req.query.latitude || !req.query.longitude)
+      throw new BadRequestError('Latitude and Longitude are required');
+
+    const lat = parseFloat(req.query.latitude as string);
+    const long = parseFloat(req.query.longitude as string);
+
+    const feedData: IFeed[] = [];
+
+    const closestStores: IStoreDocument[] = await storeService.getClosestStores([long, lat], 10);
+    const frequentlyPurchasedProducts: IProductDocument[] =
+      await productService.getFrequentlyPurchasedProductsNearUser([long, lat], 10);
+
+    feedData.push({
+      title: 'Stores close to you',
+      subtitle: 'Based on your location',
+      content: closestStores
+    });
+
+    feedData.push({
+      title: 'Frequently purchased',
+      subtitle: 'Close to you',
+      content: frequentlyPurchasedProducts
+    });
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Feed', feed: feedData });
+  }
+
   public async feed(req: Request, res: Response): Promise<void> {
     if (!req.query.latitude || !req.query.longitude)
       throw new BadRequestError('Latitude and Longitude are required');
@@ -32,7 +60,7 @@ class Get {
     // Check if data exists in cache
     const cachedData = await feedCache.getFeedData(req.currentUser!.userId);
 
-    if (cachedData) {
+    if (cachedData && cachedData[0]['content'].length > 0) {
       res.status(HTTP_STATUS.OK).json({ message: 'Feed', feed: cachedData });
     } else {
       const closestStores: IStoreDocument[] = await storeService.getClosestStores([long, lat], 10);
@@ -87,9 +115,9 @@ class Get {
   }
 
   public async likedProducts(req: Request, res: Response): Promise<void> {
-    const user: IUserDocument = await (
-      await userService.getUserById(req.currentUser!.userId)
-    ).populate('likedProducts', '-locations');
+    const user = await (
+      await (await userService.getUserById(req.currentUser!.userId)).populate('likedProducts', '-locations')
+    ).populate('likedProducts.store', '_id name image bgImage');
 
     res.status(HTTP_STATUS.OK).json({ message: 'Liked products', likedProducts: user.likedProducts });
   }

@@ -12,11 +12,13 @@ const notification_queue_1 = require("../../../shared/services/queues/notificati
 const order_queue_1 = require("../../../shared/services/queues/order.queue");
 const store_queue_1 = require("../../../shared/services/queues/store.queue");
 const transaction_queue_1 = require("../../../shared/services/queues/transaction.queue");
+const chat_1 = require("../../../shared/sockets/chat");
 const transaction_interface_1 = require("../../transactions/interfaces/transaction.interface");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class DeclineOrder {
     async byStore(req, res) {
         const { orderId } = req.params;
+        const { reason } = req.body;
         const order = await order_service_1.orderService.getOrderByOrderId(orderId);
         if (!order)
             throw new error_handler_1.BadRequestError('Order not found');
@@ -29,6 +31,7 @@ class DeclineOrder {
         if (order.status === order_interface_1.OrderStatus.PENDING) {
             order.status = order_interface_1.OrderStatus.CANCELLED;
             order.cancelledAt = Date.now();
+            order.reason = reason ? reason : '';
             order_queue_1.orderQueue.addOrderJob('updateOrderInDB', { key: orderId, value: order });
             notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToUser', {
                 key: `${order.user.userId}`,
@@ -42,6 +45,7 @@ class DeclineOrder {
         if (order.status === order_interface_1.OrderStatus.ACTIVE) {
             order.status = order_interface_1.OrderStatus.CANCELLED;
             order.cancelledAt = Date.now();
+            order.reason = reason ? reason : '';
             if (store.escrowBalance >= order.amountPaid) {
                 store.escrowBalance -= order.amountPaid;
             }
@@ -50,8 +54,8 @@ class DeclineOrder {
             notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToUser', {
                 key: `${order.user.userId}`,
                 value: {
-                    title: 'Order Declined',
-                    body: `${store.name} declined your order. Your money will be reversed.`
+                    title: `${store.name} declined your order`,
+                    body: `${reason}`
                 }
             });
             transaction_queue_1.transactionQueue.addTransactionJob('addTransactionToDB', {
@@ -63,6 +67,10 @@ class DeclineOrder {
             });
             // TODO: Implement logic to refund people
         }
+        chat_1.socketIOChatObject
+            .to(order.store._id.toString())
+            .to(order.user.userId.toString())
+            .emit('order:update', { order });
         res.status(http_status_codes_1.default.OK).json({ message: 'Order Cancelled', order });
     }
 }

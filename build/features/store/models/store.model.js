@@ -24,6 +24,7 @@ const storeSchema = new mongoose_1.Schema({
             isDefault: { type: Boolean, default: false }
         }
     ],
+    locationUpdatedAt: Date,
     verified: { type: Boolean, default: false },
     badges: [String],
     productsCount: { type: Number, default: 0 },
