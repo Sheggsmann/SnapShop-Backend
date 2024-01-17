@@ -12,6 +12,8 @@ const connection_1 = require("./shared/services/redis/connection");
 const error_handler_1 = require("./shared/globals/helpers/error-handler");
 const chat_1 = require("./shared/sockets/chat");
 const base_cron_1 = require("./shared/crons/base.cron");
+const admin_service_1 = require("./shared/services/db/admin.service");
+const admin_interface_1 = require("./features/admin/interfaces/admin.interface");
 const routes_1 = __importDefault(require("./routes"));
 const swagger_stats_1 = __importDefault(require("swagger-stats"));
 const http_1 = __importDefault(require("http"));
@@ -21,8 +23,6 @@ const cors_1 = __importDefault(require("cors"));
 const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize"));
 const compression_1 = __importDefault(require("compression"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
-const admin_service_1 = require("./shared/services/db/admin.service");
-const admin_interface_1 = require("./features/admin/interfaces/admin.interface");
 require("express-async-errors");
 const log = config_1.config.createLogger('server');
 class SnapShopServer extends connection_1.RedisSingleton {
@@ -138,9 +138,20 @@ class SnapShopServer extends connection_1.RedisSingleton {
             });
         }
     }
-    startCronJobs() {
-        log.info('STARTING CRON JOBS');
-        base_cron_1.BaseCronJob.startAllJobs();
+    async startCronJobs() {
+        try {
+            const lockAcquired = await this.lock('cronJobLock');
+            if (lockAcquired) {
+                log.info('CRON JOBS STARTED SUCCESSFULLY');
+                base_cron_1.BaseCronJob.startAllJobs();
+            }
+            else {
+                log.info('CRON JOB ALREADY STARTED BY ANOTHER INSTANCE');
+            }
+        }
+        catch (err) {
+            log.error('Error setting up cron jobs', err);
+        }
     }
     async createAppServiceAdmin() {
         const serviceAdmin = await admin_service_1.adminService.getAdminByRole('Service');

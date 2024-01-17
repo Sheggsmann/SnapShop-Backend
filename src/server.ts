@@ -6,6 +6,8 @@ import { RedisSingleton } from '@service/redis/connection';
 import { CustomError, IErrorResponse } from '@global/helpers/error-handler';
 import { SocketIOChatHandler } from '@socket/chat';
 import { BaseCronJob } from '@cronJobs/base.cron';
+import { adminService } from '@service/db/admin.service';
+import { AdminRole, IAdminDocument } from '@admin/interfaces/admin.interface';
 import applicationRoutes from '@root/routes';
 import apiStats from 'swagger-stats';
 import http from 'http';
@@ -16,8 +18,6 @@ import mongosanitize from 'express-mongo-sanitize';
 import compression from 'compression';
 import Logger from 'bunyan';
 import HTTP_STATUS from 'http-status-codes';
-import { adminService } from '@service/db/admin.service';
-import { AdminRole, IAdminDocument } from '@admin/interfaces/admin.interface';
 import 'express-async-errors';
 
 const log: Logger = config.createLogger('server');
@@ -155,9 +155,18 @@ export class SnapShopServer extends RedisSingleton {
     }
   }
 
-  private startCronJobs(): void {
-    log.info('STARTING CRON JOBS');
-    BaseCronJob.startAllJobs();
+  private async startCronJobs(): Promise<void> {
+    try {
+      const lockAcquired = await this.lock('cronJobLock');
+      if (lockAcquired) {
+        log.info('CRON JOBS STARTED SUCCESSFULLY');
+        BaseCronJob.startAllJobs();
+      } else {
+        log.info('CRON JOB ALREADY STARTED BY ANOTHER INSTANCE');
+      }
+    } catch (err) {
+      log.error('Error setting up cron jobs', err);
+    }
   }
 
   private async createAppServiceAdmin(): Promise<void> {
