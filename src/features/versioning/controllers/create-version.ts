@@ -5,7 +5,7 @@ import { versioningSchema } from '@versioning/schemes/versioning.scheme';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
-class Update {
+class Add {
   private isLowerVersion(previousVersion: string, newVersion: string): boolean {
     return parseInt(previousVersion.replaceAll('.', ''), 10) < parseInt(newVersion.replaceAll('.', ''), 10);
   }
@@ -17,14 +17,17 @@ class Update {
 
     // Reject if current version is less than existing version
     // 1.0.0
-    const result = await versioningService.getCurrentAppVersion();
-    if (!Update.prototype.isLowerVersion(result.currentAppVersion, version)) {
-      throw new BadRequestError("Version can't be lower than existing version");
+    const result = await versioningService.getCurrentAppVersion(app);
+
+    if (result) {
+      if (!Add.prototype.isLowerVersion(result.currentAppVersion, version)) {
+        throw new BadRequestError("Version can't be lower than existing version");
+      }
     }
 
-    await versioningService.updateAppVersion(version, forceUpdate || false, update, app);
-    res.status(HTTP_STATUS.OK).json({ message: 'Updated successfully' });
+    await versioningService.newAppVersion(version, forceUpdate || false, update, app);
+    res.status(HTTP_STATUS.OK).json({ message: 'App Version Created successfully' });
   }
 }
 
-export const updateVersion: Update = new Update();
+export const addVersion: Add = new Add();

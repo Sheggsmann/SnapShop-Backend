@@ -12,13 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateVersion = void 0;
+exports.addVersion = void 0;
 const error_handler_1 = require("../../../shared/globals/helpers/error-handler");
 const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-validation-decorator");
 const version_service_1 = require("../../../shared/services/db/version.service");
 const versioning_scheme_1 = require("../schemes/versioning.scheme");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
-class Update {
+class Add {
     isLowerVersion(previousVersion, newVersion) {
         return parseInt(previousVersion.replaceAll('.', ''), 10) < parseInt(newVersion.replaceAll('.', ''), 10);
     }
@@ -27,12 +27,14 @@ class Update {
         const { version, forceUpdate, update, app } = req.body;
         // Reject if current version is less than existing version
         // 1.0.0
-        const result = await version_service_1.versioningService.getCurrentAppVersion();
-        if (!Update.prototype.isLowerVersion(result.currentAppVersion, version)) {
-            throw new error_handler_1.BadRequestError("Version can't be lower than existing version");
+        const result = await version_service_1.versioningService.getCurrentAppVersion(app);
+        if (result) {
+            if (!Add.prototype.isLowerVersion(result.currentAppVersion, version)) {
+                throw new error_handler_1.BadRequestError("Version can't be lower than existing version");
+            }
         }
-        await version_service_1.versioningService.updateAppVersion(version, forceUpdate || false, update, app);
-        res.status(http_status_codes_1.default.OK).json({ message: 'Updated successfully' });
+        await version_service_1.versioningService.newAppVersion(version, forceUpdate || false, update, app);
+        res.status(http_status_codes_1.default.OK).json({ message: 'App Version Created successfully' });
     }
 }
 __decorate([
@@ -40,5 +42,5 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], Update.prototype, "appVersion", null);
-exports.updateVersion = new Update();
+], Add.prototype, "appVersion", null);
+exports.addVersion = new Add();
