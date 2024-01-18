@@ -13,6 +13,7 @@ class VersionRoutes {
         this.router = express_1.default.Router();
     }
     routes() {
+        this.router.get('/app-version', get_version_1.getVersion.appVersion);
         this.router.get('/app-version/:app', get_version_1.getVersion.appVersion);
         this.router.put('/app-version', update_version_1.updateVersion.appVersion);
         this.router.post('/app-version', create_version_1.addVersion.appVersion);

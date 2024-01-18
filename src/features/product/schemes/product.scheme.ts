@@ -3,14 +3,14 @@ import Joi, { ObjectSchema } from 'joi';
 const productSchema: ObjectSchema = Joi.object().keys({
   name: Joi.string().required().min(2).max(100).messages({
     'string.base': 'name must be of type string',
-    'string.min': 'invalid name length',
-    'string.max': 'invalid name length',
+    'string.min': 'name is too short',
+    'string.max': 'name is too long',
     'string.empty': 'name is a required field'
   }),
   description: Joi.string().required().min(5).max(1000).messages({
     'string.base': 'description must be of type string',
-    'string.min': 'invalid description length',
-    'string.max': 'invalid description length',
+    'string.min': 'description is too short',
+    'string.max': 'description is too long',
     'string.empty': 'description is a required field'
   }),
   price: Joi.number().required().min(1).messages({
