@@ -14,6 +14,7 @@ class SearchStore {
         this.DEFAULT_DISTANCE = 5; // km
         this.MIN_PRICE = 0;
         this.MAX_PRICE = 10000000;
+        this.EARTH_RADIUS = 6378.1;
         this.UNIT = 'km';
         this.store = async (req, res) => {
             const { center } = req.params;
@@ -32,7 +33,7 @@ class SearchStore {
                 throw new error_handler_1.BadRequestError('Please provide latitude and longitude in format lat,lng');
             if (!unit || !['km', 'm'].includes(unit))
                 throw new error_handler_1.BadRequestError('Unit must be km(kilometers) or m(meters)');
-            const radius = unit === 'km' ? distance / 6378.1 : distance / (6378.1 * 1000);
+            const radius = unit === 'km' ? distance / this.EARTH_RADIUS : distance / (this.EARTH_RADIUS * 1000);
             searches_queue_1.searchesQueue.addSearchTermJob('addSearchTermToDB', {
                 searchParam: `${req.query.searchParam}`,
                 location: [parseFloat(lat), parseFloat(lng)]

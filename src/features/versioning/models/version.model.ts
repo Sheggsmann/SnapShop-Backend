@@ -4,7 +4,13 @@ import { Model, Schema, model } from 'mongoose';
 const versioningSchema: Schema = new Schema(
   {
     currentAppVersion: String,
-    forceUpdate: String
+    update: Boolean,
+    forceUpdate: Boolean,
+    app: {
+      type: String,
+      default: 'store',
+      enum: ['user', 'store']
+    }
   },
   { timestamps: true }
 );

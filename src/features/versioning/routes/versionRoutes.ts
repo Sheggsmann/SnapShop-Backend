@@ -1,3 +1,4 @@
+import { addVersion } from '@versioning/controllers/create-version';
 import { getVersion } from '@versioning/controllers/get-version';
 import { updateVersion } from '@versioning/controllers/update-version';
 import express, { Router } from 'express';
@@ -10,8 +11,9 @@ class VersionRoutes {
   }
 
   public routes(): Router {
-    this.router.get('/app-version', getVersion.appVersion);
+    this.router.get('/app-version/:app', getVersion.appVersion);
     this.router.put('/app-version', updateVersion.appVersion);
+    this.router.post('/app-version', addVersion.appVersion);
     return this.router;
   }
 }
