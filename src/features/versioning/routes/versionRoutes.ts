@@ -11,6 +11,7 @@ class VersionRoutes {
   }
 
   public routes(): Router {
+    this.router.get('/app-version', getVersion.appVersion);
     this.router.get('/app-version/:app', getVersion.appVersion);
     this.router.put('/app-version', updateVersion.appVersion);
     this.router.post('/app-version', addVersion.appVersion);
