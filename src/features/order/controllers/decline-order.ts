@@ -1,4 +1,5 @@
 import { BadRequestError } from '@global/helpers/error-handler';
+import { Helpers } from '@global/helpers/helpers';
 import { IOrderDocument, OrderStatus } from '@order/interfaces/order.interface';
 import { orderService } from '@service/db/order.service';
 import { storeService } from '@service/db/store.service';
@@ -46,8 +47,12 @@ class DeclineOrder {
       order.status = OrderStatus.CANCELLED;
       order.cancelledAt = Date.now();
       order.reason = reason ? reason : '';
-      if (store.escrowBalance >= order.amountPaid) {
-        store.escrowBalance -= order.amountPaid;
+
+      const serviceFee = Helpers.calculateOrderServiceFee(order);
+      const amountCreditedToStore = order.amountPaid - serviceFee;
+
+      if (store.escrowBalance >= amountCreditedToStore) {
+        store.escrowBalance -= amountCreditedToStore;
       }
 
       orderQueue.addOrderJob('updateOrderInDB', { key: orderId, value: order });
@@ -64,7 +69,7 @@ class DeclineOrder {
         store: store._id,
         user: order.user.userId,
         order: orderId,
-        amount: Number(order.amountPaid),
+        amount: Number(amountCreditedToStore),
         type: TransactionType.REFUND
       } as ITransactionDocument);
 

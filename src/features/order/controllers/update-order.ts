@@ -16,7 +16,6 @@ import { updateOrderSchema } from '@order/schemes/order.scheme';
 import { adminService } from '@service/db/admin.service';
 import crypto from 'crypto';
 import HTTP_STATUS from 'http-status-codes';
-// import mongoose from 'mongoose';
 
 const KOBO_IN_NAIRA = 100;
 

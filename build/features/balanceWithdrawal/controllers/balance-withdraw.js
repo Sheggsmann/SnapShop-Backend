@@ -32,7 +32,7 @@ class BalanceWithdraw {
         const pendingWithdrawalRequests = await balanceWithdraw_service_1.balanceWithdrawalService.getPendingWithdrawalRequestsForStore(`${req.currentUser.storeId}`);
         const withdrawalBalance = pendingWithdrawalRequests.reduce((acc, curr) => (acc += curr.amount), 0);
         if (amount > Number(store.mainBalance) - withdrawalBalance) {
-            throw new error_handler_1.BadRequestError('Insufficient balance');
+            throw new error_handler_1.BadRequestError('Insufficient balance due to pending requests');
         }
         await balanceWithdraw_service_1.balanceWithdrawalService.addWithdrawalRequestToDB({
             store: req.currentUser.storeId,

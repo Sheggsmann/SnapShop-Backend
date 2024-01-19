@@ -38,7 +38,7 @@ class Update {
   @validator(updateProductSchema)
   public async product(req: Request, res: Response): Promise<void> {
     const { productId } = req.params;
-    const { name, images, videos, description, price, priceDiscount, quantity, category } = req.body;
+    const { name, images, videos, description, price, priceDiscount, quantity, category, tags } = req.body;
 
     const product: IProductDocument | null = await productService.getProductById(productId);
 
@@ -50,20 +50,24 @@ class Update {
       throw new NotAuthorizedError('You are not the owner of this store');
     }
 
-    const updatedProduct: IProductDocument = {
-      name,
-      description,
-      images,
-      price,
-      priceDiscount,
-      quantity,
-      category,
-      videos
-    } as IProductDocument;
+    if (priceDiscount) {
+      if (priceDiscount > price || priceDiscount > product.price)
+        throw new BadRequestError('Discount cannot be greater than price');
+    }
 
-    productQueue.addProductJob('updateProductInDB', { key: productId, value: updatedProduct });
+    if (name) product.name = name;
+    if (description) product.description = description;
+    if (images) product.images = images;
+    if (videos) product.videos = videos;
+    if (price) product.price = price;
+    if (priceDiscount) product.priceDiscount = priceDiscount;
+    if (quantity) product.quantity = quantity;
+    if (category) product.category = category;
+    if (tags) product.tags = tags;
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Product updated successfully', updatedProduct });
+    await product.save();
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Product updated successfully', updatedProduct: product });
   }
 
   @validator(updateProductMediaSchema)

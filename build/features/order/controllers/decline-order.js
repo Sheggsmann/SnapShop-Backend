@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.declineOrder = void 0;
 const error_handler_1 = require("../../../shared/globals/helpers/error-handler");
+const helpers_1 = require("../../../shared/globals/helpers/helpers");
 const order_interface_1 = require("../interfaces/order.interface");
 const order_service_1 = require("../../../shared/services/db/order.service");
 const store_service_1 = require("../../../shared/services/db/store.service");
@@ -46,8 +47,10 @@ class DeclineOrder {
             order.status = order_interface_1.OrderStatus.CANCELLED;
             order.cancelledAt = Date.now();
             order.reason = reason ? reason : '';
-            if (store.escrowBalance >= order.amountPaid) {
-                store.escrowBalance -= order.amountPaid;
+            const serviceFee = helpers_1.Helpers.calculateOrderServiceFee(order);
+            const amountCreditedToStore = order.amountPaid - serviceFee;
+            if (store.escrowBalance >= amountCreditedToStore) {
+                store.escrowBalance -= amountCreditedToStore;
             }
             order_queue_1.orderQueue.addOrderJob('updateOrderInDB', { key: orderId, value: order });
             store_queue_1.storeQueue.addStoreJob('updateStoreInDB', { key: `${store._id}`, value: store });
@@ -62,7 +65,7 @@ class DeclineOrder {
                 store: store._id,
                 user: order.user.userId,
                 order: orderId,
-                amount: Number(order.amountPaid),
+                amount: Number(amountCreditedToStore),
                 type: transaction_interface_1.TransactionType.REFUND
             });
             // TODO: Implement logic to refund people
