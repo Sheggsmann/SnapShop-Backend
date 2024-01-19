@@ -19,8 +19,8 @@ class SearchStore {
     if (!req.query.searchParam) throw new BadRequestError('Search param is required');
     if (`${req.query.searchParam}`.length > 100) throw new BadRequestError('Search param is too long');
 
-    const maxPrice = req.query.maxPrice ?? this.MAX_PRICE;
-    const minPrice = req.query.minPrice ?? this.MIN_PRICE;
+    // const maxPrice = req.query.maxPrice ?? this.MAX_PRICE;
+    // const minPrice = req.query.minPrice ?? this.MIN_PRICE;
     const unit = req.query.unit ?? this.UNIT;
 
     const distance = req.query.distance
@@ -44,9 +44,7 @@ class SearchStore {
       `${req.query.searchParam}`,
       parseFloat(lat),
       parseFloat(lng),
-      radius,
-      (minPrice as number) * 1,
-      (maxPrice as number) * 1
+      radius
     );
 
     res.status(HTTP_STATUS.OK).json({ message: 'Search results', products });

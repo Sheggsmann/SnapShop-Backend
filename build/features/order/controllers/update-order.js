@@ -29,7 +29,6 @@ const order_scheme_1 = require("../schemes/order.scheme");
 const admin_service_1 = require("../../../shared/services/db/admin.service");
 const crypto_1 = __importDefault(require("crypto"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
-// import mongoose from 'mongoose';
 const KOBO_IN_NAIRA = 100;
 class UpdateOrder {
     async confirmOrderPayment(req, res) {

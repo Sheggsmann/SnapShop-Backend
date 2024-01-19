@@ -46,7 +46,7 @@ eg:
 class Update {
     async product(req, res) {
         const { productId } = req.params;
-        const { name, images, videos, description, price, priceDiscount, quantity, category } = req.body;
+        const { name, images, videos, description, price, priceDiscount, quantity, category, tags } = req.body;
         const product = await product_service_1.productService.getProductById(productId);
         if (!product) {
             throw new error_handler_1.NotFoundError('Product not found');
@@ -54,18 +54,30 @@ class Update {
         if (product.store.owner.toString() !== req.currentUser.userId) {
             throw new error_handler_1.NotAuthorizedError('You are not the owner of this store');
         }
-        const updatedProduct = {
-            name,
-            description,
-            images,
-            price,
-            priceDiscount,
-            quantity,
-            category,
-            videos
-        };
-        product_queue_1.productQueue.addProductJob('updateProductInDB', { key: productId, value: updatedProduct });
-        res.status(http_status_codes_1.default.OK).json({ message: 'Product updated successfully', updatedProduct });
+        if (priceDiscount) {
+            if (priceDiscount > price || priceDiscount > product.price)
+                throw new error_handler_1.BadRequestError('Discount cannot be greater than price');
+        }
+        if (name)
+            product.name = name;
+        if (description)
+            product.description = description;
+        if (images)
+            product.images = images;
+        if (videos)
+            product.videos = videos;
+        if (price)
+            product.price = price;
+        if (priceDiscount)
+            product.priceDiscount = priceDiscount;
+        if (quantity)
+            product.quantity = quantity;
+        if (category)
+            product.category = category;
+        if (tags)
+            product.tags = tags;
+        await product.save();
+        res.status(http_status_codes_1.default.OK).json({ message: 'Product updated successfully', updatedProduct: product });
     }
     async productWithMedia(req, res) {
         const { productId } = req.params;

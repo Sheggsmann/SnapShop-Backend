@@ -40,9 +40,7 @@ class StoreService {
     searchParam: string,
     latitude: number,
     longitude: number,
-    radius: number,
-    minPrice: number,
-    maxPrice: number
+    radius: number
   ): Promise<IProductDocument[]> {
     searchParam = Helpers.escapeRegExp(`${searchParam}`);
     const products: IProductDocument[] = await ProductModel.aggregate([
@@ -71,18 +69,11 @@ class StoreService {
                 text: {
                   query: searchParam,
                   path: 'description',
-                  fuzzy: { maxEdits: 1, prefixLength: 1 },
+                  fuzzy: { maxEdits: 1 },
                   score: { boost: { value: 100 } }
                 }
               }
-            ],
-            filter: {
-              range: {
-                path: 'price',
-                gte: minPrice,
-                lte: maxPrice
-              }
-            }
+            ]
           }
         }
       },

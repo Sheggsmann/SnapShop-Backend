@@ -22,8 +22,8 @@ class SearchStore {
                 throw new error_handler_1.BadRequestError('Search param is required');
             if (`${req.query.searchParam}`.length > 100)
                 throw new error_handler_1.BadRequestError('Search param is too long');
-            const maxPrice = req.query.maxPrice ?? this.MAX_PRICE;
-            const minPrice = req.query.minPrice ?? this.MIN_PRICE;
+            // const maxPrice = req.query.maxPrice ?? this.MAX_PRICE;
+            // const minPrice = req.query.minPrice ?? this.MIN_PRICE;
             const unit = req.query.unit ?? this.UNIT;
             const distance = req.query.distance
                 ? this.clampDistance(parseInt(req.query.distance), unit)
@@ -38,7 +38,7 @@ class SearchStore {
                 searchParam: `${req.query.searchParam}`,
                 location: [parseFloat(lat), parseFloat(lng)]
             });
-            const products = await store_service_1.storeService.getNearbyStores(`${req.query.searchParam}`, parseFloat(lat), parseFloat(lng), radius, minPrice * 1, maxPrice * 1);
+            const products = await store_service_1.storeService.getNearbyStores(`${req.query.searchParam}`, parseFloat(lat), parseFloat(lng), radius);
             res.status(http_status_codes_1.default.OK).json({ message: 'Search results', products });
         };
         this.clampDistance = (distance, unit = 'km') => {

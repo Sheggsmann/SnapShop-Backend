@@ -27,7 +27,7 @@ class BalanceWithdraw {
     const withdrawalBalance = pendingWithdrawalRequests.reduce((acc, curr) => (acc += curr.amount), 0);
 
     if (amount > Number(store.mainBalance) - withdrawalBalance) {
-      throw new BadRequestError('Insufficient balance');
+      throw new BadRequestError('Insufficient balance due to pending requests');
     }
 
     await balanceWithdrawalService.addWithdrawalRequestToDB({

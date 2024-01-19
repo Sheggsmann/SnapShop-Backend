@@ -26,7 +26,7 @@ class StoreService {
     async getStoreByStoreId(storeId) {
         return await store_model_1.StoreModel.findOne({ _id: storeId });
     }
-    async getNearbyStores(searchParam, latitude, longitude, radius, minPrice, maxPrice) {
+    async getNearbyStores(searchParam, latitude, longitude, radius) {
         searchParam = helpers_1.Helpers.escapeRegExp(`${searchParam}`);
         const products = await product_model_1.ProductModel.aggregate([
             {
@@ -54,18 +54,11 @@ class StoreService {
                                 text: {
                                     query: searchParam,
                                     path: 'description',
-                                    fuzzy: { maxEdits: 1, prefixLength: 1 },
+                                    fuzzy: { maxEdits: 1 },
                                     score: { boost: { value: 100 } }
                                 }
                             }
-                        ],
-                        filter: {
-                            range: {
-                                path: 'price',
-                                gte: minPrice,
-                                lte: maxPrice
-                            }
-                        }
+                        ]
                     }
                 }
             },
