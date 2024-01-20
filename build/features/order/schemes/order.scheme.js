@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.reportOrderSchema = exports.updateOrderSchema = exports.orderSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 const productSchema = joi_1.default.object({
+    _id: joi_1.default.string(),
     product: joi_1.default.object().required(),
     quantity: joi_1.default.number().integer().min(0).max(100).required()
 });
