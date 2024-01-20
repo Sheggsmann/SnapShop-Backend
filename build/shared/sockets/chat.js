@@ -157,16 +157,17 @@ class SocketIOChatHandler {
                 });
             }
             else {
+                const messageNotification = body.length > 80 ? body.substring(0, 80) + '...' : body;
                 if (senderType === 'User') {
                     notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToStore', {
                         key: `${receiver}`,
-                        value: { title: senderUsername, body: body.substring(0, 30) }
+                        value: { title: senderUsername, body: messageNotification }
                     });
                 }
                 if (senderType === 'Store') {
                     notification_queue_1.notificationQueue.addNotificationJob('sendPushNotificationToUser', {
                         key: `${receiver}`,
-                        value: { title: senderUsername, body: body.substring(0, 30) }
+                        value: { title: senderUsername, body: messageNotification }
                     });
                 }
             }

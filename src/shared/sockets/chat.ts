@@ -216,17 +216,19 @@ export class SocketIOChatHandler {
           value: { title: 'New Order 🥳🎉', body: 'You just received a new order' }
         });
       } else {
+        const messageNotification = body.length > 80 ? body.substring(0, 80) + '...' : body;
+
         if (senderType === 'User') {
           notificationQueue.addNotificationJob('sendPushNotificationToStore', {
             key: `${receiver}`,
-            value: { title: senderUsername, body: body.substring(0, 30) }
+            value: { title: senderUsername, body: messageNotification }
           });
         }
 
         if (senderType === 'Store') {
           notificationQueue.addNotificationJob('sendPushNotificationToUser', {
             key: `${receiver}`,
-            value: { title: senderUsername, body: body.substring(0, 30) }
+            value: { title: senderUsername, body: messageNotification }
           });
         }
       }
