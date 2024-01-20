@@ -5,13 +5,11 @@ import { authService } from '@service/db/auth.service';
 import { ObjectId } from 'mongodb';
 import { Apps, IAuthDocument } from '@auth/interfaces/auth.interface';
 import { Helpers } from '@global/helpers/helpers';
-import { config } from '@root/config';
 import { resendOtpSchema, signupSchema, verifyAccountSchema } from '@auth/schemes/signup';
 import { smsTransport } from '@service/sms/sms.transport';
 import { IUserDocument, Role } from '@user/interfaces/user.interface';
 import { authQueue } from '@service/queues/auth.queue';
 import { userQueue } from '@service/queues/user.queue';
-import JWT from 'jsonwebtoken';
 import HTTP_STATUS from 'http-status-codes';
 
 export const OTP_EXPIRES_IN = 5 * 60 * 1000;
@@ -89,7 +87,7 @@ class SignUp {
       profilePicture: ''
     };
 
-    const authToken: string = JWT.sign(jwtPayload, config.JWT_TOKEN!);
+    const authToken: string = Helpers.signToken(jwtPayload);
 
     res.status(HTTP_STATUS.CREATED).json({ message: 'Account created', token: authToken });
   }

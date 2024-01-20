@@ -1,7 +1,13 @@
 import { IProductDocument } from '@product/interfaces/product.interface';
 import { IOrderDocument } from '@order/interfaces/order.interface';
+import { config } from '@root/config';
+import JWT from 'jsonwebtoken';
 
 export class Helpers {
+  static signToken(jwtPayload: object): string {
+    return JWT.sign(jwtPayload, config.JWT_TOKEN!, { expiresIn: '7d' });
+  }
+
   static genrateRandomIntegers(len: number): number {
     const characters = '0123456789';
     const charactersLength = characters.length;

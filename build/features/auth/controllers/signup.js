@@ -19,13 +19,11 @@ const auth_service_1 = require("../../../shared/services/db/auth.service");
 const mongodb_1 = require("mongodb");
 const auth_interface_1 = require("../interfaces/auth.interface");
 const helpers_1 = require("../../../shared/globals/helpers/helpers");
-const config_1 = require("../../../config");
 const signup_1 = require("../schemes/signup");
 const sms_transport_1 = require("../../../shared/services/sms/sms.transport");
 const user_interface_1 = require("../../user/interfaces/user.interface");
 const auth_queue_1 = require("../../../shared/services/queues/auth.queue");
 const user_queue_1 = require("../../../shared/services/queues/user.queue");
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 exports.OTP_EXPIRES_IN = 5 * 60 * 1000;
 class SignUp {
@@ -89,7 +87,7 @@ class SignUp {
             roles: userRoles,
             profilePicture: ''
         };
-        const authToken = jsonwebtoken_1.default.sign(jwtPayload, config_1.config.JWT_TOKEN);
+        const authToken = helpers_1.Helpers.signToken(jwtPayload);
         res.status(http_status_codes_1.default.CREATED).json({ message: 'Account created', token: authToken });
     }
     async exists(req, res) {

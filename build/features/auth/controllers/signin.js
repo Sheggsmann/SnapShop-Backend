@@ -15,13 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.siginin = void 0;
 const signin_1 = require("../schemes/signin");
 const error_handler_1 = require("../../../shared/globals/helpers/error-handler");
+const helpers_1 = require("../../../shared/globals/helpers/helpers");
 const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-validation-decorator");
-const config_1 = require("../../../config");
 const auth_service_1 = require("../../../shared/services/db/auth.service");
 const store_service_1 = require("../../../shared/services/db/store.service");
 const user_service_1 = require("../../../shared/services/db/user.service");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class SignIn {
     async verifyLoginDetails(mobileNumber, password) {
         const existingUser = await auth_service_1.authService.getUserByPhonenumber(mobileNumber);
@@ -38,13 +37,13 @@ class SignIn {
         const { mobileNumber, password } = req.body;
         const authUser = await SignIn.prototype.verifyLoginDetails(mobileNumber, password);
         const user = await user_service_1.userService.getUserByAuthId(`${authUser._id}`);
-        const userJwt = jsonwebtoken_1.default.sign({
+        const userJwt = helpers_1.Helpers.signToken({
             uId: authUser.uId,
             userId: user._id,
             roles: user.roles,
             profilePicture: user.profilePicture,
             mobileNumber: authUser.mobileNumber
-        }, config_1.config.JWT_TOKEN);
+        });
         res.status(http_status_codes_1.default.OK).json({ message: 'User login successful', token: userJwt, user });
     }
     async readStore(req, res) {
@@ -58,26 +57,26 @@ class SignIn {
          * send the user JWT to the frontend so the store can be created
          */
         if (!store) {
-            const jwtToken = jsonwebtoken_1.default.sign({
+            const jwtToken = helpers_1.Helpers.signToken({
                 uId: user.uId,
                 userId: user._id,
                 roles: user.roles,
                 profilePicture: user.profilePicture,
                 mobileNumber: authUser.mobileNumber
-            }, config_1.config.JWT_TOKEN);
+            });
             res.status(http_status_codes_1.default.NOT_FOUND).json({ message: 'Store not found', token: jwtToken, user });
             return;
         }
         if (!store)
             throw new error_handler_1.NotFoundError('Store not found.');
-        const userJwt = jsonwebtoken_1.default.sign({
+        const userJwt = helpers_1.Helpers.signToken({
             uId: user.uId,
             userId: user._id,
             storeId: store._id,
             roles: user.roles,
             profilePicture: user.profilePicture,
             mobileNumber: authUser.mobileNumber
-        }, config_1.config.JWT_TOKEN);
+        });
         res.status(http_status_codes_1.default.OK).json({ message: 'Store login successful', token: userJwt, user, store });
     }
 }
