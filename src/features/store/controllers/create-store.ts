@@ -6,9 +6,7 @@ import { storeSchema } from '@store/schemes/store.scheme';
 import { storeQueue } from '@service/queues/store.queue';
 import { IStoreDocument } from '@store/interfaces/store.interface';
 import { ObjectId } from 'mongodb';
-import { config } from '@root/config';
 import { Helpers } from '@global/helpers/helpers';
-import JWT from 'jsonwebtoken';
 
 import HTTP_STATUS from 'http-status-codes';
 
@@ -54,7 +52,7 @@ class Create {
       storeId: storeObjectId
     };
 
-    const authToken: string = JWT.sign(jwtPayload, config.JWT_TOKEN!);
+    const authToken: string = Helpers.signToken(jwtPayload);
 
     res.status(HTTP_STATUS.CREATED).json({ message: 'Store created successfully', store, token: authToken });
   }

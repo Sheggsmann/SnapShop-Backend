@@ -5,8 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reportOrderSchema = exports.updateOrderSchema = exports.orderSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
+const productSchema = joi_1.default.object({
+    product: joi_1.default.object().required(),
+    quantity: joi_1.default.number().integer().min(0).max(100).required()
+});
 const orderSchema = joi_1.default.object().keys({
-    products: joi_1.default.array().required().min(1).max(15).messages({
+    products: joi_1.default.array().items(productSchema).required().min(1).max(15).messages({
         'array.base': 'products must be an array',
         'array.min': 'invalid array length',
         'array.max': 'invalid array length',
@@ -20,7 +24,7 @@ const updateOrderSchema = joi_1.default.object().keys({
         'number.min': 'deliveryFee should be greater than 1',
         'number.max': 'deliveryFee is too big'
     }),
-    products: joi_1.default.array().min(1).max(50).messages({
+    products: joi_1.default.array().items(productSchema).min(1).max(50).messages({
         'array.base': 'please select one or more products',
         'array.min': 'no product selected',
         'array.max': 'too many products'

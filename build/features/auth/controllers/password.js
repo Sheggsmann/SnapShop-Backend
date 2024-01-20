@@ -30,7 +30,9 @@ class Password {
         const otp = `${helpers_1.Helpers.generateOtp(4)}`;
         // const otp = '1111';
         await auth_service_1.authService.updatePasswordToken(`${existingUser._id}`, otp, Date.now() + signup_1.OTP_EXPIRES_IN);
-        await sms_transport_1.smsTransport.sendSms(mobileNumber, `Snapshup password reset token: ${otp}`, otpProvider);
+        const msg = await sms_transport_1.smsTransport.sendSms(mobileNumber, `Snapshup password reset token: ${otp}`, otpProvider);
+        if (msg === 'error')
+            throw new error_handler_1.BadRequestError(`Sorry, we couldn't send the sms, try again`);
         res.status(http_status_codes_1.default.OK).json({ message: 'Password reset otp sent.' });
     }
     async update(req, res) {
