@@ -1,6 +1,7 @@
 import { ILocation, IStoreDocument } from '@store/interfaces/store.interface';
 import { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import { ICartItem } from '@order/interfaces/order.interface';
 
 export interface IProductDocument extends Document {
   _id: string | ObjectId;
@@ -20,7 +21,7 @@ export interface IProductDocument extends Document {
 }
 
 export interface IProductJob {
-  value?: IProductDocument;
+  value?: IProductDocument | ICartItem[];
   key?: string;
   storeId?: string;
 }

@@ -32,6 +32,16 @@ class ProductWorker {
     }
   }
 
+  public async updateProductPurchaseCount(job: Job, done: DoneCallback): Promise<void> {
+    try {
+      const { value } = job.data;
+      await productService.updateProductsPurchaseCount(value);
+    } catch (err) {
+      log.error(err);
+      done(err as Error);
+    }
+  }
+
   public async removeProductFromDB(job: Job, done: DoneCallback): Promise<void> {
     try {
       const { key, storeId } = job.data;

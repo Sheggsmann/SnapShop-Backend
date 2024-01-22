@@ -29,6 +29,7 @@ const order_scheme_1 = require("../schemes/order.scheme");
 const admin_service_1 = require("../../../shared/services/db/admin.service");
 const crypto_1 = __importDefault(require("crypto"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
+const product_queue_1 = require("../../../shared/services/queues/product.queue");
 const KOBO_IN_NAIRA = 100;
 class UpdateOrder {
     async confirmOrderPayment(req, res) {
@@ -69,12 +70,14 @@ class UpdateOrder {
                     console.log('AMOUNT PAID:', amountPaid);
                     if (total === amountPaid) {
                         const deliveryCode = helpers_1.Helpers.generateOtp(4);
-                        await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
+                        await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode, serviceFee);
                         // Subtract service fee from the amount paid and credit to store
                         const storeCreditAmount = amountPaid - serviceFee;
                         await store_service_1.storeService.updateStoreEscrowBalance(storeId, storeCreditAmount);
                         // TODO: store the service fee in our admin account
                         await admin_service_1.adminService.updateServiceAdminUserCharge(serviceFee);
+                        // Increase products purchase counts
+                        product_queue_1.productQueue.addProductJob('updateProductPurchaseCount', { value: order.products });
                         order.paid = true;
                         order.amountPaid = amountPaid;
                         order.serviceFee = serviceFee;
@@ -115,14 +118,15 @@ class UpdateOrder {
             console.log('\nYOU SHOULD PAY:', total);
             if (total !== amountPaid)
                 throw new error_handler_1.BadRequestError('Incorrect amount');
-            const deliveryCode = helpers_1.Helpers.generateOtp(4);
-            await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
             // Subtract service fee from the amount paid and credit to store
             const serviceCharge = helpers_1.Helpers.calculateOrderServiceFee(order);
+            const deliveryCode = helpers_1.Helpers.generateOtp(4);
+            await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode, serviceCharge);
             const storeCreditAmount = amountPaid - serviceCharge;
             await store_service_1.storeService.updateStoreEscrowBalance(storeId, storeCreditAmount);
             // TODO: store the service fee in our admin account
             await admin_service_1.adminService.updateServiceAdminUserCharge(serviceCharge);
+            product_queue_1.productQueue.addProductJob('updateProductPurchaseCount', { value: order.products });
             transaction_queue_1.transactionQueue.addTransactionJob('addTransactionToDB', {
                 store: storeId,
                 order: orderId,
