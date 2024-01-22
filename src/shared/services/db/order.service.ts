@@ -98,11 +98,12 @@ class OrderService {
     orderId: string,
     paid: boolean,
     amountPaid: number,
-    deliveryCode: string
+    deliveryCode: string,
+    serviceFee: number
   ): Promise<void> {
     await OrderModel.updateOne(
       { _id: orderId },
-      { $set: { paid, amountPaid, deliveryCode, status: OrderStatus.ACTIVE, paidAt: Date.now() } }
+      { $set: { paid, amountPaid, deliveryCode, status: OrderStatus.ACTIVE, paidAt: Date.now(), serviceFee } }
     );
   }
 }

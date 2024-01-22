@@ -69,7 +69,7 @@ class UpdateOrder {
                     console.log('AMOUNT PAID:', amountPaid);
                     if (total === amountPaid) {
                         const deliveryCode = helpers_1.Helpers.generateOtp(4);
-                        await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
+                        await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode, serviceFee);
                         // Subtract service fee from the amount paid and credit to store
                         const storeCreditAmount = amountPaid - serviceFee;
                         await store_service_1.storeService.updateStoreEscrowBalance(storeId, storeCreditAmount);
@@ -115,8 +115,9 @@ class UpdateOrder {
             console.log('\nYOU SHOULD PAY:', total);
             if (total !== amountPaid)
                 throw new error_handler_1.BadRequestError('Incorrect amount');
+            const serviceFee = helpers_1.Helpers.calculateOrderServiceFee(order);
             const deliveryCode = helpers_1.Helpers.generateOtp(4);
-            await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode);
+            await order_service_1.orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode, serviceFee);
             // Subtract service fee from the amount paid and credit to store
             const serviceCharge = helpers_1.Helpers.calculateOrderServiceFee(order);
             const storeCreditAmount = amountPaid - serviceCharge;
