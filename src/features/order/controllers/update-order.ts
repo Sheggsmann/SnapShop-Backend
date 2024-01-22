@@ -16,6 +16,7 @@ import { updateOrderSchema } from '@order/schemes/order.scheme';
 import { adminService } from '@service/db/admin.service';
 import crypto from 'crypto';
 import HTTP_STATUS from 'http-status-codes';
+import { productQueue } from '@service/queues/product.queue';
 
 const KOBO_IN_NAIRA = 100;
 
@@ -78,6 +79,9 @@ class UpdateOrder {
             // TODO: store the service fee in our admin account
             await adminService.updateServiceAdminUserCharge(serviceFee);
 
+            // Increase products purchase counts
+            productQueue.addProductJob('updateProductPurchaseCount', { value: order.products });
+
             order.paid = true;
             order.amountPaid = amountPaid;
             order.serviceFee = serviceFee;
@@ -122,18 +126,19 @@ class UpdateOrder {
 
       console.log('\nYOU SHOULD PAY:', total);
       if (total !== amountPaid) throw new BadRequestError('Incorrect amount');
-      const serviceFee = Helpers.calculateOrderServiceFee(order);
-
-      const deliveryCode = Helpers.generateOtp(4);
-      await orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode, serviceFee);
-
       // Subtract service fee from the amount paid and credit to store
       const serviceCharge = Helpers.calculateOrderServiceFee(order);
+
+      const deliveryCode = Helpers.generateOtp(4);
+      await orderService.updateOrderPaymentStatus(orderId, true, amountPaid, deliveryCode, serviceCharge);
+
       const storeCreditAmount = amountPaid - serviceCharge;
       await storeService.updateStoreEscrowBalance(storeId, storeCreditAmount);
 
       // TODO: store the service fee in our admin account
       await adminService.updateServiceAdminUserCharge(serviceCharge);
+
+      productQueue.addProductJob('updateProductPurchaseCount', { value: order.products });
 
       transactionQueue.addTransactionJob('addTransactionToDB', {
         store: storeId,

@@ -1,3 +1,4 @@
+import { ICartItem } from '@order/interfaces/order.interface';
 import { IProductDocument } from '@product/interfaces/product.interface';
 import { ProductModel } from '@product/models/product.model';
 import { StoreModel } from '@store/models/store.model';
@@ -76,6 +77,15 @@ class ProductService {
   public async removeProductFromDB(productId: string, storeId: string): Promise<void> {
     await ProductModel.findByIdAndRemove(productId);
     await StoreModel.updateOne({ _id: storeId }, { $inc: { productsCount: -1 } });
+  }
+
+  public async updateProductsPurchaseCount(products: ICartItem[]): Promise<void> {
+    for (const product of products) {
+      await ProductModel.updateOne(
+        { _id: (product.product as IProductDocument)._id },
+        { $inc: { purchaseCount: product.quantity } }
+      );
+    }
   }
 }
 
