@@ -1,11 +1,29 @@
 import { IProductDocument } from '@product/interfaces/product.interface';
 import { IOrderDocument } from '@order/interfaces/order.interface';
 import { config } from '@root/config';
+import { AuthUserPayload } from '@auth/interfaces/auth.interface';
+import { Request } from 'express';
 import JWT from 'jsonwebtoken';
 
 export class Helpers {
   static signToken(jwtPayload: object): string {
     return JWT.sign(jwtPayload, config.JWT_TOKEN!, { expiresIn: '7d' });
+  }
+
+  static parseToken(token: string): AuthUserPayload | null {
+    try {
+      const payload: AuthUserPayload = JWT.verify(token, config.JWT_TOKEN!) as AuthUserPayload;
+      return payload;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  static getTokenFromHeader(req: Request): string | null {
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      return req.headers.authorization.split(' ')[1];
+    }
+    return null;
   }
 
   static genrateRandomIntegers(len: number): number {

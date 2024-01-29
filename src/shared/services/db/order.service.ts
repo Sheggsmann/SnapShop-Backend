@@ -4,6 +4,18 @@ import { IProductDocument } from '@product/interfaces/product.interface';
 // import { ClientSession } from 'mongoose';
 
 class OrderService {
+  public async getOrders(skip: number, limit: number): Promise<IOrderDocument[]> {
+    const orders: IOrderDocument[] = await OrderModel.find({})
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    return orders;
+  }
+
+  public async getOrdersCount(): Promise<number> {
+    return await OrderModel.countDocuments({});
+  }
+
   public async addOrderToDB(data: IProductDocument): Promise<void> {
     await OrderModel.create(data);
   }

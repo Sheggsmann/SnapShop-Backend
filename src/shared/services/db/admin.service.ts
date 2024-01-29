@@ -10,6 +10,14 @@ class AdminService {
     return await AdminModel.findOne({ role });
   }
 
+  public async getAdminByEmail(email: string): Promise<IAdminDocument | null> {
+    return await AdminModel.findOne({ email });
+  }
+
+  public async getAdmin(role: keyof typeof AdminRole, email: string): Promise<IAdminDocument | null> {
+    return await AdminModel.findOne({ role, email });
+  }
+
   public async updateServiceAdminUserCharge(amount: number): Promise<void> {
     await AdminModel.updateOne({ role: AdminRole.Service }, { $inc: { serviceChargeFromUsers: amount } });
   }

@@ -10,6 +10,7 @@ import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
 const feedCache: FeedCache = new FeedCache();
+const PAGE_SIZE = 50;
 
 class Get {
   public async me(req: Request, res: Response): Promise<void> {
@@ -18,6 +19,17 @@ class Get {
       throw new BadRequestError('Details not found');
     }
     res.status(HTTP_STATUS.OK).json({ message: 'User profile', user });
+  }
+
+  public async all(req: Request, res: Response): Promise<void> {
+    const { page } = req.params;
+    const skip = (parseInt(page) - 1) * PAGE_SIZE;
+    const limit = parseInt(page) * PAGE_SIZE;
+
+    const users: IUserDocument[] = await userService.getUsers(skip, limit);
+    const usersCount: number = await userService.getUsersCount();
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Users', users, usersCount });
   }
 
   public async guestFeed(req: Request, res: Response): Promise<void> {

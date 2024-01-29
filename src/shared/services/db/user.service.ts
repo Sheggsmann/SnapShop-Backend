@@ -7,6 +7,15 @@ class UserService {
     await UserModel.create(data);
   }
 
+  public async getUsers(skip: number, limit: number): Promise<IUserDocument[]> {
+    const users: IUserDocument[] = await UserModel.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit);
+    return users;
+  }
+
+  public async getUsersCount(): Promise<number> {
+    return await UserModel.countDocuments({});
+  }
+
   public async getUserById(userId: string): Promise<IUserDocument> {
     return (await UserModel.findOne({ _id: userId }).populate(
       'authId',
