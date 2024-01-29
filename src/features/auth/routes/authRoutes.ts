@@ -3,6 +3,8 @@ import { signup } from '@auth/controllers/signup';
 import { password } from '@auth/controllers/password';
 import { siginin } from '@auth/controllers/signin';
 import { getStores } from '@store/controllers/get-store';
+import { adminSignin } from '@admin/controllers/admin-signin';
+import { createAdmin } from '@admin/controllers/create-admin';
 
 class AuthRoutes {
   private router: Router;
@@ -12,6 +14,8 @@ class AuthRoutes {
   }
 
   public routes(): Router {
+    this.router.post('/admin/signin', adminSignin.read);
+    this.router.post('/admin/create', createAdmin.admin);
     this.router.post('/signup', signup.create);
     this.router.post('/signin', siginin.read);
     this.router.post('/store-signin', siginin.readStore);

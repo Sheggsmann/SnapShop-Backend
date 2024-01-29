@@ -9,7 +9,7 @@ class SearchesWorker {
   async addSearchTermToDB(job: Job, done: DoneCallback): Promise<void> {
     try {
       const { data } = job;
-      await searchesService.add(data.searchParam, data.location);
+      await searchesService.add(data.searchParam, data.location, data.user);
 
       job.progress(100);
       done(null, data);

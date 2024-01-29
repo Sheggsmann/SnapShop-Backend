@@ -20,8 +20,15 @@ class StoreService {
   }
 
   public async getStores(skip: number, limit: number): Promise<IStoreDocument[]> {
-    const stores: IStoreDocument[] = await StoreModel.find({}).skip(skip).limit(limit);
+    const stores: IStoreDocument[] = await StoreModel.find({})
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
     return stores;
+  }
+
+  public async getStoresCount(): Promise<number> {
+    return await StoreModel.countDocuments({});
   }
 
   public async getStoreByName(name: string): Promise<IStoreDocument | null> {

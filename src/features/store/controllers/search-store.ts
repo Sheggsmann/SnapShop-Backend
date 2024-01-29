@@ -1,4 +1,5 @@
 import { BadRequestError } from '@global/helpers/error-handler';
+import { Helpers } from '@global/helpers/helpers';
 import { IProductDocument } from '@product/interfaces/product.interface';
 import { storeService } from '@service/db/store.service';
 import { searchesQueue } from '@service/queues/searches.queue';
@@ -35,9 +36,14 @@ class SearchStore {
 
     const radius = unit === 'km' ? distance / this.EARTH_RADIUS : distance / (this.EARTH_RADIUS * 1000);
 
+    const token = Helpers.getTokenFromHeader(req);
+    let authPayload = null;
+
+    if (token) authPayload = Helpers.parseToken(token);
     searchesQueue.addSearchTermJob('addSearchTermToDB', {
       searchParam: `${req.query.searchParam}`,
-      location: [parseFloat(lat), parseFloat(lng)]
+      location: [parseFloat(lat), parseFloat(lng)],
+      user: authPayload ? authPayload.userId : ''
     });
 
     const products: IProductDocument[] = await storeService.getNearbyStores(

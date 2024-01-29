@@ -13,8 +13,9 @@ class Get {
     const limit = parseInt(page) * PAGE_SIZE;
 
     const products: IProductDocument[] = await productService.getProducts(skip, limit);
+    const productsCount: number = await productService.getProductsCount();
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Products', products });
+    res.status(HTTP_STATUS.OK).json({ message: 'Products', products, productsCount });
   }
 
   public async productByProductId(req: Request, res: Response): Promise<void> {

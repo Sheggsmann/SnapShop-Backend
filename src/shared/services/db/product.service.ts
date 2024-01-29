@@ -10,7 +10,14 @@ class ProductService {
   }
 
   public async getProducts(skip: number, limit: number): Promise<IProductDocument[]> {
-    return (await ProductModel.find({}).skip(skip).limit(limit)) as IProductDocument[];
+    return (await ProductModel.find({})
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)) as IProductDocument[];
+  }
+
+  public async getProductsCount(): Promise<number> {
+    return await ProductModel.countDocuments({});
   }
 
   public async getProductById(productId: string): Promise<IProductDocument | null> {

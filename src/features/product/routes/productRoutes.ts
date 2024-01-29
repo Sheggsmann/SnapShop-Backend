@@ -12,7 +12,6 @@ class ProductRoutes {
   }
 
   public routes(): Router {
-    this.router.get('/products/:skip', authMiddleware.checkAuth, getProduct.all);
     this.router.get('/products/by-store/:storeId', authMiddleware.checkAuth, getProduct.productsByStoreId);
     this.router.get('/product/:productId', authMiddleware.checkAuth, getProduct.productByProductId);
 

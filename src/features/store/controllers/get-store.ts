@@ -16,8 +16,9 @@ class Get {
     const limit = parseInt(page) * PAGE_SIZE;
 
     const stores: IStoreDocument[] = await storeService.getStores(skip, limit);
+    const storesCount: number = await storeService.getStoresCount();
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Stores', stores });
+    res.status(HTTP_STATUS.OK).json({ message: 'Stores', stores, storesCount });
   };
 
   public myStore = async (req: Request, res: Response): Promise<void> => {
