@@ -7,6 +7,13 @@ class UserService {
     async createUser(data) {
         await user_model_1.UserModel.create(data);
     }
+    async getUsers(skip, limit) {
+        const users = await user_model_1.UserModel.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit);
+        return users;
+    }
+    async getUsersCount() {
+        return await user_model_1.UserModel.countDocuments({});
+    }
     async getUserById(userId) {
         return (await user_model_1.UserModel.findOne({ _id: userId }).populate('authId', 'mobileNumber verified uId'));
     }

@@ -25,11 +25,11 @@ exports.default = (app) => {
         app.use(BASE_PATH, authRoutes_1.authRoutes.routes());
         app.use(BASE_PATH, searchStoreRoutes_1.searchStoreRoutes.routes());
         app.use(BASE_PATH, paymentRoutes_1.paymentRoutes.routes());
+        app.use(BASE_PATH, reviewRoutes_1.reviewRoutes.routes());
         app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, userRoutes_1.userRoutes.routes());
         app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, storeRoutes_1.storeRoutes.routes());
         app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, orderRoutes_1.orderRoutes.routes());
         app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, chatRoutes_1.chatRoutes.routes());
-        app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, reviewRoutes_1.reviewRoutes.routes());
         app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, feedbackRoutes_1.feedbackRoutes.routes());
         app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, transactionRoutes_1.transactionRoutes.routes());
         app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, balanceWithdrawalRoutes_1.balanceWithdrawalRoutes.routes());

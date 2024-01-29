@@ -13,9 +13,9 @@ class ReviewRoutes {
         this.router = express_1.default.Router();
     }
     routes() {
-        this.router.get('/product/reviews/:productId', auth_middleware_1.authMiddleware.checkAuth, get_review_1.getReview.reviews);
-        this.router.get('/store/reviews/:storeId', auth_middleware_1.authMiddleware.checkAuth, get_review_1.getReview.storeReviews);
-        this.router.post('/reviews', auth_middleware_1.authMiddleware.checkAuth, create_review_1.createReview.review);
+        this.router.get('/product/reviews/:productId', get_review_1.getReview.reviews);
+        this.router.get('/store/reviews/:storeId', get_review_1.getReview.storeReviews);
+        this.router.post('/reviews', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.checkAuth, create_review_1.createReview.review);
         return this.router;
     }
 }

@@ -5,6 +5,16 @@ const order_interface_1 = require("../../../features/order/interfaces/order.inte
 const order_model_1 = require("../../../features/order/models/order.model");
 // import { ClientSession } from 'mongoose';
 class OrderService {
+    async getOrders(skip, limit) {
+        const orders = await order_model_1.OrderModel.find({})
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+        return orders;
+    }
+    async getOrdersCount() {
+        return await order_model_1.OrderModel.countDocuments({});
+    }
     async addOrderToDB(data) {
         await order_model_1.OrderModel.create(data);
     }

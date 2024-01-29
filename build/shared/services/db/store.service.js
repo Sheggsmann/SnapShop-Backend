@@ -14,8 +14,14 @@ class StoreService {
         await Promise.all([createdStore, user]);
     }
     async getStores(skip, limit) {
-        const stores = await store_model_1.StoreModel.find({}).skip(skip).limit(limit);
+        const stores = await store_model_1.StoreModel.find({})
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
         return stores;
+    }
+    async getStoresCount() {
+        return await store_model_1.StoreModel.countDocuments({});
     }
     async getStoreByName(name) {
         return (await store_model_1.StoreModel.findOne({ name }).select('name image verified'));

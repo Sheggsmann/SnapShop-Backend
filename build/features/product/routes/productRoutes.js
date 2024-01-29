@@ -14,7 +14,6 @@ class ProductRoutes {
         this.router = express_1.default.Router();
     }
     routes() {
-        this.router.get('/products/:skip', auth_middleware_1.authMiddleware.checkAuth, get_product_1.getProduct.all);
         this.router.get('/products/by-store/:storeId', auth_middleware_1.authMiddleware.checkAuth, get_product_1.getProduct.productsByStoreId);
         this.router.get('/product/:productId', auth_middleware_1.authMiddleware.checkAuth, get_product_1.getProduct.productByProductId);
         this.router.post('/product', auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['StoreOwner']), create_product_1.createProduct.product);

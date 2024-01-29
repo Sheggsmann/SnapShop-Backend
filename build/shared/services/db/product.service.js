@@ -9,7 +9,13 @@ class ProductService {
         await store_model_1.StoreModel.updateOne({ _id: storeId }, { $inc: { productsCount: 1 } });
     }
     async getProducts(skip, limit) {
-        return (await product_model_1.ProductModel.find({}).skip(skip).limit(limit));
+        return (await product_model_1.ProductModel.find({})
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit));
+    }
+    async getProductsCount() {
+        return await product_model_1.ProductModel.countDocuments({});
     }
     async getProductById(productId) {
         return await product_model_1.ProductModel.findOne({ _id: productId }).populate('store');
