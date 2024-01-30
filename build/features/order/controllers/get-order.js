@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getOrders = void 0;
 const order_service_1 = require("../../../shared/services/db/order.service");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
+const PAGE_SIZE = 50;
 class Get {
     async myOrders(req, res) {
         const page = req.query.page ? parseInt(req.query.page) : 0;
@@ -26,6 +27,14 @@ class Get {
         const { storeId } = req.params;
         const orders = await order_service_1.orderService.getOrdersByStoreId(storeId, skip, limit);
         res.status(http_status_codes_1.default.OK).json({ message: 'Store orders', orders });
+    }
+    async all(req, res) {
+        const { page } = req.params;
+        const skip = (parseInt(page) - 1) * PAGE_SIZE;
+        const limit = parseInt(page) * PAGE_SIZE;
+        const orders = await order_service_1.orderService.getOrders(skip, limit);
+        const ordersCount = await order_service_1.orderService.getOrdersCount();
+        res.status(http_status_codes_1.default.OK).json({ message: 'Orders', orders, ordersCount });
     }
 }
 exports.getOrders = new Get();

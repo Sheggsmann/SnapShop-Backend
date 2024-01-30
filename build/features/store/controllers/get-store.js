@@ -17,7 +17,8 @@ class Get {
             const skip = (parseInt(page) - 1) * PAGE_SIZE;
             const limit = parseInt(page) * PAGE_SIZE;
             const stores = await store_service_1.storeService.getStores(skip, limit);
-            res.status(http_status_codes_1.default.OK).json({ message: 'Stores', stores });
+            const storesCount = await store_service_1.storeService.getStoresCount();
+            res.status(http_status_codes_1.default.OK).json({ message: 'Stores', stores, storesCount });
         };
         this.myStore = async (req, res) => {
             const store = await store_service_1.storeService.getStoreByStoreId(`${req.currentUser.storeId}`);

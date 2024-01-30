@@ -11,6 +11,7 @@ const user_service_1 = require("../../../shared/services/db/user.service");
 const feed_cache_1 = require("../../../shared/services/redis/feed.cache");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const feedCache = new feed_cache_1.FeedCache();
+const PAGE_SIZE = 50;
 class Get {
     async me(req, res) {
         const user = await user_service_1.userService.getUserById(req.currentUser.userId);
@@ -18,6 +19,14 @@ class Get {
             throw new error_handler_1.BadRequestError('Details not found');
         }
         res.status(http_status_codes_1.default.OK).json({ message: 'User profile', user });
+    }
+    async all(req, res) {
+        const { page } = req.params;
+        const skip = (parseInt(page) - 1) * PAGE_SIZE;
+        const limit = parseInt(page) * PAGE_SIZE;
+        const users = await user_service_1.userService.getUsers(skip, limit);
+        const usersCount = await user_service_1.userService.getUsersCount();
+        res.status(http_status_codes_1.default.OK).json({ message: 'Users', users, usersCount });
     }
     async guestFeed(req, res) {
         if (!req.query.latitude || !req.query.longitude)

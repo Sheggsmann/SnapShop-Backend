@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchStore = void 0;
 const error_handler_1 = require("../../../shared/globals/helpers/error-handler");
+const helpers_1 = require("../../../shared/globals/helpers/helpers");
 const store_service_1 = require("../../../shared/services/db/store.service");
 const searches_queue_1 = require("../../../shared/services/queues/searches.queue");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
@@ -34,9 +35,14 @@ class SearchStore {
             if (!unit || !['km', 'm'].includes(unit))
                 throw new error_handler_1.BadRequestError('Unit must be km(kilometers) or m(meters)');
             const radius = unit === 'km' ? distance / this.EARTH_RADIUS : distance / (this.EARTH_RADIUS * 1000);
+            const token = helpers_1.Helpers.getTokenFromHeader(req);
+            let authPayload = null;
+            if (token)
+                authPayload = helpers_1.Helpers.parseToken(token);
             searches_queue_1.searchesQueue.addSearchTermJob('addSearchTermToDB', {
                 searchParam: `${req.query.searchParam}`,
-                location: [parseFloat(lat), parseFloat(lng)]
+                location: [parseFloat(lat), parseFloat(lng)],
+                user: authPayload ? authPayload.userId : ''
             });
             const products = await store_service_1.storeService.getNearbyStores(`${req.query.searchParam}`, parseFloat(lat), parseFloat(lng), radius);
             res.status(http_status_codes_1.default.OK).json({ message: 'Search results', products });

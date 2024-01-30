@@ -8,7 +8,7 @@ class SearchesWorker {
     async addSearchTermToDB(job, done) {
         try {
             const { data } = job;
-            await searches_service_1.searchesService.add(data.searchParam, data.location);
+            await searches_service_1.searchesService.add(data.searchParam, data.location, data.user);
             job.progress(100);
             done(null, data);
         }

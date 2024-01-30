@@ -14,7 +14,8 @@ class Get {
         const skip = (parseInt(page) - 1) * PAGE_SIZE;
         const limit = parseInt(page) * PAGE_SIZE;
         const products = await product_service_1.productService.getProducts(skip, limit);
-        res.status(http_status_codes_1.default.OK).json({ message: 'Products', products });
+        const productsCount = await product_service_1.productService.getProductsCount();
+        res.status(http_status_codes_1.default.OK).json({ message: 'Products', products, productsCount });
     }
     async productByProductId(req, res) {
         const { productId } = req.params;

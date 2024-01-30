@@ -10,6 +10,12 @@ class AdminService {
     async getAdminByRole(role) {
         return await admin_model_1.AdminModel.findOne({ role });
     }
+    async getAdminByEmail(email) {
+        return await admin_model_1.AdminModel.findOne({ email });
+    }
+    async getAdmin(role, email) {
+        return await admin_model_1.AdminModel.findOne({ role, email });
+    }
     async updateServiceAdminUserCharge(amount) {
         await admin_model_1.AdminModel.updateOne({ role: admin_interface_1.AdminRole.Service }, { $inc: { serviceChargeFromUsers: amount } });
     }

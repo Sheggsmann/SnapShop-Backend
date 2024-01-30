@@ -10,6 +10,21 @@ class Helpers {
     static signToken(jwtPayload) {
         return jsonwebtoken_1.default.sign(jwtPayload, config_1.config.JWT_TOKEN, { expiresIn: '7d' });
     }
+    static parseToken(token) {
+        try {
+            const payload = jsonwebtoken_1.default.verify(token, config_1.config.JWT_TOKEN);
+            return payload;
+        }
+        catch (err) {
+            return null;
+        }
+    }
+    static getTokenFromHeader(req) {
+        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+            return req.headers.authorization.split(' ')[1];
+        }
+        return null;
+    }
     static genrateRandomIntegers(len) {
         const characters = '0123456789';
         const charactersLength = characters.length;
