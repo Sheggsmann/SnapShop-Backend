@@ -7,7 +7,21 @@ import HTTP_STATUS from 'http-status-codes';
 
 class Update {
   private isLowerVersion(previousVersion: string, newVersion: string): boolean {
-    return parseInt(previousVersion.replaceAll('.', ''), 10) < parseInt(newVersion.replaceAll('.', ''), 10);
+    const previousIntArray = previousVersion.split('.').map(Number);
+    const newIntArray = newVersion.split('.').map(Number);
+
+    for (let i = 0; i < Math.max(previousIntArray.length, newIntArray.length); i++) {
+      const previousValue = previousIntArray[i] || 0;
+      const newValue = newIntArray[i] || 0;
+
+      if (previousValue < newValue) {
+        return true;
+      } else if (previousValue > newValue) {
+        return false;
+      }
+    }
+
+    return false;
   }
 
   // TODO: implement authentication and data filter
