@@ -20,7 +20,19 @@ const versioning_scheme_1 = require("../schemes/versioning.scheme");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class Add {
     isLowerVersion(previousVersion, newVersion) {
-        return parseInt(previousVersion.replaceAll('.', ''), 10) < parseInt(newVersion.replaceAll('.', ''), 10);
+        const previousIntArray = previousVersion.split('.').map(Number);
+        const newIntArray = newVersion.split('.').map(Number);
+        for (let i = 0; i < Math.max(previousIntArray.length, newIntArray.length); i++) {
+            const previousValue = previousIntArray[i] || 0;
+            const newValue = newIntArray[i] || 0;
+            if (previousValue < newValue) {
+                return true;
+            }
+            else if (previousValue > newValue) {
+                return false;
+            }
+        }
+        return false;
     }
     // TODO: implement authentication and data filter
     async appVersion(req, res) {
