@@ -43,7 +43,7 @@ class SearchStore {
     searchesQueue.addSearchTermJob('addSearchTermToDB', {
       searchParam: `${req.query.searchParam}`,
       location: [parseFloat(lat), parseFloat(lng)],
-      user: authPayload ? authPayload.userId : ''
+      user: authPayload ? authPayload?.userId : ''
     });
 
     const products: IProductDocument[] = await storeService.getNearbyStores(

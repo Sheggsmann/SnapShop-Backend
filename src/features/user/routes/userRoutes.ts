@@ -13,27 +13,43 @@ class UserRoutes {
   }
 
   public routes(): Router {
-    this.router.get('/me', authMiddleware.checkAuth, getUser.me);
-    this.router.get('/user/feed', authMiddleware.checkAuth, getUser.feed);
-    this.router.get('/user/saved-stores', authMiddleware.checkAuth, getUser.savedStores);
-    this.router.get('/user/liked-products', authMiddleware.checkAuth, getUser.likedProducts);
-    this.router.get('/user/auth/:userId', authMiddleware.checkAuth, getUser.auth);
-    this.router.get('/profile/:userId', authMiddleware.checkAuth, getUser.profile);
+    this.router.get('/me', authMiddleware.protect, authMiddleware.checkAuth, getUser.me);
+    this.router.get('/user/feed', authMiddleware.protect, authMiddleware.checkAuth, getUser.feed);
+    this.router.get(
+      '/user/saved-stores',
+      authMiddleware.protect,
+      authMiddleware.checkAuth,
+      getUser.savedStores
+    );
+    this.router.get(
+      '/user/liked-products',
+      authMiddleware.protect,
+      authMiddleware.checkAuth,
+      getUser.likedProducts
+    );
+    this.router.get('/user/auth/:userId', authMiddleware.protect, authMiddleware.checkAuth, getUser.auth);
+    this.router.get('/profile/:userId', authMiddleware.protect, authMiddleware.checkAuth, getUser.profile);
 
-    this.router.put('/user', authMiddleware.checkAuth, updateUser.user);
-    this.router.post('/user/like-product', authMiddleware.checkAuth, updateUser.likeProduct);
-    this.router.post('/user/save-store', authMiddleware.checkAuth, updateUser.saveStore);
+    this.router.put('/user', authMiddleware.protect, authMiddleware.checkAuth, updateUser.user);
+    this.router.post(
+      '/user/like-product',
+      authMiddleware.protect,
+      authMiddleware.checkAuth,
+      updateUser.likeProduct
+    );
+    this.router.post(
+      '/user/save-store',
+      authMiddleware.protect,
+      authMiddleware.checkAuth,
+      updateUser.saveStore
+    );
+    this.router.post('/user/store-expo-push-token', updateUser.savePushNotificationToken);
 
     if (config.NODE_ENV! === 'development') {
       this.router.delete('/user/:userId', deleteUser.user);
       this.router.post('/user/send-sms', updateUser.sendSms);
     }
 
-    return this.router;
-  }
-
-  public openRoutes(): Router {
-    this.router.post('/user/store-expo-push-token', updateUser.savePushNotificationToken);
     return this.router;
   }
 }

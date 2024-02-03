@@ -28,9 +28,8 @@ export default (app: Application) => {
     app.use(BASE_PATH, searchStoreRoutes.routes());
     app.use(BASE_PATH, paymentRoutes.routes());
     app.use(BASE_PATH, reviewRoutes.routes());
-    app.use(BASE_PATH, userRoutes.openRoutes());
+    app.use(BASE_PATH, userRoutes.routes());
 
-    app.use(BASE_PATH, authMiddleware.protect, userRoutes.routes());
     app.use(BASE_PATH, authMiddleware.protect, storeRoutes.routes());
     app.use(BASE_PATH, authMiddleware.protect, orderRoutes.routes());
     app.use(BASE_PATH, authMiddleware.protect, chatRoutes.routes());
