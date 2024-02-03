@@ -104,6 +104,8 @@ class Update {
    */
   @validator(savePushTokenSchema)
   public async savePushNotificationToken(req: Request, res: Response): Promise<void> {
+    res.status(HTTP_STATUS.OK).json({ message: 'Reached Here' });
+    return;
     const { pushToken } = req.body;
     const updatedUser: Pick<IUserDocument, 'expoPushToken'> = { expoPushToken: pushToken };
     userQueue.addUserJob('updateUserInDB', { key: req.currentUser!.userId, value: updatedUser });
