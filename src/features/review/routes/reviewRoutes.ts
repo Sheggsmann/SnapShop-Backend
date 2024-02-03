@@ -11,9 +11,9 @@ class ReviewRoutes {
   }
 
   public routes(): Router {
-    this.router.get('/product/reviews/:productId', authMiddleware.checkAuth, getReview.reviews);
-    this.router.get('/store/reviews/:storeId', authMiddleware.checkAuth, getReview.storeReviews);
-    this.router.post('/reviews', authMiddleware.checkAuth, createReview.review);
+    this.router.get('/product/reviews/:productId', getReview.reviews);
+    this.router.get('/store/reviews/:storeId', getReview.storeReviews);
+    this.router.post('/reviews', authMiddleware.protect, authMiddleware.checkAuth, createReview.review);
 
     return this.router;
   }

@@ -12,7 +12,7 @@ const helpers_1 = require("../globals/helpers/helpers");
 const admin_service_1 = require("../services/db/admin.service");
 let n = 0;
 const log = config_1.config.createLogger('ORDER PROCESSING JOB');
-const ESCROW_TO_BALANCE_TIME_IN_MS = 1000 * 60 * 3;
+const ESCROW_TO_BALANCE_TIME_IN_MS = 1000 * 60 * 60 * 24;
 async function orderProcessingJob() {
     n++;
     try {

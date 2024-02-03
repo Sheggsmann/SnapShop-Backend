@@ -24,4 +24,13 @@ export class RedisSingleton {
       console.error('\n\nREDIS ERROR:', error);
     });
   }
+
+  public async lock(lockKey: string): Promise<boolean> {
+    const result = await this.client.setNX(lockKey, '1');
+    return result;
+  }
+
+  public async unlock(lockKey: string): Promise<void> {
+    await this.client.del(lockKey);
+  }
 }

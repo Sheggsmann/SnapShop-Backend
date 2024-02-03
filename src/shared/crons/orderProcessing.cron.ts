@@ -14,7 +14,7 @@ let n = 0;
 
 const log: Logger = config.createLogger('ORDER PROCESSING JOB');
 
-const ESCROW_TO_BALANCE_TIME_IN_MS = 1000 * 60 * 3;
+const ESCROW_TO_BALANCE_TIME_IN_MS = 1000 * 60 * 60 * 24;
 
 export async function orderProcessingJob() {
   n++;

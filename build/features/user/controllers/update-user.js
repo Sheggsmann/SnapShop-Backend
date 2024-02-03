@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateUser = void 0;
 const cloudinary_upload_1 = require("../../../shared/globals/helpers/cloudinary_upload");
 const error_handler_1 = require("../../../shared/globals/helpers/error-handler");
+const helpers_1 = require("../../../shared/globals/helpers/helpers");
 const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-validation-decorator");
 const user_service_1 = require("../../../shared/services/db/user.service");
 const user_queue_1 = require("../../../shared/services/queues/user.queue");
@@ -90,9 +91,17 @@ class Update {
      * @desc defines the endpoint to store expo push token
      */
     async savePushNotificationToken(req, res) {
+        const token = helpers_1.Helpers.getTokenFromHeader(req);
+        let authPayload = null;
+        if (token)
+            authPayload = helpers_1.Helpers.parseToken(token);
+        if (!authPayload) {
+            res.status(http_status_codes_1.default.OK).json({ message: 'Success' });
+            return;
+        }
         const { pushToken } = req.body;
         const updatedUser = { expoPushToken: pushToken };
-        user_queue_1.userQueue.addUserJob('updateUserInDB', { key: req.currentUser.userId, value: updatedUser });
+        user_queue_1.userQueue.addUserJob('updateUserInDB', { key: authPayload.userId, value: updatedUser });
         res.status(http_status_codes_1.default.OK).json({ message: 'PushToken saved successfully' });
     }
     async sendSms(req, res) {

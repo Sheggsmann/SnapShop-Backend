@@ -1,5 +1,6 @@
 import { uploadFile } from '@global/helpers/cloudinary_upload';
 import { BadRequestError, NotFoundError } from '@global/helpers/error-handler';
+import { Helpers } from '@global/helpers/helpers';
 import { validator } from '@global/helpers/joi-validation-decorator';
 import { userService } from '@service/db/user.service';
 import { userQueue } from '@service/queues/user.queue';
@@ -104,11 +105,18 @@ class Update {
    */
   @validator(savePushTokenSchema)
   public async savePushNotificationToken(req: Request, res: Response): Promise<void> {
-    res.status(HTTP_STATUS.OK).json({ message: 'Reached Here' });
-    return;
+    const token = Helpers.getTokenFromHeader(req);
+    let authPayload = null;
+
+    if (token) authPayload = Helpers.parseToken(token);
+    if (!authPayload) {
+      res.status(HTTP_STATUS.OK).json({ message: 'Success' });
+      return;
+    }
+
     const { pushToken } = req.body;
     const updatedUser: Pick<IUserDocument, 'expoPushToken'> = { expoPushToken: pushToken };
-    userQueue.addUserJob('updateUserInDB', { key: req.currentUser!.userId, value: updatedUser });
+    userQueue.addUserJob('updateUserInDB', { key: authPayload.userId, value: updatedUser });
 
     res.status(HTTP_STATUS.OK).json({ message: 'PushToken saved successfully' });
   }
