@@ -27,14 +27,13 @@ exports.default = (app) => {
         app.use(BASE_PATH, paymentRoutes_1.paymentRoutes.routes());
         app.use(BASE_PATH, reviewRoutes_1.reviewRoutes.routes());
         app.use(BASE_PATH, userRoutes_1.userRoutes.routes());
+        app.use(BASE_PATH, productRoutes_1.productRoutes.routes());
         app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, storeRoutes_1.storeRoutes.routes());
         app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, orderRoutes_1.orderRoutes.routes());
         app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, chatRoutes_1.chatRoutes.routes());
         app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, feedbackRoutes_1.feedbackRoutes.routes());
         app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, transactionRoutes_1.transactionRoutes.routes());
         app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, balanceWithdrawalRoutes_1.balanceWithdrawalRoutes.routes());
-        // Store owner routes
-        app.use(BASE_PATH, auth_middleware_1.authMiddleware.protect, productRoutes_1.productRoutes.routes());
     };
     routes();
 };

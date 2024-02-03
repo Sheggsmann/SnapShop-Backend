@@ -29,6 +29,7 @@ export default (app: Application) => {
     app.use(BASE_PATH, paymentRoutes.routes());
     app.use(BASE_PATH, reviewRoutes.routes());
     app.use(BASE_PATH, userRoutes.routes());
+    app.use(BASE_PATH, productRoutes.routes());
 
     app.use(BASE_PATH, authMiddleware.protect, storeRoutes.routes());
     app.use(BASE_PATH, authMiddleware.protect, orderRoutes.routes());
@@ -36,9 +37,6 @@ export default (app: Application) => {
     app.use(BASE_PATH, authMiddleware.protect, feedbackRoutes.routes());
     app.use(BASE_PATH, authMiddleware.protect, transactionRoutes.routes());
     app.use(BASE_PATH, authMiddleware.protect, balanceWithdrawalRoutes.routes());
-
-    // Store owner routes
-    app.use(BASE_PATH, authMiddleware.protect, productRoutes.routes());
   };
 
   routes();

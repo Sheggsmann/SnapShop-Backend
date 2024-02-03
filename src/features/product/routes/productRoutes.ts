@@ -12,11 +12,17 @@ class ProductRoutes {
   }
 
   public routes(): Router {
-    this.router.get('/products/by-store/:storeId', authMiddleware.checkAuth, getProduct.productsByStoreId);
-    this.router.get('/product/:productId', authMiddleware.checkAuth, getProduct.productByProductId);
+    this.router.get('/products/by-store/:storeId', getProduct.productsByStoreId);
+    this.router.get(
+      '/product/:productId',
+      authMiddleware.protect,
+      authMiddleware.checkAuth,
+      getProduct.productByProductId
+    );
 
     this.router.post(
       '/product',
+      authMiddleware.protect,
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),
       createProduct.product
@@ -24,6 +30,7 @@ class ProductRoutes {
 
     this.router.put(
       '/product/:productId',
+      authMiddleware.protect,
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),
       updateProduct.product
@@ -31,6 +38,7 @@ class ProductRoutes {
 
     this.router.put(
       '/product/media/:productId',
+      authMiddleware.protect,
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),
       updateProduct.productWithMedia
@@ -38,6 +46,7 @@ class ProductRoutes {
 
     this.router.delete(
       '/product/:productId',
+      authMiddleware.protect,
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),
       updateProduct.deleteProduct
