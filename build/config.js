@@ -36,6 +36,7 @@ class Config {
         this.PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
         this.EXPO_ACCESS_TOKEN = process.env.EXPO_ACCESS_TOKEN || '';
         this.BULKSMS_API_KEY = process.env.BULKSMS_API_KEY || '';
+        this.WEBSITE_URL = process.env.WEBSITE_URL || '';
     }
     validateConfig() {
         for (const [key, value] of Object.entries(this)) {

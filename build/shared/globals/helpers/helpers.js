@@ -5,8 +5,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Helpers = void 0;
 const config_1 = require("../../../config");
+const uuid_1 = require("uuid");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class Helpers {
+    static formatStoreLink(slug) {
+        return `${config_1.config.WEBSITE_URL}/stores/${slug}`;
+    }
+    static generateUniqueSlug(input) {
+        const cleanedInput = input.replace(/\s/gi, '').trim().toLowerCase();
+        const uniqueId = (0, uuid_1.v4)().split('-')[0];
+        const slug = `${cleanedInput.substring(0, 4)}-${uniqueId}`;
+        return slug;
+    }
+    static cleanSlug(slug) {
+        const cleanedName = slug
+            .replace(/[^\w\s]/gi, '')
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, '-');
+        return cleanedName;
+    }
     static signToken(jwtPayload) {
         return jsonwebtoken_1.default.sign(jwtPayload, config_1.config.JWT_TOKEN, { expiresIn: '7d' });
     }
