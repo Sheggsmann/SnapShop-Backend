@@ -29,6 +29,7 @@ class Config {
   public PAYSTACK_SECRET_KEY: string | undefined;
   public EXPO_ACCESS_TOKEN: string | undefined;
   public BULKSMS_API_KEY: string | undefined;
+  public WEBSITE_URL: string | undefined;
 
   private readonly DEFAULT_DATABSE_URL = 'mongodb://localhost:27017/snapshop-backend';
   private readonly PORT = 5000;
@@ -57,6 +58,7 @@ class Config {
     this.PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
     this.EXPO_ACCESS_TOKEN = process.env.EXPO_ACCESS_TOKEN || '';
     this.BULKSMS_API_KEY = process.env.BULKSMS_API_KEY || '';
+    this.WEBSITE_URL = process.env.WEBSITE_URL || '';
   }
 
   public validateConfig(): void {

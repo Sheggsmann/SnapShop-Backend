@@ -19,6 +19,7 @@ export interface IStoreDocument extends Document {
   mobileNumber?: string;
   uId: string;
   name: string;
+  slug: string;
   bgImage: string;
   image: string;
   verified: boolean;

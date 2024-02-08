@@ -53,4 +53,13 @@ const storeLocationUpdateSchema: ObjectSchema = Joi.object().keys({
   })
 });
 
-export { storeSchema, storeUpdateSchema, storeLocationUpdateSchema };
+const storeSlugSchema: ObjectSchema = Joi.object().keys({
+  slug: Joi.string().required().min(5).max(20).messages({
+    'any.required': 'slug is a required field',
+    'string.empty': 'slug is a required field',
+    'string.min': 'slug cannot be less than 5 characters',
+    'string.max': 'slug cannot be more than 20 characters'
+  })
+});
+
+export { storeSchema, storeUpdateSchema, storeLocationUpdateSchema, storeSlugSchema };

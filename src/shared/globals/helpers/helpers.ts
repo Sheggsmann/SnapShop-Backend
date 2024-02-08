@@ -3,9 +3,30 @@ import { IOrderDocument } from '@order/interfaces/order.interface';
 import { config } from '@root/config';
 import { AuthUserPayload } from '@auth/interfaces/auth.interface';
 import { Request } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import JWT from 'jsonwebtoken';
 
 export class Helpers {
+  static formatStoreLink(slug: string): string {
+    return `${config.WEBSITE_URL}/stores/${slug}`;
+  }
+
+  static generateUniqueSlug(input: string): string {
+    const cleanedInput = input.replace(/\s/gi, '').trim().toLowerCase();
+    const uniqueId = uuidv4().split('-')[0];
+    const slug = `${cleanedInput.substring(0, 4)}-${uniqueId}`;
+    return slug;
+  }
+
+  static cleanSlug(slug: string): string {
+    const cleanedName = slug
+      .replace(/[^\w\s]/gi, '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '-');
+    return cleanedName;
+  }
+
   static signToken(jwtPayload: object): string {
     return JWT.sign(jwtPayload, config.JWT_TOKEN!, { expiresIn: '7d' });
   }

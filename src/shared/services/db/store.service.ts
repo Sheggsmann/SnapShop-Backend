@@ -165,6 +165,14 @@ class StoreService {
       await StoreModel.updateOne({ _id: storeId }, { $inc: { escrowBalance: Number(balance) } });
     }
   }
+
+  public async saveStoreSlug(storeId: string, slug: string): Promise<void> {
+    await StoreModel.updateOne({ _id: storeId }, { $set: { slug } });
+  }
+
+  public async getStoreBySlug(slug: string): Promise<IStoreDocument | null> {
+    return await StoreModel.findOne({ slug });
+  }
 }
 
 export const storeService: StoreService = new StoreService();
