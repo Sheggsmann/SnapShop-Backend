@@ -41,5 +41,18 @@ class NotificationWorker {
             done(err);
         }
     }
+    async sendMultiplePushNotifications(job, done) {
+        try {
+            // key here should be an array, ie: ["ExponentPushToken[w7wngZJBLRjKkFMgS5lVzp]", "ExponentPushToken[w7wngZJBLRjKkFMgS5lVzp]"]
+            const { key, value } = job.data;
+            await notification_service_1.notificationService.sendNotification(key, value);
+            job.progress(100);
+            done(null, job.data);
+        }
+        catch (err) {
+            log.error(err);
+            done(err);
+        }
+    }
 }
 exports.notificationWorker = new NotificationWorker();

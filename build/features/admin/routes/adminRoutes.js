@@ -13,17 +13,29 @@ const get_order_1 = require("../../order/controllers/get-order");
 const get_user_1 = require("../../user/controllers/get-user");
 const get_searches_1 = require("../../searches/controllers/get-searches");
 const get_product_1 = require("../../product/controllers/get-product");
+const send_notification_1 = require("../../notification/controllers/send-notification");
 class AdminRoutes {
     constructor() {
         this.router = express_1.default.Router();
     }
     routes() {
         this.router.get('/maintenance', get_maintenance_1.getMaintenance.maintenance);
+        // Stores Routes
         this.router.get('/stores/all/:page', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), get_store_1.getStores.all);
+        // Orders Routes
         this.router.get('/orders/all/:page', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), get_order_1.getOrders.all);
+        // Users Routes
         this.router.get('/users/all/:page', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), get_user_1.getUser.all);
+        // Products Routes
         this.router.get('/products/all/:page', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), get_product_1.getProduct.all);
+        // Searches Routes
         this.router.get('/searches/all/:page', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), get_searches_1.getSearches.all);
+        // Notification Routes
+        this.router.post('/notifications/to-user/:userId', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), send_notification_1.sendNotification.toUser);
+        this.router.post('/notifications/to-store/:storeId', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), send_notification_1.sendNotification.toStore);
+        this.router.post('/notifications/all-users', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), send_notification_1.sendNotification.toAllUsers);
+        this.router.post('/notifications/all-stores', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), send_notification_1.sendNotification.toAllStores);
+        this.router.post('/notifications/all', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), send_notification_1.sendNotification.toAll);
         return this.router;
     }
 }

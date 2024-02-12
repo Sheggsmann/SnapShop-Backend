@@ -44,6 +44,19 @@ class NotificationWorker {
       done(err as Error);
     }
   }
+
+  async sendMultiplePushNotifications(job: Job, done: DoneCallback): Promise<void> {
+    try {
+      // key here should be an array, ie: ["ExponentPushToken[w7wngZJBLRjKkFMgS5lVzp]", "ExponentPushToken[w7wngZJBLRjKkFMgS5lVzp]"]
+      const { key, value } = job.data;
+      await notificationService.sendNotification(key, value);
+      job.progress(100);
+      done(null, job.data);
+    } catch (err) {
+      log.error(err);
+      done(err as Error);
+    }
+  }
 }
 
 export const notificationWorker: NotificationWorker = new NotificationWorker();

@@ -8,19 +8,21 @@ class NotificationService {
     constructor() {
         this.expo = new expo_server_sdk_1.Expo();
     }
-    async sendNotification(pushToken, notificationMessage) {
-        console.log('\nSENDING PUSH NOTIFICATIOn');
-        if (!expo_server_sdk_1.Expo.isExpoPushToken(pushToken)) {
-            console.log('\nINVALID PUSH TOKEN:', pushToken);
-            return;
-        }
+    async sendNotification(pushTokens, notificationMessage) {
         const messages = [];
-        messages.push({
-            to: pushToken,
-            sound: 'default',
-            body: notificationMessage.body,
-            title: notificationMessage.title
-        });
+        for (const pushToken of pushTokens) {
+            console.log('\nSENDING PUSH NOTIFICATIOn');
+            if (!expo_server_sdk_1.Expo.isExpoPushToken(pushToken)) {
+                console.log('\nINVALID PUSH TOKEN:', pushToken);
+                continue;
+            }
+            messages.push({
+                to: pushToken,
+                sound: 'default',
+                body: notificationMessage.body,
+                title: notificationMessage.title
+            });
+        }
         const chunks = this.expo.chunkPushNotifications(messages);
         const tickets = [];
         for (const chunk of chunks) {
@@ -35,21 +37,23 @@ class NotificationService {
         }
     }
     async sendSingleNotification(pushToken, notificationMessage) {
-        await this.sendNotification(pushToken, notificationMessage);
+        await this.sendNotification([pushToken], notificationMessage);
     }
     async sendNotificationToUser(userId, notificationMessage) {
         const user = await user_service_1.userService.getUserById(userId);
         if (!user)
             return;
-        const pushToken = user.expoPushToken;
-        await this.sendNotification(pushToken, notificationMessage);
+        const pushToken = user?.expoPushToken;
+        if (pushToken)
+            await this.sendNotification([pushToken], notificationMessage);
     }
     async sendNotificationToStore(storeId, notificationMessage) {
         const store = await store_service_1.storeService.getStoreByStoreId(storeId);
         if (!store)
             return;
-        const pushToken = store.expoPushToken;
-        await this.sendNotification(pushToken, notificationMessage);
+        const pushToken = store?.expoPushToken;
+        if (pushToken)
+            await this.sendNotification([pushToken], notificationMessage);
     }
 }
 exports.notificationService = new NotificationService();

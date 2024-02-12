@@ -8,6 +8,9 @@ class NotificationQueue extends base_queue_1.BaseQueue {
         super('Notification');
         this.processJob('sendPushNotificationToUser', 5, notification_worker_1.notificationWorker.sendPushNotificationToUser);
         this.processJob('sendPushNotificationToStore', 5, notification_worker_1.notificationWorker.sendPushNotificationToStore);
+        this.processJob('sendPushtNotificationToAllUsers', 5, notification_worker_1.notificationWorker.sendMultiplePushNotifications);
+        this.processJob('sendPushNotificationToAllStores', 5, notification_worker_1.notificationWorker.sendMultiplePushNotifications);
+        this.processJob('sendPushNotificationToAll', 5, notification_worker_1.notificationWorker.sendMultiplePushNotifications);
     }
     addNotificationJob(name, data) {
         this.addJob(name, data);
