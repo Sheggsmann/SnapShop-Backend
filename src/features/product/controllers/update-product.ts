@@ -51,7 +51,7 @@ class Update {
     }
 
     if (priceDiscount) {
-      if (priceDiscount > price || priceDiscount > product.price)
+      if (parseInt(priceDiscount) > parseInt(price) || parseInt(priceDiscount) > product.price)
         throw new BadRequestError('Discount cannot be greater than price');
     }
 

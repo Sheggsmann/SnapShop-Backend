@@ -55,7 +55,7 @@ class Update {
             throw new error_handler_1.NotAuthorizedError('You are not the owner of this store');
         }
         if (priceDiscount) {
-            if (priceDiscount > price || priceDiscount > product.price)
+            if (parseInt(priceDiscount) > parseInt(price) || parseInt(priceDiscount) > product.price)
                 throw new error_handler_1.BadRequestError('Discount cannot be greater than price');
         }
         if (name)
