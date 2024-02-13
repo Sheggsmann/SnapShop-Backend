@@ -20,8 +20,9 @@ const store_service_1 = require("../../../shared/services/db/store.service");
 const store_queue_1 = require("../../../shared/services/queues/store.queue");
 const store_scheme_1 = require("../schemes/store.scheme");
 const user_scheme_1 = require("../../user/schemes/user.scheme");
-const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const store_constant_1 = require("../constants/store.constant");
+const product_service_1 = require("../../../shared/services/db/product.service");
+const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class Update {
     async store(req, res) {
         const { storeId } = req.params;
@@ -91,6 +92,27 @@ class Update {
         store_queue_1.storeQueue.addStoreJob('updateStoreInDB', { key: req.currentUser.storeId, value: updatedStore });
         res.status(http_status_codes_1.default.OK).json({ message: 'PushToken saved successfully' });
     }
+    async productCategory(req, res) {
+        let { oldCategory, newCategory } = req.body;
+        oldCategory = oldCategory.toLowerCase().trim();
+        newCategory = newCategory.toLowerCase().trim();
+        if (oldCategory === newCategory)
+            throw new error_handler_1.BadRequestError('Category names are the same');
+        const store = await store_service_1.storeService.getStoreByStoreId(`${req.currentUser.storeId}`);
+        if (!store)
+            throw new error_handler_1.NotFoundError('Store not found');
+        // Return 400 if the new category exists in any of the product categories
+        if (store.productCategories.find((category) => category.trim().toLowerCase() === newCategory))
+            throw new error_handler_1.BadRequestError('Category already exists');
+        // Replace the old category in the store.productCategories with the oldCategory
+        const categoryId = store.productCategories.findIndex((category) => category.trim().toLowerCase() === oldCategory);
+        if (categoryId > -1) {
+            store.productCategories[categoryId] = newCategory;
+            await store_service_1.storeService.updateStore(`${req.currentUser.storeId}`, store);
+            await product_service_1.productService.updateStoreProductsCategories(`${req.currentUser.storeId}`, oldCategory, newCategory);
+        }
+        res.status(http_status_codes_1.default.OK).json({ message: 'Category updated successfully', store });
+    }
 }
 __decorate([
     (0, joi_validation_decorator_1.validator)(store_scheme_1.storeUpdateSchema),
@@ -110,4 +132,10 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], Update.prototype, "savePushNotificationToken", null);
+__decorate([
+    (0, joi_validation_decorator_1.validator)(store_scheme_1.updateProductCategorySchema),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], Update.prototype, "productCategory", null);
 exports.updateStore = new Update();

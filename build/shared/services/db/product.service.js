@@ -78,5 +78,8 @@ class ProductService {
             await product_model_1.ProductModel.updateOne({ _id: product.product._id }, { $inc: { purchaseCount: product.quantity } });
         }
     }
+    async updateStoreProductsCategories(storeId, oldCategory, newCategory) {
+        await product_model_1.ProductModel.updateMany({ store: storeId, category: oldCategory }, { $set: { category: newCategory } });
+    }
 }
 exports.productService = new ProductService();

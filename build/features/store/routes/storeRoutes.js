@@ -23,6 +23,7 @@ class StoreRoutes {
         this.router.put('/stores/verify/:storeId', auth_middleware_1.authMiddleware.checkAuth, update_store_1.updateStore.verify);
         this.router.put('/stores/:storeId', auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['StoreOwner']), update_store_1.updateStore.store);
         this.router.put('/stores/:storeId/updateLocation', auth_middleware_1.authMiddleware.checkAuth, update_store_1.updateStore.storeLocation);
+        this.router.put('/store/product-categories', auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['StoreOwner']), update_store_1.updateStore.productCategory);
         this.router.post('/store/signup', auth_middleware_1.authMiddleware.checkAuth, create_store_1.createStore.store);
         this.router.post('/store/:storeId/slug', auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['StoreOwner']), share_store_1.shareStore.createStoreSlug);
         this.router.post('/store/store-expo-push-token', auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['StoreOwner']), update_store_1.updateStore.savePushNotificationToken);

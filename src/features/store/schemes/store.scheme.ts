@@ -62,4 +62,15 @@ const storeSlugSchema: ObjectSchema = Joi.object().keys({
   })
 });
 
-export { storeSchema, storeUpdateSchema, storeLocationUpdateSchema, storeSlugSchema };
+const updateProductCategorySchema: ObjectSchema = Joi.object().keys({
+  oldCategory: Joi.string().min(1).max(50).required(),
+  newCategory: Joi.string().min(1).max(50).required()
+});
+
+export {
+  storeSchema,
+  storeUpdateSchema,
+  storeLocationUpdateSchema,
+  storeSlugSchema,
+  updateProductCategorySchema
+};

@@ -94,6 +94,17 @@ class ProductService {
       );
     }
   }
+
+  public async updateStoreProductsCategories(
+    storeId: string,
+    oldCategory: string,
+    newCategory: string
+  ): Promise<void> {
+    await ProductModel.updateMany(
+      { store: storeId, category: oldCategory },
+      { $set: { category: newCategory } }
+    );
+  }
 }
 
 export const productService: ProductService = new ProductService();

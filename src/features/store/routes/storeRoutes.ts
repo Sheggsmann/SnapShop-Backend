@@ -42,6 +42,12 @@ class StoreRoutes {
       updateStore.store
     );
     this.router.put('/stores/:storeId/updateLocation', authMiddleware.checkAuth, updateStore.storeLocation);
+    this.router.put(
+      '/store/product-categories',
+      authMiddleware.checkAuth,
+      authMiddleware.restrictTo(['StoreOwner']),
+      updateStore.productCategory
+    );
 
     this.router.post('/store/signup', authMiddleware.checkAuth, createStore.store);
     this.router.post(
