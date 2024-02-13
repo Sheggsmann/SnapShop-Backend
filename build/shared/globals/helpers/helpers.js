@@ -9,7 +9,7 @@ const uuid_1 = require("uuid");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class Helpers {
     static formatStoreLink(slug) {
-        return `${config_1.config.WEBSITE_URL}/stores/${slug}`;
+        return `${config_1.config.WEBSITE_URL}/stores/s/${slug}`;
     }
     static generateUniqueSlug(input) {
         const cleanedInput = input.replace(/\s/gi, '').trim().toLowerCase();

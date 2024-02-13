@@ -5,7 +5,7 @@ const product_model_1 = require("../../../features/product/models/product.model"
 const store_model_1 = require("../../../features/store/models/store.model");
 const user_interface_1 = require("../../../features/user/interfaces/user.interface");
 const user_model_1 = require("../../../features/user/models/user.model");
-const mongodb_1 = require("mongodb");
+const mongoose_1 = require("mongoose");
 const helpers_1 = require("../../globals/helpers/helpers");
 class StoreService {
     async addStoreToDB(userId, store) {
@@ -111,7 +111,7 @@ class StoreService {
     }
     async getStoreProductsByCategory(storeId) {
         const products = await product_model_1.ProductModel.aggregate([
-            { $match: { store: new mongodb_1.ObjectId(storeId) } },
+            { $match: { store: new mongoose_1.Types.ObjectId(storeId) } },
             { $group: { _id: '$category', products: { $push: '$$ROOT' } } }
         ]);
         return products;

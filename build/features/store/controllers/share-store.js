@@ -23,7 +23,7 @@ class ShareStore {
     async getSlugLink(req, res) {
         const store = await store_service_1.storeService.getStoreByStoreId(req.params.storeId);
         let link = '';
-        if (store) {
+        if (store && store?.slug) {
             link = helpers_1.Helpers.formatStoreLink(store.slug);
         }
         else {

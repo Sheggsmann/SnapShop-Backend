@@ -13,7 +13,7 @@ class ShareStore {
 
     let link = '';
 
-    if (store) {
+    if (store && store?.slug) {
       link = Helpers.formatStoreLink(store.slug);
     } else {
       link = '';

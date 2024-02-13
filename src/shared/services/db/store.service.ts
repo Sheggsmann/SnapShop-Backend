@@ -4,8 +4,7 @@ import { IStoreDocument, IStoreWithCategories } from '@store/interfaces/store.in
 import { StoreModel } from '@store/models/store.model';
 import { IUserDocument, Role } from '@user/interfaces/user.interface';
 import { UserModel } from '@user/models/user.model';
-import { ObjectId } from 'mongodb';
-import { UpdateQuery } from 'mongoose';
+import { Types, UpdateQuery } from 'mongoose';
 import { Helpers } from '@global/helpers/helpers';
 
 class StoreService {
@@ -131,7 +130,7 @@ class StoreService {
 
   public async getStoreProductsByCategory(storeId: string): Promise<IStoreWithCategories[]> {
     const products = await ProductModel.aggregate([
-      { $match: { store: new ObjectId(storeId) } },
+      { $match: { store: new Types.ObjectId(storeId) } },
       { $group: { _id: '$category', products: { $push: '$$ROOT' } } }
     ]);
     return products as IStoreWithCategories[];

@@ -8,7 +8,7 @@ import JWT from 'jsonwebtoken';
 
 export class Helpers {
   static formatStoreLink(slug: string): string {
-    return `${config.WEBSITE_URL}/stores/${slug}`;
+    return `${config.WEBSITE_URL}/stores/s/${slug}`;
   }
 
   static generateUniqueSlug(input: string): string {

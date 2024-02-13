@@ -64,6 +64,17 @@ class Get {
     res.status(HTTP_STATUS.OK).json({ message: 'Product Categories', categories: store.productCategories });
   };
 
+  public storeByStoreSlug = async (req: Request, res: Response): Promise<void> => {
+    const { slug } = req.params;
+    const store = await storeService.getStoreBySlug(slug);
+    if (!store) throw new NotFoundError('Store not found');
+
+    const categorizedProducts = await storeService.getStoreProductsByCategory(store._id.toString());
+    const queryResult = { ...store.toJSON(), categories: [...categorizedProducts] };
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Store details', store: queryResult });
+  };
+
   public products = async (req: Request, res: Response): Promise<void> => {
     const storeId = req.currentUser!.storeId;
     const products: IProductDocument[] = await productService.getProductsByStoreId(`${storeId}`);

@@ -55,6 +55,15 @@ class Get {
                 throw new error_handler_1.BadRequestError('Store not found');
             res.status(http_status_codes_1.default.OK).json({ message: 'Product Categories', categories: store.productCategories });
         };
+        this.storeByStoreSlug = async (req, res) => {
+            const { slug } = req.params;
+            const store = await store_service_1.storeService.getStoreBySlug(slug);
+            if (!store)
+                throw new error_handler_1.NotFoundError('Store not found');
+            const categorizedProducts = await store_service_1.storeService.getStoreProductsByCategory(store._id.toString());
+            const queryResult = { ...store.toJSON(), categories: [...categorizedProducts] };
+            res.status(http_status_codes_1.default.OK).json({ message: 'Store details', store: queryResult });
+        };
         this.products = async (req, res) => {
             const storeId = req.currentUser.storeId;
             const products = await product_service_1.productService.getProductsByStoreId(`${storeId}`);
