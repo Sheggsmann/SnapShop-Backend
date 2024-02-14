@@ -12,8 +12,6 @@ const connection_1 = require("./shared/services/redis/connection");
 const error_handler_1 = require("./shared/globals/helpers/error-handler");
 const chat_1 = require("./shared/sockets/chat");
 const base_cron_1 = require("./shared/crons/base.cron");
-const admin_service_1 = require("./shared/services/db/admin.service");
-const admin_interface_1 = require("./features/admin/interfaces/admin.interface");
 const routes_1 = __importDefault(require("./routes"));
 const swagger_stats_1 = __importDefault(require("swagger-stats"));
 const http_1 = __importDefault(require("http"));
@@ -79,7 +77,6 @@ class SnapShopServer extends connection_1.RedisSingleton {
             this.startHttpServer(httpServer);
             this.socketIOConnections(socketIo);
             this.startCronJobs();
-            this.createAppServiceAdmin();
         }
         catch (err) {
             log.error(err);
@@ -151,18 +148,6 @@ class SnapShopServer extends connection_1.RedisSingleton {
         }
         catch (err) {
             log.error('Error setting up cron jobs', err);
-        }
-    }
-    async createAppServiceAdmin() {
-        const serviceAdmin = await admin_service_1.adminService.getAdminByRole('Service');
-        if (!serviceAdmin) {
-            await admin_service_1.adminService.createAdmin({
-                name: 'Service Admin',
-                role: admin_interface_1.AdminRole.Service,
-                password: '',
-                serviceChargeFromStores: 0,
-                serviceChargeFromUsers: 0
-            });
         }
     }
 }

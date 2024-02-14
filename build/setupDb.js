@@ -5,12 +5,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const config_1 = require("./config");
+const admin_service_1 = require("./shared/services/db/admin.service");
 const logger = config_1.config.createLogger('setupDatabase');
 exports.default = () => {
     const connect = () => {
         mongoose_1.default
             .connect(`${config_1.config.DATABASE_URL}`)
-            .then(() => logger.info('Successfully connected to the database'))
+            .then(() => {
+            logger.info('Successfully connected to the database');
+            admin_service_1.adminService.createAppServiceAdmin();
+        })
             .catch((err) => {
             logger.error('Error connecting to database', err);
             return process.exit(1);

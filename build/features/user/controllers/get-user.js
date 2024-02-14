@@ -63,7 +63,7 @@ class Get {
             const closestStores = await store_service_1.storeService.getClosestStores([long, lat], 10);
             const frequentlyPurchasedProducts = await product_service_1.productService.getFrequentlyPurchasedProductsNearUser([long, lat], 10);
             feedData.push({
-                title: 'Stores close to you',
+                title: 'Trending Stores',
                 subtitle: 'Based on your location',
                 content: closestStores
             });

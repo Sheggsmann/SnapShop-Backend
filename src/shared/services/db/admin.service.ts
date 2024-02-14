@@ -25,6 +25,19 @@ class AdminService {
   public async updateServiceAdminStoreCharge(amount: number): Promise<void> {
     await AdminModel.updateOne({ role: AdminRole.Service }, { $inc: { serviceChargeFromStores: amount } });
   }
+
+  public async createAppServiceAdmin(): Promise<void> {
+    const serviceAdmin = await AdminService.prototype.getAdminByRole('Service');
+    if (!serviceAdmin) {
+      await AdminService.prototype.createAdmin({
+        name: 'Service Admin',
+        role: AdminRole.Service,
+        password: '',
+        serviceChargeFromStores: 0,
+        serviceChargeFromUsers: 0
+      } as unknown as IAdminDocument);
+    }
+  }
 }
 
 export const adminService: AdminService = new AdminService();

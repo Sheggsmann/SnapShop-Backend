@@ -137,20 +137,38 @@ class StoreService {
   }
 
   public async getClosestStores(location: [number, number], limit: number): Promise<IStoreDocument[]> {
-    const closestStores: IStoreDocument[] = await StoreModel.aggregate([
-      {
-        $geoNear: {
-          near: {
-            type: 'Point',
-            coordinates: [location[0], location[1]]
-          },
-          distanceField: 'distance',
-          spherical: true,
-          maxDistance: 100000 // Maximum distance in meter
-        }
-      },
-      { $limit: limit }
-    ]);
+    let closestStores: IStoreDocument[] = [];
+    // closestStores = await StoreModel.aggregate([
+    //   {
+    //     $geoNear: {
+    //       near: {
+    //         type: 'Point',
+    //         coordinates: [location[0], location[1]]
+    //       },
+    //       distanceField: 'distance',
+    //       spherical: true,
+    //       maxDistance: 100000 // Maximum distance in meter
+    //     }
+    //   },
+    //   { $limit: limit }
+    // ]);
+
+    closestStores = await StoreModel.find({
+      _id: {
+        $in: [
+          '65c38942a24acaa08606f879',
+          '65cb9319a5eed00296967e83',
+          '65bb88cd77df69b429c17179',
+          '65c33804a24acaa08606f62d',
+          '65bf8dc3a24acaa08606e358',
+          '65b664ab89662250a9da2899',
+          '656da469676d4e7bbc5b3152',
+          '65bba66677df69b429c171bd',
+          '65a824ba3b58d98511079fe4',
+          '65b4eb8d89662250a9da1fa4'
+        ]
+      }
+    });
 
     return closestStores;
   }

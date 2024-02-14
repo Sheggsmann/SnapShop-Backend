@@ -6,8 +6,6 @@ import { RedisSingleton } from '@service/redis/connection';
 import { CustomError, IErrorResponse } from '@global/helpers/error-handler';
 import { SocketIOChatHandler } from '@socket/chat';
 import { BaseCronJob } from '@cronJobs/base.cron';
-import { adminService } from '@service/db/admin.service';
-import { AdminRole, IAdminDocument } from '@admin/interfaces/admin.interface';
 import applicationRoutes from '@root/routes';
 import apiStats from 'swagger-stats';
 import http from 'http';
@@ -88,7 +86,6 @@ export class SnapShopServer extends RedisSingleton {
       this.startHttpServer(httpServer);
       this.socketIOConnections(socketIo);
       this.startCronJobs();
-      this.createAppServiceAdmin();
     } catch (err) {
       log.error(err);
     }
@@ -166,19 +163,6 @@ export class SnapShopServer extends RedisSingleton {
       }
     } catch (err) {
       log.error('Error setting up cron jobs', err);
-    }
-  }
-
-  private async createAppServiceAdmin(): Promise<void> {
-    const serviceAdmin = await adminService.getAdminByRole('Service');
-    if (!serviceAdmin) {
-      await adminService.createAdmin({
-        name: 'Service Admin',
-        role: AdminRole.Service,
-        password: '',
-        serviceChargeFromStores: 0,
-        serviceChargeFromUsers: 0
-      } as unknown as IAdminDocument);
     }
   }
 }
