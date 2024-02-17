@@ -1,6 +1,7 @@
 import { config } from '@root/config';
 import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
 import axios, { isAxiosError } from 'axios';
+import client from 'twilio';
 import Logger from 'bunyan';
 
 const log: Logger = config.createLogger('SMS');
@@ -12,6 +13,21 @@ const snsClient = new SNSClient({
 });
 
 class SmsTransport {
+  private async twilioWhatsAppSender(receiverMobileNumber: string, body: string): Promise<MsgResponse> {
+    try {
+      client(config.TWILIO_SID, config.TWILIO_AUTH_TOKEN).messages.create({
+        from: 'whatsapp:+18159740716',
+        body,
+        to: `whatsapp:${receiverMobileNumber}`
+      });
+
+      return Promise.resolve('success');
+    } catch (err) {
+      log.error(err);
+      return Promise.resolve('error');
+    }
+  }
+
   private async awsDevSmsSender(receiverMobileNumber: string, body: string): Promise<MsgResponse> {
     try {
       await snsClient.send(
