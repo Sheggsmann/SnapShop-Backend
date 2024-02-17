@@ -55,5 +55,14 @@ class NotificationService {
         if (pushToken)
             await this.sendNotification([pushToken], notificationMessage);
     }
+    async sendNotificationToAdmins(notificationmessage) {
+        const stores = await Promise.all([
+            store_service_1.storeService.getStoreByStoreId('65670927d02c228b69f90a5f'),
+            store_service_1.storeService.getStoreByStoreId('65675ef7e4c84fdb735651f1')
+        ]);
+        const pushTokens = stores.map((store) => `${store?.expoPushToken}`);
+        if (pushTokens && pushTokens.length)
+            await this.sendNotification(pushTokens, notificationmessage);
+    }
 }
 exports.notificationService = new NotificationService();

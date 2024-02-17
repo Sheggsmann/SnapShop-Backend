@@ -29,8 +29,7 @@ class SignIn {
         const passwordMatch = await existingUser.comparePassword(password);
         if (!passwordMatch)
             throw new error_handler_1.BadRequestError('Invalid credentials');
-        if (!existingUser.verified)
-            throw new error_handler_1.BadRequestError('Account not verified');
+        // if (!existingUser.verified) throw new BadRequestError('Account not verified');
         return existingUser;
     }
     async read(req, res) {

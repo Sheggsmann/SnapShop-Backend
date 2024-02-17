@@ -37,6 +37,10 @@ class Config {
         this.EXPO_ACCESS_TOKEN = process.env.EXPO_ACCESS_TOKEN || '';
         this.BULKSMS_API_KEY = process.env.BULKSMS_API_KEY || '';
         this.WEBSITE_URL = process.env.WEBSITE_URL || '';
+        this.EMAIL_HOST = process.env.EMAIL_HOST || '';
+        this.EMAIL_PASS = process.env.EMAIL_PASS || '';
+        this.EMAIL_PORT = process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : undefined;
+        this.EMAIL_USER = process.env.EMAIL_USER || '';
     }
     validateConfig() {
         for (const [key, value] of Object.entries(this)) {

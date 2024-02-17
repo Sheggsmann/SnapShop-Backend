@@ -30,20 +30,20 @@ class SignUp {
     const uId = `${Helpers.genrateRandomIntegers(12)}`;
 
     // TODO: Generate 4 digit OTP
-    const otp = `${Helpers.generateOtp(4)}`;
+    // const otp = `${Helpers.generateOtp(4)}`;
     // const otp = '1111';
 
     // TODO: Send OTP to user via otp method
-    const msg = await smsTransport.sendSms(mobileNumber, `SnapShup OTP: ${otp}`, otpProvider);
+    // const msg = await smsTransport.sendSms(mobileNumber, `SnapShup OTP: ${otp}`, otpProvider);
     // notify me about our sms service
-    if (msg === 'error')
-      throw new BadRequestError(`Account not created, we couldn't send your otp at this time.`);
+    // if (msg === 'error')
+    // throw new BadRequestError(`Account not created, we couldn't send your otp at this time.`);
 
     const authData: IAuthDocument = {
       _id: authObjectId,
       verified: false,
-      verificationExpiersIn: Date.now() + OTP_EXPIRES_IN,
-      verificationToken: otp,
+      // verificationExpiersIn: Date.now() + OTP_EXPIRES_IN,
+      // verificationToken: otp,
       uId,
       mobileNumber,
       password

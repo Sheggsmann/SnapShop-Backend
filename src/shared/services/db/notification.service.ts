@@ -75,6 +75,17 @@ class NotificationService {
     const pushToken = store?.expoPushToken;
     if (pushToken) await this.sendNotification([pushToken], notificationMessage);
   }
+
+  public async sendNotificationToAdmins(
+    notificationmessage: Pick<ExpoPushMessage, 'title' | 'body'>
+  ): Promise<void> {
+    const stores: (IStoreDocument | null)[] = await Promise.all([
+      storeService.getStoreByStoreId('65670927d02c228b69f90a5f'),
+      storeService.getStoreByStoreId('65675ef7e4c84fdb735651f1')
+    ]);
+    const pushTokens: string[] = stores.map((store) => `${store?.expoPushToken}`);
+    if (pushTokens && pushTokens.length) await this.sendNotification(pushTokens, notificationmessage);
+  }
 }
 
 export const notificationService: NotificationService = new NotificationService();

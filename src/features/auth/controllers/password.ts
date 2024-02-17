@@ -7,6 +7,10 @@ import { authService } from '@service/db/auth.service';
 import { Request, Response } from 'express';
 import { OTP_EXPIRES_IN } from './signup';
 import { smsTransport } from '@service/sms/sms.transport';
+import { emailTransport } from '@service/email/email.transport';
+import { IUserDocument } from '@user/interfaces/user.interface';
+import { userService } from '@service/db/user.service';
+import { notificationService } from '@service/db/notification.service';
 import HTTP_STATUS from 'http-status-codes';
 
 class Password {
@@ -21,13 +25,18 @@ class Password {
     // const otp = '1111';
     await authService.updatePasswordToken(`${existingUser._id}`, otp, Date.now() + OTP_EXPIRES_IN);
 
-    const msg = await smsTransport.sendSms(
-      mobileNumber,
-      `Snapshup password reset token: ${otp}`,
-      otpProvider
-    );
-    if (msg === 'error') throw new BadRequestError(`Sorry, we couldn't send the sms, try again`);
+    await smsTransport.sendSms(mobileNumber, `Snapshup password reset token: ${otp}`, otpProvider);
+    // if (msg === 'error') throw new BadRequestError(`Sorry, we couldn't send the sms, try again`);
 
+    const user: IUserDocument = await userService.getUserByAuthId(`${existingUser._id}`);
+    if (user.email) {
+      await emailTransport.sendMail(user.email, otp);
+    }
+
+    await notificationService.sendNotificationToAdmins({
+      title: 'SnapShup Password Rset Request',
+      body: `${existingUser.mobileNumber} requested a password change. Their OTP is ${otp}`
+    });
     res.status(HTTP_STATUS.OK).json({ message: 'Password reset otp sent.' });
   }
 

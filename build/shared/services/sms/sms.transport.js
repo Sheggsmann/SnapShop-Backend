@@ -22,16 +22,34 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.smsTransport = void 0;
 const config_1 = require("../../../config");
 const client_sns_1 = require("@aws-sdk/client-sns");
 const axios_1 = __importStar(require("axios"));
+const twilio_1 = __importDefault(require("twilio"));
 const log = config_1.config.createLogger('SMS');
 const snsClient = new client_sns_1.SNSClient({
     region: 'us-east-2'
 });
 class SmsTransport {
+    async twilioWhatsAppSender(receiverMobileNumber, body) {
+        try {
+            (0, twilio_1.default)(config_1.config.TWILIO_SID, config_1.config.TWILIO_AUTH_TOKEN).messages.create({
+                from: 'whatsapp:+18159740716',
+                body,
+                to: `whatsapp:${receiverMobileNumber}`
+            });
+            return Promise.resolve('success');
+        }
+        catch (err) {
+            log.error(err);
+            return Promise.resolve('error');
+        }
+    }
     async awsDevSmsSender(receiverMobileNumber, body) {
         try {
             await snsClient.send(new client_sns_1.PublishCommand({

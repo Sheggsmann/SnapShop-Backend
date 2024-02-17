@@ -30,6 +30,10 @@ class Config {
   public EXPO_ACCESS_TOKEN: string | undefined;
   public BULKSMS_API_KEY: string | undefined;
   public WEBSITE_URL: string | undefined;
+  public EMAIL_HOST: string | undefined;
+  public EMAIL_PASS: string | undefined;
+  public EMAIL_PORT: number | undefined;
+  public EMAIL_USER: string | undefined;
 
   private readonly DEFAULT_DATABSE_URL = 'mongodb://localhost:27017/snapshop-backend';
   private readonly PORT = 5000;
@@ -59,6 +63,10 @@ class Config {
     this.EXPO_ACCESS_TOKEN = process.env.EXPO_ACCESS_TOKEN || '';
     this.BULKSMS_API_KEY = process.env.BULKSMS_API_KEY || '';
     this.WEBSITE_URL = process.env.WEBSITE_URL || '';
+    this.EMAIL_HOST = process.env.EMAIL_HOST || '';
+    this.EMAIL_PASS = process.env.EMAIL_PASS || '';
+    this.EMAIL_PORT = process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : undefined;
+    this.EMAIL_USER = process.env.EMAIL_USER || '';
   }
 
   public validateConfig(): void {

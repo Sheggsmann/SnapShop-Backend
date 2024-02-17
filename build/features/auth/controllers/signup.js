@@ -38,18 +38,18 @@ class SignUp {
         const userObjectId = new mongodb_1.ObjectId();
         const uId = `${helpers_1.Helpers.genrateRandomIntegers(12)}`;
         // TODO: Generate 4 digit OTP
-        const otp = `${helpers_1.Helpers.generateOtp(4)}`;
+        // const otp = `${Helpers.generateOtp(4)}`;
         // const otp = '1111';
         // TODO: Send OTP to user via otp method
-        const msg = await sms_transport_1.smsTransport.sendSms(mobileNumber, `SnapShup OTP: ${otp}`, otpProvider);
+        // const msg = await smsTransport.sendSms(mobileNumber, `SnapShup OTP: ${otp}`, otpProvider);
         // notify me about our sms service
-        if (msg === 'error')
-            throw new error_handler_1.BadRequestError(`Account not created, we couldn't send your otp at this time.`);
+        // if (msg === 'error')
+        // throw new BadRequestError(`Account not created, we couldn't send your otp at this time.`);
         const authData = {
             _id: authObjectId,
             verified: false,
-            verificationExpiersIn: Date.now() + exports.OTP_EXPIRES_IN,
-            verificationToken: otp,
+            // verificationExpiersIn: Date.now() + OTP_EXPIRES_IN,
+            // verificationToken: otp,
             uId,
             mobileNumber,
             password
