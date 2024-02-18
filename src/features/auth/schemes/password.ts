@@ -10,7 +10,8 @@ const mobileNumberSchema: ObjectSchema = Joi.object().keys({
   otpProvider: Joi.string().required().messages({
     'string.base': 'otp provider must be of type string',
     'string.empty': 'otp provider is required'
-  })
+  }),
+  app: Joi.string()
 });
 
 const passwordSchema: ObjectSchema = Joi.object().keys({

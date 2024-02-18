@@ -11,12 +11,14 @@ import { emailTransport } from '@service/email/email.transport';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { userService } from '@service/db/user.service';
 import { notificationService } from '@service/db/notification.service';
+import { IStoreDocument } from '@store/interfaces/store.interface';
+import { storeService } from '@service/db/store.service';
 import HTTP_STATUS from 'http-status-codes';
 
 class Password {
   @validator(mobileNumberSchema)
   public async create(req: Request, res: Response): Promise<void> {
-    const { mobileNumber, otpProvider } = req.body;
+    const { mobileNumber, otpProvider, app } = req.body;
 
     const existingUser: IAuthDocument | null = await authService.getUserByPhonenumber(mobileNumber);
     if (!existingUser) throw new BadRequestError('Invalid credentials');
@@ -29,8 +31,15 @@ class Password {
     // if (msg === 'error') throw new BadRequestError(`Sorry, we couldn't send the sms, try again`);
 
     const user: IUserDocument = await userService.getUserByAuthId(`${existingUser._id}`);
-    if (user.email) {
-      await emailTransport.sendMail(user.email, otp);
+    if (app === 'store') {
+      const store: IStoreDocument | null = await storeService.getStoreByUserId(`${user._id}`);
+      if (store && store.email) {
+        await emailTransport.sendMail(store.email, otp);
+      }
+    } else {
+      if (user.email) {
+        await emailTransport.sendMail(user.email, otp);
+      }
     }
 
     await notificationService.sendNotificationToAdmins({

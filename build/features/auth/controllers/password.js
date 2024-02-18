@@ -23,10 +23,11 @@ const sms_transport_1 = require("../../../shared/services/sms/sms.transport");
 const email_transport_1 = require("../../../shared/services/email/email.transport");
 const user_service_1 = require("../../../shared/services/db/user.service");
 const notification_service_1 = require("../../../shared/services/db/notification.service");
+const store_service_1 = require("../../../shared/services/db/store.service");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class Password {
     async create(req, res) {
-        const { mobileNumber, otpProvider } = req.body;
+        const { mobileNumber, otpProvider, app } = req.body;
         const existingUser = await auth_service_1.authService.getUserByPhonenumber(mobileNumber);
         if (!existingUser)
             throw new error_handler_1.BadRequestError('Invalid credentials');
@@ -36,8 +37,16 @@ class Password {
         await sms_transport_1.smsTransport.sendSms(mobileNumber, `Snapshup password reset token: ${otp}`, otpProvider);
         // if (msg === 'error') throw new BadRequestError(`Sorry, we couldn't send the sms, try again`);
         const user = await user_service_1.userService.getUserByAuthId(`${existingUser._id}`);
-        if (user.email) {
-            await email_transport_1.emailTransport.sendMail(user.email, otp);
+        if (app === 'store') {
+            const store = await store_service_1.storeService.getStoreByUserId(`${user._id}`);
+            if (store && store.email) {
+                await email_transport_1.emailTransport.sendMail(store.email, otp);
+            }
+        }
+        else {
+            if (user.email) {
+                await email_transport_1.emailTransport.sendMail(user.email, otp);
+            }
         }
         await notification_service_1.notificationService.sendNotificationToAdmins({
             title: 'SnapShup Password Reset Request',

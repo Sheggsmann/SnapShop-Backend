@@ -15,7 +15,8 @@ const mobileNumberSchema = joi_1.default.object().keys({
     otpProvider: joi_1.default.string().required().messages({
         'string.base': 'otp provider must be of type string',
         'string.empty': 'otp provider is required'
-    })
+    }),
+    app: joi_1.default.string()
 });
 exports.mobileNumberSchema = mobileNumberSchema;
 const passwordSchema = joi_1.default.object().keys({
