@@ -16,6 +16,10 @@ class UserService {
     return await UserModel.countDocuments({});
   }
 
+  public async getUserByEmail(email: string): Promise<IUserDocument | null> {
+    return await UserModel.findOne({ email });
+  }
+
   public async getUserById(userId: string): Promise<IUserDocument> {
     return (await UserModel.findOne({ _id: userId }).populate(
       'authId',

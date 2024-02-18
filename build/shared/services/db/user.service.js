@@ -14,6 +14,9 @@ class UserService {
     async getUsersCount() {
         return await user_model_1.UserModel.countDocuments({});
     }
+    async getUserByEmail(email) {
+        return await user_model_1.UserModel.findOne({ email });
+    }
     async getUserById(userId) {
         return (await user_model_1.UserModel.findOne({ _id: userId }).populate('authId', 'mobileNumber verified uId'));
     }

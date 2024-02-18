@@ -39,6 +39,12 @@ const storeUpdateSchema: ObjectSchema = Joi.object().keys({
     'string.min': 'invalid store description',
     'string.max': 'invalid store description',
     'string.empty': 'description is a required field'
+  }),
+  email: Joi.string().email().optional().allow(null, '').min(2).max(100).messages({
+    'string.base': 'email must be of type string',
+    'string.min': 'invalid email',
+    'string.max': 'invalid email',
+    'string.email': 'invalid email'
   })
 });
 

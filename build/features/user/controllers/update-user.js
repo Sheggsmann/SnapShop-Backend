@@ -28,6 +28,12 @@ class Update {
         const user = await user_service_1.userService.getUserById(req.currentUser.userId);
         if (!user)
             throw new error_handler_1.NotFoundError('User not found');
+        if (email) {
+            const emailUser = await user_service_1.userService.getUserByEmail(email.trim());
+            if (emailUser && email.trim().toLowerCase() !== user.email?.toLowerCase()) {
+                throw new error_handler_1.BadRequestError('Email already in use.');
+            }
+        }
         // Upload Images if they are images
         let imageResult = {};
         if (image) {

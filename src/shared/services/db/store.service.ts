@@ -34,6 +34,10 @@ class StoreService {
     return (await StoreModel.findOne({ name }).select('name image verified')) as IStoreDocument;
   }
 
+  public async getStoreByEmail(email: string): Promise<IStoreDocument | null> {
+    return await StoreModel.findOne({ email });
+  }
+
   public async getStoreByUserId(userId: string): Promise<IStoreDocument | null> {
     return await StoreModel.findOne({ owner: userId });
   }

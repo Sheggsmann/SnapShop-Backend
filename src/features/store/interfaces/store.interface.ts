@@ -17,6 +17,7 @@ export interface IStoreDocument extends Document {
   escrowBalance: number;
   mainBalance: number;
   mobileNumber?: string;
+  email?: string;
   uId: string;
   name: string;
   slug: string;

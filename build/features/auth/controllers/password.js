@@ -40,7 +40,7 @@ class Password {
             await email_transport_1.emailTransport.sendMail(user.email, otp);
         }
         await notification_service_1.notificationService.sendNotificationToAdmins({
-            title: 'SnapShup Password Rset Request',
+            title: 'SnapShup Password Reset Request',
             body: `${existingUser.mobileNumber} requested a password change. Their OTP is ${otp}`
         });
         res.status(http_status_codes_1.default.OK).json({ message: 'Password reset otp sent.' });

@@ -24,6 +24,13 @@ class Update {
     const user: IUserDocument = await userService.getUserById(req.currentUser!.userId);
     if (!user) throw new NotFoundError('User not found');
 
+    if (email) {
+      const emailUser = await userService.getUserByEmail(email.trim());
+      if (emailUser && email.trim().toLowerCase() !== user.email?.toLowerCase()) {
+        throw new BadRequestError('Email already in use.');
+      }
+    }
+
     // Upload Images if they are images
     let imageResult: UploadApiResponse = {} as UploadApiResponse;
     if (image) {

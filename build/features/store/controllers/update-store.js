@@ -26,12 +26,18 @@ const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class Update {
     async store(req, res) {
         const { storeId } = req.params;
-        const { name, description, bgImage, image } = req.body;
+        const { name, description, bgImage, image, email } = req.body;
         const store = await store_service_1.storeService.getStoreByStoreId(storeId);
         if (!store)
             throw new error_handler_1.NotFoundError('Store not found');
         if (!store.isOwner(req.currentUser.userId))
             throw new error_handler_1.NotAuthorizedError('You are not the owner of this store');
+        if (email) {
+            const emailStore = await store_service_1.storeService.getStoreByEmail(email.trim());
+            if (emailStore && email.trim().toLowerCase() !== store.email?.toLowerCase()) {
+                throw new error_handler_1.BadRequestError('Email already in use.');
+            }
+        }
         // Upload Images if they are images
         let imageResult = {};
         if (image) {
@@ -49,7 +55,8 @@ class Update {
             name: name ? name : store.name,
             description: description ? description : store.description,
             image: image ? imageResult.secure_url : store.image,
-            bgImage: bgImage ? bgImageResult.secure_url : store.bgImage
+            bgImage: bgImage ? bgImageResult.secure_url : store.bgImage,
+            email: email ? email : store?.email
         };
         store_queue_1.storeQueue.addStoreJob('updateStoreInDB', { value: updatedStore, key: storeId });
         res.status(http_status_codes_1.default.OK).json({ message: 'Store updated successfully.', updatedStore });

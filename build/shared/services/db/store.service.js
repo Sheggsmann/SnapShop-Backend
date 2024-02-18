@@ -26,6 +26,9 @@ class StoreService {
     async getStoreByName(name) {
         return (await store_model_1.StoreModel.findOne({ name }).select('name image verified'));
     }
+    async getStoreByEmail(email) {
+        return await store_model_1.StoreModel.findOne({ email });
+    }
     async getStoreByUserId(userId) {
         return await store_model_1.StoreModel.findOne({ owner: userId });
     }

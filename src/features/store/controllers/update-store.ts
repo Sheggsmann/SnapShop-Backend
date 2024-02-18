@@ -20,13 +20,20 @@ class Update {
   @validator(storeUpdateSchema)
   public async store(req: Request, res: Response): Promise<void> {
     const { storeId } = req.params;
-    const { name, description, bgImage, image } = req.body;
+    const { name, description, bgImage, image, email } = req.body;
 
     const store: IStoreDocument | null = await storeService.getStoreByStoreId(storeId);
     if (!store) throw new NotFoundError('Store not found');
 
     if (!store.isOwner(req.currentUser!.userId))
       throw new NotAuthorizedError('You are not the owner of this store');
+
+    if (email) {
+      const emailStore = await storeService.getStoreByEmail(email.trim());
+      if (emailStore && email.trim().toLowerCase() !== store.email?.toLowerCase()) {
+        throw new BadRequestError('Email already in use.');
+      }
+    }
 
     // Upload Images if they are images
     let imageResult: UploadApiResponse = {} as UploadApiResponse;
@@ -45,7 +52,8 @@ class Update {
       name: name ? name : store.name,
       description: description ? description : store.description,
       image: image ? imageResult.secure_url : store.image,
-      bgImage: bgImage ? bgImageResult.secure_url : store.bgImage
+      bgImage: bgImage ? bgImageResult.secure_url : store.bgImage,
+      email: email ? email : store?.email
     } as IStoreDocument;
 
     storeQueue.addStoreJob('updateStoreInDB', { value: updatedStore, key: storeId });
