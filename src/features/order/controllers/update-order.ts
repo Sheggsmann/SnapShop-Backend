@@ -14,9 +14,9 @@ import { ITransactionDocument, TransactionType } from '@transactions/interfaces/
 import { validator } from '@global/helpers/joi-validation-decorator';
 import { updateOrderSchema } from '@order/schemes/order.scheme';
 import { adminService } from '@service/db/admin.service';
+import { productQueue } from '@service/queues/product.queue';
 import crypto from 'crypto';
 import HTTP_STATUS from 'http-status-codes';
-import { productQueue } from '@service/queues/product.queue';
 
 const KOBO_IN_NAIRA = 100;
 

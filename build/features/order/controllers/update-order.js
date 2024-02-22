@@ -27,9 +27,9 @@ const transaction_interface_1 = require("../../transactions/interfaces/transacti
 const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-validation-decorator");
 const order_scheme_1 = require("../schemes/order.scheme");
 const admin_service_1 = require("../../../shared/services/db/admin.service");
+const product_queue_1 = require("../../../shared/services/queues/product.queue");
 const crypto_1 = __importDefault(require("crypto"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
-const product_queue_1 = require("../../../shared/services/queues/product.queue");
 const KOBO_IN_NAIRA = 100;
 class UpdateOrder {
     async confirmOrderPayment(req, res) {

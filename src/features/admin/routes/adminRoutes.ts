@@ -8,6 +8,8 @@ import { getUser } from '@user/controllers/get-user';
 import { getSearches } from '@searches/controllers/get-searches';
 import { getProduct } from '@product/controllers/get-product';
 import { sendNotification } from '@root/features/notification/controllers/send-notification';
+import { getTagsMappings } from '@admin/controllers/get-tags-mapping';
+import { createTagMapping } from '@admin/controllers/create-tag-mapping';
 
 class AdminRoutes {
   private router: Router;
@@ -89,6 +91,20 @@ class AdminRoutes {
       authMiddleware.protect,
       authMiddleware.restrictTo([Role.Admin]),
       sendNotification.toAll
+    );
+
+    // Tags Mappings Routes
+    this.router.get(
+      '/tags-mappings/all',
+      authMiddleware.protect,
+      authMiddleware.restrictTo([Role.Admin]),
+      getTagsMappings.tag
+    );
+    this.router.post(
+      '/tags-mappings',
+      authMiddleware.protect,
+      authMiddleware.restrictTo([Role.Admin]),
+      createTagMapping.tag
     );
 
     return this.router;

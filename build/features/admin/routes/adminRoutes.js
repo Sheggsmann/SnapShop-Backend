@@ -14,6 +14,8 @@ const get_user_1 = require("../../user/controllers/get-user");
 const get_searches_1 = require("../../searches/controllers/get-searches");
 const get_product_1 = require("../../product/controllers/get-product");
 const send_notification_1 = require("../../notification/controllers/send-notification");
+const get_tags_mapping_1 = require("../controllers/get-tags-mapping");
+const create_tag_mapping_1 = require("../controllers/create-tag-mapping");
 class AdminRoutes {
     constructor() {
         this.router = express_1.default.Router();
@@ -36,6 +38,9 @@ class AdminRoutes {
         this.router.post('/notifications/all-users', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), send_notification_1.sendNotification.toAllUsers);
         this.router.post('/notifications/all-stores', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), send_notification_1.sendNotification.toAllStores);
         this.router.post('/notifications/all', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), send_notification_1.sendNotification.toAll);
+        // Tags Mappings Routes
+        this.router.get('/tags-mappings/all', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), get_tags_mapping_1.getTagsMappings.tag);
+        this.router.post('/tags-mappings', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), create_tag_mapping_1.createTagMapping.tag);
         return this.router;
     }
 }

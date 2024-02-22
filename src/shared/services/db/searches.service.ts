@@ -3,7 +3,11 @@ import { ISearchesDocument } from '@searches/interfaces/searches.interfaces';
 
 class Searches {
   public async add(searchParam: string, location: number[], user: string): Promise<void> {
-    await SearchesModel.create({ searchParam, location, user });
+    if (user) {
+      await SearchesModel.create({ searchParam, location, user });
+    } else {
+      await SearchesModel.create({ searchParam, location });
+    }
   }
 
   public async getSearches(skip: number, limit: number): Promise<ISearchesDocument[]> {
