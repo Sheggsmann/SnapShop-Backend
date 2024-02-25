@@ -26,12 +26,18 @@ class AuthMiddleware {
     }
     restrictTo(roles) {
         return (req, res, next) => {
+            let isAuthenticated = false;
             roles.forEach((role) => {
-                if (!req.currentUser.roles.includes(role)) {
-                    throw new error_handler_1.NotAuthorizedError('You do not have the permissions to access this route.');
+                if (req.currentUser.roles.includes(role)) {
+                    isAuthenticated = true;
                 }
             });
-            next();
+            if (isAuthenticated) {
+                next();
+            }
+            else {
+                throw new error_handler_1.NotAuthorizedError('You do not have the permissions to access this route.');
+            }
         };
     }
     checkAuth(req, res, next) {

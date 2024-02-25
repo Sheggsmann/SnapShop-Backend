@@ -40,7 +40,7 @@ class ProductRoutes {
       '/product/media/:productId',
       authMiddleware.protect,
       authMiddleware.checkAuth,
-      authMiddleware.restrictTo(['StoreOwner']),
+      authMiddleware.restrictTo(['StoreOwner', 'Admin']),
       updateProduct.productWithMedia
     );
 

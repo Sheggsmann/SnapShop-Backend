@@ -28,13 +28,18 @@ class AuthMiddleware {
 
   public restrictTo(roles: (keyof typeof Role)[]) {
     return (req: Request, res: Response, next: NextFunction): void => {
+      let isAuthenticated = false;
       roles.forEach((role) => {
-        if (!req.currentUser!.roles.includes(role)) {
-          throw new NotAuthorizedError('You do not have the permissions to access this route.');
+        if (req.currentUser!.roles.includes(role)) {
+          isAuthenticated = true;
         }
       });
 
-      next();
+      if (isAuthenticated) {
+        next();
+      } else {
+        throw new NotAuthorizedError('You do not have the permissions to access this route.');
+      }
     };
   }
 

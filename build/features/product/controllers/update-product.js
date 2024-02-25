@@ -21,6 +21,7 @@ const product_queue_1 = require("../../../shared/services/queues/product.queue")
 const cloudinary_upload_1 = require("../../../shared/globals/helpers/cloudinary_upload");
 const product_constants_1 = require("../constants/product.constants");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
+const user_interface_1 = require("../../user/interfaces/user.interface");
 /* When updating a product, the images and videos are passed as an array of image/video files with the
 following format.
 
@@ -51,8 +52,10 @@ class Update {
         if (!product) {
             throw new error_handler_1.NotFoundError('Product not found');
         }
-        if (product.store.owner.toString() !== req.currentUser.userId) {
-            throw new error_handler_1.NotAuthorizedError('You are not the owner of this store');
+        if (!req.currentUser.roles.includes(user_interface_1.Role.Admin)) {
+            if (product.store.owner.toString() !== req.currentUser.userId.toString()) {
+                throw new error_handler_1.BadRequestError('You are not the owner of this store');
+            }
         }
         if (priceDiscount) {
             if (parseInt(priceDiscount) > parseInt(price) || parseInt(priceDiscount) > product.price)
@@ -86,8 +89,10 @@ class Update {
         if (!product) {
             throw new error_handler_1.NotFoundError('Product not found');
         }
-        if (product.store.owner.toString() !== req.currentUser.userId) {
-            throw new error_handler_1.NotAuthorizedError('You are not the owner of this store');
+        if (!req.currentUser.roles.includes(user_interface_1.Role.Admin)) {
+            if (product.store.owner.toString() !== req.currentUser.userId.toString()) {
+                throw new error_handler_1.BadRequestError('You are not the owner of this store');
+            }
         }
         // Check if images have exceeded the max image length
         const totalImages = product.images.length + (images?.uploaded?.length ?? 0) - (images?.deleted?.length ?? 0);

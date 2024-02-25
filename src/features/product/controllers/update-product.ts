@@ -3,13 +3,14 @@ import { validator } from '@global/helpers/joi-validation-decorator';
 import { IProductDocument, IProductFile, IUpdateProductFile } from '@product/interfaces/product.interface';
 import { updateProductMediaSchema, updateProductSchema } from '@product/schemes/product.scheme';
 import { productService } from '@service/db/product.service';
-import { BadRequestError, NotAuthorizedError, NotFoundError } from '@global/helpers/error-handler';
+import { BadRequestError, NotFoundError } from '@global/helpers/error-handler';
 import { productQueue } from '@service/queues/product.queue';
 import { UploadApiResponse } from 'cloudinary';
 import { deleteFile, uploadMultiple } from '@global/helpers/cloudinary_upload';
 import { productConstants } from '@product/constants/product.constants';
 import { IStoreDocument } from '@store/interfaces/store.interface';
 import HTTP_STATUS from 'http-status-codes';
+import { Role } from '@user/interfaces/user.interface';
 
 /* When updating a product, the images and videos are passed as an array of image/video files with the
 following format.
@@ -46,8 +47,12 @@ class Update {
       throw new NotFoundError('Product not found');
     }
 
-    if ((product.store as unknown as IStoreDocument).owner.toString() !== req.currentUser!.userId) {
-      throw new NotAuthorizedError('You are not the owner of this store');
+    if (!req.currentUser!.roles.includes(Role.Admin)) {
+      if (
+        (product.store as unknown as IStoreDocument).owner.toString() !== req.currentUser!.userId.toString()
+      ) {
+        throw new BadRequestError('You are not the owner of this store');
+      }
     }
 
     if (priceDiscount) {
@@ -81,8 +86,12 @@ class Update {
       throw new NotFoundError('Product not found');
     }
 
-    if ((product.store as unknown as IStoreDocument).owner.toString() !== req.currentUser!.userId) {
-      throw new NotAuthorizedError('You are not the owner of this store');
+    if (!req.currentUser!.roles.includes(Role.Admin)) {
+      if (
+        (product.store as unknown as IStoreDocument).owner.toString() !== req.currentUser!.userId.toString()
+      ) {
+        throw new BadRequestError('You are not the owner of this store');
+      }
     }
 
     // Check if images have exceeded the max image length
