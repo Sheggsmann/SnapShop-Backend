@@ -9,8 +9,8 @@ import { UploadApiResponse } from 'cloudinary';
 import { deleteFile, uploadMultiple } from '@global/helpers/cloudinary_upload';
 import { productConstants } from '@product/constants/product.constants';
 import { IStoreDocument } from '@store/interfaces/store.interface';
-import HTTP_STATUS from 'http-status-codes';
 import { Role } from '@user/interfaces/user.interface';
+import HTTP_STATUS from 'http-status-codes';
 
 /* When updating a product, the images and videos are passed as an array of image/video files with the
 following format.
