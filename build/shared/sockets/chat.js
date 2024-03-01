@@ -14,6 +14,7 @@ const order_queue_1 = require("../services/queues/order.queue");
 const user_service_1 = require("../services/db/user.service");
 const notification_queue_1 = require("../services/queues/notification.queue");
 const analytics_queue_1 = require("../services/queues/analytics.queue");
+const email_queue_1 = require("../services/queues/email.queue");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const log = config_1.config.createLogger('CHAT-SOCKET');
@@ -132,6 +133,12 @@ class SocketIOChatHandler {
                         products: order.products,
                         status: order_interface_1.OrderStatus.PENDING,
                         createdAt
+                    });
+                    email_queue_1.emailQueue.addEmailJob('sendMailToAdmins', {
+                        value: {
+                            title: 'New Order 🥳',
+                            body: `${(user.firstname, user.lastname)} placed an order from store ${receiver}`
+                        }
                     });
                 }
             }

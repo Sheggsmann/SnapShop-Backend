@@ -3,6 +3,8 @@ import { createTransport } from 'nodemailer';
 
 type MsgResponse = 'error' | 'success';
 
+type TemplateType = 'default' | 'reset-password';
+
 class EmailTransport {
   private otpHtmlTemplate(otp: string) {
     return `
@@ -14,11 +16,35 @@ class EmailTransport {
           `;
   }
 
+  private defaultTemplate(body: string): string {
+    return `<div>
+      ${body}
+    </div>`;
+  }
+
+  private selectTemplate(template = 'default') {
+    return (body: string) => {
+      switch (template) {
+        case 'default':
+          return this.defaultTemplate(body);
+        case 'reset-password':
+          return this.otpHtmlTemplate(body);
+        default:
+          return this.defaultTemplate(body);
+      }
+    };
+  }
+
   //   private async zohoSmsSender(receiverEmail: string, body: string) {}
 
   //   private devEmailSender(receiverEmail: string, body: string) {}
 
-  private async prodEmailSender(receiverEmail: string, body: string): Promise<MsgResponse> {
+  private async prodEmailSender(
+    receiverEmail: string,
+    title: string,
+    body: string,
+    template: TemplateType
+  ): Promise<MsgResponse> {
     const transport = createTransport({
       host: config.EMAIL_HOST,
       port: config.EMAIL_PORT,
@@ -31,9 +57,9 @@ class EmailTransport {
     const mailOptions = {
       from: `"SnapShup" <support@geelgeworden.nl>`,
       to: receiverEmail,
-      subject: 'SnapShup Reset Token ✅✅',
-      text: 'Your SnapShup Reset Password OTP is ...',
-      html: this.otpHtmlTemplate(body)
+      subject: title,
+      text: template === 'reset-password' ? `Your SnapShup Reset Password OTP is ... ${body}` : body,
+      html: this.selectTemplate(template)(body)
     };
 
     try {
@@ -45,8 +71,20 @@ class EmailTransport {
     }
   }
 
-  public async sendMail(receiverEmail: string, body: string): Promise<MsgResponse> {
-    return this.prodEmailSender(receiverEmail, body);
+  public async sendMail(
+    receiverEmail: string,
+    title: string,
+    body: string,
+    template: TemplateType = 'default'
+  ): Promise<MsgResponse> {
+    return this.prodEmailSender(receiverEmail, title, body, template);
+  }
+
+  public async sendMailToAdmins(title: string, body: string) {
+    const adminEmails = ['promisesheggs@gmail.com', 'jaystance25@gmail.com'];
+    for (const email of adminEmails) {
+      this.prodEmailSender(email, title, body, 'default');
+    }
   }
 }
 

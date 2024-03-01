@@ -40,12 +40,12 @@ class Password {
         if (app === 'store') {
             const store = await store_service_1.storeService.getStoreByUserId(`${user._id}`);
             if (store && store.email) {
-                await email_transport_1.emailTransport.sendMail(store.email, otp);
+                await email_transport_1.emailTransport.sendMail(store.email, 'SnapShup Reset Token ✅✅', otp, 'reset-password');
             }
         }
         else {
             if (user.email) {
-                await email_transport_1.emailTransport.sendMail(user.email, otp);
+                await email_transport_1.emailTransport.sendMail(user.email, 'SnapShup Reset Token ✅✅', otp, 'reset-password');
             }
         }
         await notification_service_1.notificationService.sendNotificationToAdmins({

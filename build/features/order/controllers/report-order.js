@@ -21,6 +21,7 @@ const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-
 const order_scheme_1 = require("../schemes/order.scheme");
 const notification_queue_1 = require("../../../shared/services/queues/notification.queue");
 const chat_1 = require("../../../shared/sockets/chat");
+const email_queue_1 = require("../../../shared/services/queues/email.queue");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 class ReportOrder {
     async report(req, res) {
@@ -52,6 +53,12 @@ class ReportOrder {
             value: {
                 title: `${order.user.name} reported an issue with their order 😞`,
                 body: `${reason}`
+            }
+        });
+        email_queue_1.emailQueue.addEmailJob('sendMailToAdmins', {
+            value: {
+                title: 'Order Dispute',
+                body: `${order.user} reported an order from store ${order.store}`
             }
         });
         res.status(http_status_codes_1.default.OK).json({ message: 'Order report success', order });

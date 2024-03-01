@@ -8,6 +8,7 @@ import { reportOrderSchema } from '@order/schemes/order.scheme';
 import { notificationQueue } from '@service/queues/notification.queue';
 import { IStoreDocument } from '@store/interfaces/store.interface';
 import { socketIOChatObject } from '@socket/chat';
+import { emailQueue } from '@service/queues/email.queue';
 import HTTP_STATUS from 'http-status-codes';
 
 class ReportOrder {
@@ -46,6 +47,13 @@ class ReportOrder {
       value: {
         title: `${order.user.name} reported an issue with their order 😞`,
         body: `${reason}`
+      }
+    });
+
+    emailQueue.addEmailJob('sendMailToAdmins', {
+      value: {
+        title: 'Order Dispute',
+        body: `${order.user} reported an order from store ${order.store}`
       }
     });
 

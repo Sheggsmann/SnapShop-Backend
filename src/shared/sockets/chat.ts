@@ -13,6 +13,7 @@ import { IAnalyticsData, IAnalyticsDocument } from '@analytics/interfaces/analyt
 import { userService } from '@service/db/user.service';
 import { notificationQueue } from '@service/queues/notification.queue';
 import { analyticsQueue } from '@service/queues/analytics.queue';
+import { emailQueue } from '@service/queues/email.queue';
 import JWT from 'jsonwebtoken';
 import Logger from 'bunyan';
 import mongoose from 'mongoose';
@@ -191,6 +192,13 @@ export class SocketIOChatHandler {
             products: order!.products,
             status: OrderStatus.PENDING,
             createdAt
+          });
+
+          emailQueue.addEmailJob('sendMailToAdmins', {
+            value: {
+              title: 'New Order 🥳',
+              body: `${(user.firstname, user.lastname)} placed an order from store ${receiver}`
+            }
           });
         }
       }

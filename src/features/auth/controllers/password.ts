@@ -34,11 +34,11 @@ class Password {
     if (app === 'store') {
       const store: IStoreDocument | null = await storeService.getStoreByUserId(`${user._id}`);
       if (store && store.email) {
-        await emailTransport.sendMail(store.email, otp);
+        await emailTransport.sendMail(store.email, 'SnapShup Reset Token ✅✅', otp, 'reset-password');
       }
     } else {
       if (user.email) {
-        await emailTransport.sendMail(user.email, otp);
+        await emailTransport.sendMail(user.email, 'SnapShup Reset Token ✅✅', otp, 'reset-password');
       }
     }
 

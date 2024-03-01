@@ -13,9 +13,26 @@ class EmailTransport {
           </div>
           `;
     }
+    defaultTemplate(body) {
+        return `<div>
+      ${body}
+    </div>`;
+    }
+    selectTemplate(template = 'default') {
+        return (body) => {
+            switch (template) {
+                case 'default':
+                    return this.defaultTemplate(body);
+                case 'reset-password':
+                    return this.otpHtmlTemplate(body);
+                default:
+                    return this.defaultTemplate(body);
+            }
+        };
+    }
     //   private async zohoSmsSender(receiverEmail: string, body: string) {}
     //   private devEmailSender(receiverEmail: string, body: string) {}
-    async prodEmailSender(receiverEmail, body) {
+    async prodEmailSender(receiverEmail, title, body, template) {
         const transport = (0, nodemailer_1.createTransport)({
             host: config_1.config.EMAIL_HOST,
             port: config_1.config.EMAIL_PORT,
@@ -27,9 +44,9 @@ class EmailTransport {
         const mailOptions = {
             from: `"SnapShup" <support@geelgeworden.nl>`,
             to: receiverEmail,
-            subject: 'SnapShup Reset Token ✅✅',
-            text: 'Your SnapShup Reset Password OTP is ...',
-            html: this.otpHtmlTemplate(body)
+            subject: title,
+            text: template === 'reset-password' ? `Your SnapShup Reset Password OTP is ... ${body}` : body,
+            html: this.selectTemplate(template)(body)
         };
         try {
             await transport.sendMail(mailOptions);
@@ -40,8 +57,14 @@ class EmailTransport {
             return Promise.resolve('error');
         }
     }
-    async sendMail(receiverEmail, body) {
-        return this.prodEmailSender(receiverEmail, body);
+    async sendMail(receiverEmail, title, body, template = 'default') {
+        return this.prodEmailSender(receiverEmail, title, body, template);
+    }
+    async sendMailToAdmins(title, body) {
+        const adminEmails = ['promisesheggs@gmail.com', 'jaystance25@gmail.com'];
+        for (const email of adminEmails) {
+            this.prodEmailSender(email, title, body, 'default');
+        }
     }
 }
 exports.emailTransport = new EmailTransport();

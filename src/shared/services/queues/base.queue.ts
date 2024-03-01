@@ -15,6 +15,7 @@ import { INotificationJob } from '@root/features/notification/interfaces/notific
 import { ITransactionDocument } from '@transactions/interfaces/transaction.interface';
 import { IAnalyticsJob } from '@analytics/interfaces/analytics.interface';
 import Logger from 'bunyan';
+import { IEmailJob } from '@service/email/email.interface';
 
 export let bullAdapters: BullAdapter[] = [];
 export const serverAdapter: ExpressAdapter = new ExpressAdapter().setBasePath('/queues');
@@ -22,6 +23,7 @@ export const serverAdapter: ExpressAdapter = new ExpressAdapter().setBasePath('/
 type IBaseJobData =
   | IAuthJob
   | IAnalyticsJob
+  | IEmailJob
   | IUserJob
   | IStoreJob
   | IProductJob
