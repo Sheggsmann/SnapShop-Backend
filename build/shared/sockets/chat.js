@@ -13,6 +13,7 @@ const order_interface_1 = require("../../features/order/interfaces/order.interfa
 const order_queue_1 = require("../services/queues/order.queue");
 const user_service_1 = require("../services/db/user.service");
 const notification_queue_1 = require("../services/queues/notification.queue");
+const analytics_queue_1 = require("../services/queues/analytics.queue");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const log = config_1.config.createLogger('CHAT-SOCKET');
@@ -69,6 +70,10 @@ class SocketIOChatHandler {
                 if (callback) {
                     callback({ messageId });
                 }
+            });
+            // Listen for tracking events
+            socket.on('track', async (data) => {
+                analytics_queue_1.analyticsQueue.addAnalyticsJob('addAnalyticsToDB', { value: data });
             });
             socket.on('disconnect', async () => {
                 await chatCache.userIsOffline(currentAuthId);

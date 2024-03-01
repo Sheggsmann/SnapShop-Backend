@@ -55,7 +55,7 @@ class StoreService {
                                 text: {
                                     query: searchParam,
                                     path: 'tags',
-                                    fuzzy: { maxEdits: 1, prefixLength: 1 },
+                                    fuzzy: { maxEdits: 2, prefixLength: 2 },
                                     score: { boost: { value: 400 } }
                                 }
                             },

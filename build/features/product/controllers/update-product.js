@@ -20,8 +20,8 @@ const error_handler_1 = require("../../../shared/globals/helpers/error-handler")
 const product_queue_1 = require("../../../shared/services/queues/product.queue");
 const cloudinary_upload_1 = require("../../../shared/globals/helpers/cloudinary_upload");
 const product_constants_1 = require("../constants/product.constants");
-const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const user_interface_1 = require("../../user/interfaces/user.interface");
+const http_status_codes_1 = __importDefault(require("http-status-codes"));
 /* When updating a product, the images and videos are passed as an array of image/video files with the
 following format.
 
