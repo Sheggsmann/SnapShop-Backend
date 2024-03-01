@@ -50,10 +50,11 @@ class SearchStore {
       `${req.query.searchParam}`,
       parseFloat(lat),
       parseFloat(lng),
-      radius
+      radius,
+      Boolean(req.query?.anywhere === 'true')
     );
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Search results', products });
+    res.status(HTTP_STATUS.OK).json({ message: 'Search results', products, productsCount: products.length });
   };
 
   private clampDistance = (distance: number, unit = 'km'): number => {

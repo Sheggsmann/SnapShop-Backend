@@ -44,8 +44,8 @@ class SearchStore {
                 location: [parseFloat(lat), parseFloat(lng)],
                 user: authPayload ? authPayload?.userId : ''
             });
-            const products = await store_service_1.storeService.getNearbyStores(`${req.query.searchParam}`, parseFloat(lat), parseFloat(lng), radius);
-            res.status(http_status_codes_1.default.OK).json({ message: 'Search results', products });
+            const products = await store_service_1.storeService.getNearbyStores(`${req.query.searchParam}`, parseFloat(lat), parseFloat(lng), radius, Boolean(req.query?.anywhere === 'true'));
+            res.status(http_status_codes_1.default.OK).json({ message: 'Search results', products, productsCount: products.length });
         };
         this.clampDistance = (distance, unit = 'km') => {
             // using 1 for kilometers and 1000 for meters

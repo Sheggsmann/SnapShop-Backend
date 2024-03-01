@@ -35,73 +35,138 @@ class StoreService {
     async getStoreByStoreId(storeId) {
         return await store_model_1.StoreModel.findOne({ _id: storeId });
     }
-    async getNearbyStores(searchParam, latitude, longitude, radius) {
+    async getNearbyStores(searchParam, latitude, longitude, radius, anywhere = false) {
         searchParam = helpers_1.Helpers.escapeRegExp(`${searchParam}`);
-        const products = await product_model_1.ProductModel.aggregate([
-            {
-                $search: {
-                    index: 'searchProducts',
-                    compound: {
-                        should: [
-                            {
-                                text: {
-                                    query: searchParam,
-                                    path: 'name',
-                                    fuzzy: { maxEdits: 1, prefixLength: 1 },
-                                    score: { boost: { value: 100 } }
+        let products = [];
+        if (anywhere) {
+            products = await product_model_1.ProductModel.aggregate([
+                {
+                    $search: {
+                        index: 'searchProducts',
+                        compound: {
+                            should: [
+                                {
+                                    text: {
+                                        query: searchParam,
+                                        path: 'name',
+                                        fuzzy: { maxEdits: 1, prefixLength: 1 },
+                                        score: { boost: { value: 100 } }
+                                    }
+                                },
+                                {
+                                    text: {
+                                        query: searchParam,
+                                        path: 'tags',
+                                        fuzzy: { maxEdits: 2, prefixLength: 1 },
+                                        score: { boost: { value: 400 } }
+                                    }
+                                },
+                                {
+                                    text: {
+                                        query: searchParam,
+                                        path: 'description',
+                                        fuzzy: { maxEdits: 1 },
+                                        score: { boost: { value: 100 } }
+                                    }
                                 }
-                            },
-                            {
-                                text: {
-                                    query: searchParam,
-                                    path: 'tags',
-                                    fuzzy: { maxEdits: 2, prefixLength: 2 },
-                                    score: { boost: { value: 400 } }
-                                }
-                            },
-                            {
-                                text: {
-                                    query: searchParam,
-                                    path: 'description',
-                                    fuzzy: { maxEdits: 1 },
-                                    score: { boost: { value: 100 } }
-                                }
-                            }
-                        ]
+                            ]
+                        }
+                    }
+                },
+                { $limit: 120 },
+                {
+                    $lookup: {
+                        from: 'Store',
+                        localField: 'store',
+                        foreignField: '_id',
+                        as: 'store'
+                    }
+                },
+                { $unwind: '$store' },
+                {
+                    $project: {
+                        name: 1,
+                        description: 1,
+                        store: 1,
+                        price: 1,
+                        priceDiscount: 1,
+                        quantity: 1,
+                        images: 1,
+                        videos: 1,
+                        tags: 1,
+                        productsCount: 1,
+                        score: { $meta: 'searchScore' }
                     }
                 }
-            },
-            { $limit: 50 },
-            {
-                $lookup: {
-                    from: 'Store',
-                    localField: 'store',
-                    foreignField: '_id',
-                    as: 'store'
+            ]);
+        }
+        else {
+            products = await product_model_1.ProductModel.aggregate([
+                {
+                    $search: {
+                        index: 'searchProducts',
+                        compound: {
+                            should: [
+                                {
+                                    text: {
+                                        query: searchParam,
+                                        path: 'name',
+                                        fuzzy: { maxEdits: 1, prefixLength: 1 },
+                                        score: { boost: { value: 100 } }
+                                    }
+                                },
+                                {
+                                    text: {
+                                        query: searchParam,
+                                        path: 'tags',
+                                        fuzzy: { maxEdits: 2, prefixLength: 2 },
+                                        score: { boost: { value: 400 } }
+                                    }
+                                },
+                                {
+                                    text: {
+                                        query: searchParam,
+                                        path: 'description',
+                                        fuzzy: { maxEdits: 1 },
+                                        score: { boost: { value: 100 } }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                { $limit: 80 },
+                {
+                    $lookup: {
+                        from: 'Store',
+                        localField: 'store',
+                        foreignField: '_id',
+                        as: 'store'
+                    }
+                },
+                { $unwind: '$store' },
+                {
+                    $match: {
+                        'store.locations.location': { $geoWithin: { $centerSphere: [[longitude, latitude], radius] } }
+                    }
+                },
+                {
+                    $project: {
+                        name: 1,
+                        description: 1,
+                        store: 1,
+                        price: 1,
+                        priceDiscount: 1,
+                        quantity: 1,
+                        images: 1,
+                        videos: 1,
+                        tags: 1,
+                        productsCount: 1,
+                        score: { $meta: 'searchScore' }
+                    }
                 }
-            },
-            { $unwind: '$store' },
-            {
-                $match: {
-                    'store.locations.location': { $geoWithin: { $centerSphere: [[longitude, latitude], radius] } }
-                }
-            },
-            {
-                $project: {
-                    name: 1,
-                    description: 1,
-                    store: 1,
-                    price: 1,
-                    priceDiscount: 1,
-                    quantity: 1,
-                    images: 1,
-                    videos: 1,
-                    tags: 1,
-                    productsCount: 1,
-                    score: { $meta: 'searchScore' }
-                }
-            }
-        ]);
+            ]);
+        }
         const productsWithDistance = products.map((product) => {
             const storeLocation = product.store.locations[0].location.coordinates;
             const distance = helpers_1.Helpers.calculateDistance(latitude, longitude, storeLocation[1], storeLocation[0]);

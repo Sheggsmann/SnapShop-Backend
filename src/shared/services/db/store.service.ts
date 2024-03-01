@@ -50,74 +50,140 @@ class StoreService {
     searchParam: string,
     latitude: number,
     longitude: number,
-    radius: number
+    radius: number,
+    anywhere = false
   ): Promise<IProductDocument[]> {
     searchParam = Helpers.escapeRegExp(`${searchParam}`);
-    const products: IProductDocument[] = await ProductModel.aggregate([
-      {
-        $search: {
-          index: 'searchProducts',
-          compound: {
-            should: [
-              {
-                text: {
-                  query: searchParam,
-                  path: 'name',
-                  fuzzy: { maxEdits: 1, prefixLength: 1 },
-                  score: { boost: { value: 100 } }
+    let products: IProductDocument[] = [];
+
+    if (anywhere) {
+      products = await ProductModel.aggregate([
+        {
+          $search: {
+            index: 'searchProducts',
+            compound: {
+              should: [
+                {
+                  text: {
+                    query: searchParam,
+                    path: 'name',
+                    fuzzy: { maxEdits: 1, prefixLength: 1 },
+                    score: { boost: { value: 100 } }
+                  }
+                },
+                {
+                  text: {
+                    query: searchParam,
+                    path: 'tags',
+                    fuzzy: { maxEdits: 2, prefixLength: 1 },
+                    score: { boost: { value: 400 } }
+                  }
+                },
+                {
+                  text: {
+                    query: searchParam,
+                    path: 'description',
+                    fuzzy: { maxEdits: 1 },
+                    score: { boost: { value: 100 } }
+                  }
                 }
-              },
-              {
-                text: {
-                  query: searchParam,
-                  path: 'tags',
-                  fuzzy: { maxEdits: 2, prefixLength: 2 },
-                  score: { boost: { value: 400 } }
-                }
-              },
-              {
-                text: {
-                  query: searchParam,
-                  path: 'description',
-                  fuzzy: { maxEdits: 1 },
-                  score: { boost: { value: 100 } }
-                }
-              }
-            ]
+              ]
+            }
+          }
+        },
+        { $limit: 120 },
+        {
+          $lookup: {
+            from: 'Store',
+            localField: 'store',
+            foreignField: '_id',
+            as: 'store'
+          }
+        },
+        { $unwind: '$store' },
+        {
+          $project: {
+            name: 1,
+            description: 1,
+            store: 1,
+            price: 1,
+            priceDiscount: 1,
+            quantity: 1,
+            images: 1,
+            videos: 1,
+            tags: 1,
+            productsCount: 1,
+            score: { $meta: 'searchScore' }
           }
         }
-      },
-      { $limit: 50 },
-      {
-        $lookup: {
-          from: 'Store',
-          localField: 'store',
-          foreignField: '_id',
-          as: 'store'
+      ]);
+    } else {
+      products = await ProductModel.aggregate([
+        {
+          $search: {
+            index: 'searchProducts',
+            compound: {
+              should: [
+                {
+                  text: {
+                    query: searchParam,
+                    path: 'name',
+                    fuzzy: { maxEdits: 1, prefixLength: 1 },
+                    score: { boost: { value: 100 } }
+                  }
+                },
+                {
+                  text: {
+                    query: searchParam,
+                    path: 'tags',
+                    fuzzy: { maxEdits: 2, prefixLength: 2 },
+                    score: { boost: { value: 400 } }
+                  }
+                },
+                {
+                  text: {
+                    query: searchParam,
+                    path: 'description',
+                    fuzzy: { maxEdits: 1 },
+                    score: { boost: { value: 100 } }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        { $limit: 80 },
+        {
+          $lookup: {
+            from: 'Store',
+            localField: 'store',
+            foreignField: '_id',
+            as: 'store'
+          }
+        },
+        { $unwind: '$store' },
+        {
+          $match: {
+            'store.locations.location': { $geoWithin: { $centerSphere: [[longitude, latitude], radius] } }
+          }
+        },
+        {
+          $project: {
+            name: 1,
+            description: 1,
+            store: 1,
+            price: 1,
+            priceDiscount: 1,
+            quantity: 1,
+            images: 1,
+            videos: 1,
+            tags: 1,
+            productsCount: 1,
+            score: { $meta: 'searchScore' }
+          }
         }
-      },
-      { $unwind: '$store' },
-      {
-        $match: {
-          'store.locations.location': { $geoWithin: { $centerSphere: [[longitude, latitude], radius] } }
-        }
-      },
-      {
-        $project: {
-          name: 1,
-          description: 1,
-          store: 1,
-          price: 1,
-          priceDiscount: 1,
-          quantity: 1,
-          images: 1,
-          videos: 1,
-          tags: 1,
-          productsCount: 1,
-          score: { $meta: 'searchScore' }
-        }
-      }
-    ]);
+      ]);
+    }
 
     const productsWithDistance: IProductDocument[] = products.map((product) => {
       const storeLocation: number[] = (product.store as IStoreDocument).locations[0].location.coordinates;
