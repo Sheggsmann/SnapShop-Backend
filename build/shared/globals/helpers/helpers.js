@@ -26,7 +26,7 @@ class Helpers {
         return cleanedName;
     }
     static signToken(jwtPayload) {
-        return jsonwebtoken_1.default.sign(jwtPayload, config_1.config.JWT_TOKEN, { expiresIn: '7d' });
+        return jsonwebtoken_1.default.sign(jwtPayload, config_1.config.JWT_TOKEN);
     }
     static parseToken(token) {
         try {

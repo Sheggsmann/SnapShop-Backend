@@ -28,7 +28,7 @@ export class Helpers {
   }
 
   static signToken(jwtPayload: object): string {
-    return JWT.sign(jwtPayload, config.JWT_TOKEN!, { expiresIn: '7d' });
+    return JWT.sign(jwtPayload, config.JWT_TOKEN!);
   }
 
   static parseToken(token: string): AuthUserPayload | null {
