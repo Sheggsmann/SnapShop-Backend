@@ -8,7 +8,7 @@ const SALT_ROUND = 11;
 const authSchema = new Schema(
   {
     uId: String,
-    mobileNumber: String,
+    mobileNumber: { type: String, trim: true },
     password: String,
     passwordResetExpiresIn: Number,
     passwordResetToken: { type: String, default: '' },

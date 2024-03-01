@@ -3,12 +3,12 @@ import { Model, Schema, Types, model } from 'mongoose';
 
 const storeSchema: Schema = new Schema(
   {
-    name: { type: String, unique: true, required: true },
+    name: { type: String, unique: true, required: true, trim: true },
     owner: { type: Types.ObjectId, ref: 'User', index: true, required: true },
     escrowBalance: { type: Number, default: 0, min: 0 },
     mainBalance: { type: Number, default: 0, min: 0 },
-    slug: { type: String, unique: true },
-    email: { type: String, unique: true },
+    slug: { type: String, unique: true, trim: true },
+    email: { type: String, unique: true, trim: true },
     mobileNumber: String,
     uId: String,
     bgImage: String,

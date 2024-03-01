@@ -5,11 +5,11 @@ const user_interface_1 = require("../interfaces/user.interface");
 const mongoose_1 = require("mongoose");
 const userSchema = new mongoose_1.Schema({
     authId: { type: mongoose_1.Types.ObjectId, ref: 'Auth', index: true },
-    firstname: String,
-    lastname: String,
+    firstname: { type: String, trim: true },
+    lastname: { type: String, trim: true },
     mobileNumber: String,
     source: String,
-    email: { type: String, unique: true },
+    email: { type: String, unique: true, trim: true },
     roles: { type: [], default: [user_interface_1.Role.User] },
     savedStores: [{ type: mongoose_1.Types.ObjectId, ref: 'Store' }],
     likedProducts: [{ type: mongoose_1.Types.ObjectId, ref: 'Product' }],

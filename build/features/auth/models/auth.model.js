@@ -6,7 +6,7 @@ const mongoose_1 = require("mongoose");
 const SALT_ROUND = 11;
 const authSchema = new mongoose_1.Schema({
     uId: String,
-    mobileNumber: String,
+    mobileNumber: { type: String, trim: true },
     password: String,
     passwordResetExpiresIn: Number,
     passwordResetToken: { type: String, default: '' },
