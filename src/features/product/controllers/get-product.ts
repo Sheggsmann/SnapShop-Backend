@@ -4,7 +4,7 @@ import { productService } from '@service/db/product.service';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
-const PAGE_SIZE = 60;
+const PAGE_SIZE = 150;
 
 class Get {
   public async all(req: Request, res: Response): Promise<void> {

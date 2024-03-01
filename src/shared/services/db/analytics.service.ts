@@ -14,6 +14,10 @@ class AnalyticsService {
   public async getAnalytics(skip: number, limit: number): Promise<IAnalyticsDocument[]> {
     return await AnalyticsModel.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit);
   }
+
+  public async getAnalyticsCount(): Promise<number> {
+    return await AnalyticsModel.countDocuments();
+  }
 }
 
 export const analyticsService: AnalyticsService = new AnalyticsService();

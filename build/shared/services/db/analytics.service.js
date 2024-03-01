@@ -14,5 +14,8 @@ class AnalyticsService {
     async getAnalytics(skip, limit) {
         return await analytics_model_1.AnalyticsModel.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit);
     }
+    async getAnalyticsCount() {
+        return await analytics_model_1.AnalyticsModel.countDocuments();
+    }
 }
 exports.analyticsService = new AnalyticsService();

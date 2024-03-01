@@ -10,6 +10,7 @@ import { getProduct } from '@product/controllers/get-product';
 import { sendNotification } from '@root/features/notification/controllers/send-notification';
 import { getTagsMappings } from '@admin/controllers/get-tags-mapping';
 import { createTagMapping } from '@admin/controllers/create-tag-mapping';
+import { getAnalytics } from '@analytics/controllers/get-analytics';
 
 class AdminRoutes {
   private router: Router;
@@ -105,6 +106,14 @@ class AdminRoutes {
       authMiddleware.protect,
       authMiddleware.restrictTo([Role.Admin]),
       createTagMapping.tag
+    );
+
+    // Analytics Routes
+    this.router.get(
+      '/analytics/all/:page',
+      authMiddleware.protect,
+      authMiddleware.restrictTo([Role.Admin]),
+      getAnalytics.all
     );
 
     return this.router;

@@ -7,7 +7,7 @@ exports.getProduct = void 0;
 const error_handler_1 = require("../../../shared/globals/helpers/error-handler");
 const product_service_1 = require("../../../shared/services/db/product.service");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
-const PAGE_SIZE = 60;
+const PAGE_SIZE = 150;
 class Get {
     async all(req, res) {
         const { page } = req.params;

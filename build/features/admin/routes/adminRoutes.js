@@ -16,6 +16,7 @@ const get_product_1 = require("../../product/controllers/get-product");
 const send_notification_1 = require("../../notification/controllers/send-notification");
 const get_tags_mapping_1 = require("../controllers/get-tags-mapping");
 const create_tag_mapping_1 = require("../controllers/create-tag-mapping");
+const get_analytics_1 = require("../../analytics/controllers/get-analytics");
 class AdminRoutes {
     constructor() {
         this.router = express_1.default.Router();
@@ -41,6 +42,8 @@ class AdminRoutes {
         // Tags Mappings Routes
         this.router.get('/tags-mappings/all', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), get_tags_mapping_1.getTagsMappings.tag);
         this.router.post('/tags-mappings', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), create_tag_mapping_1.createTagMapping.tag);
+        // Analytics Routes
+        this.router.get('/analytics/all/:page', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), get_analytics_1.getAnalytics.all);
         return this.router;
     }
 }
