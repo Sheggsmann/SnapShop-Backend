@@ -9,8 +9,10 @@ import { chatQueue } from '@service/queues/chat.queue';
 import { IOrderDocument, OrderStatus } from '@order/interfaces/order.interface';
 import { orderQueue } from '@service/queues/order.queue';
 import { IUserDocument } from '@user/interfaces/user.interface';
+import { IAnalyticsData, IAnalyticsDocument } from '@analytics/interfaces/analytics.interface';
 import { userService } from '@service/db/user.service';
 import { notificationQueue } from '@service/queues/notification.queue';
+import { analyticsQueue } from '@service/queues/analytics.queue';
 import JWT from 'jsonwebtoken';
 import Logger from 'bunyan';
 import mongoose from 'mongoose';
@@ -100,6 +102,11 @@ export class SocketIOChatHandler {
           }
         }
       );
+
+      // Listen for tracking events
+      socket.on('track', async (data: IAnalyticsData) => {
+        analyticsQueue.addAnalyticsJob('addAnalyticsToDB', { value: data as IAnalyticsDocument });
+      });
 
       socket.on('disconnect', async () => {
         await chatCache.userIsOffline(currentAuthId);
