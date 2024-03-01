@@ -9,6 +9,8 @@ class EmailWorker {
         try {
             const { value } = job.data;
             await email_transport_1.emailTransport.sendMailToAdmins(value.title, value.body);
+            job.progress(100);
+            done(null, job.data);
         }
         catch (err) {
             log.error(err);
