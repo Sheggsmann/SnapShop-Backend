@@ -63,7 +63,10 @@ class OrderService {
     });
   }
 
-  public async userHasFinalizedOrder(userId: string, storeId: string): Promise<IOrderDocument | null> {
+  public async userHasFinalizedOrderFromStore(
+    userId: string,
+    storeId: string
+  ): Promise<IOrderDocument | null> {
     return await OrderModel.findOne({
       $and: [
         { 'user.userId': userId },

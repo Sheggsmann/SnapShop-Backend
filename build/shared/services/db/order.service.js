@@ -55,7 +55,7 @@ class OrderService {
             ]
         });
     }
-    async userHasFinalizedOrder(userId, storeId) {
+    async userHasFinalizedOrderFromStore(userId, storeId) {
         return await order_model_1.OrderModel.findOne({
             $and: [
                 { 'user.userId': userId },

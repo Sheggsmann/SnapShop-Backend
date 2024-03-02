@@ -53,7 +53,7 @@ class Create {
             throw new error_handler_1.BadRequestError(`You already reviewed this ${type}`);
         }
         if (type === 'store') {
-            const hasPurchaseFromStore = await order_service_1.orderService.userHasFinalizedOrder(req.currentUser.userId, storeId);
+            const hasPurchaseFromStore = await order_service_1.orderService.userHasFinalizedOrderFromStore(req.currentUser.userId, storeId);
             if (!hasPurchaseFromStore) {
                 throw new error_handler_1.BadRequestError("You haven't purchased any product from this store.");
             }
