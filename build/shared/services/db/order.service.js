@@ -55,11 +55,18 @@ class OrderService {
             ]
         });
     }
-    async userHasFinalizedOrder(userId) {
+    async userHasFinalizedOrder(userId, storeId) {
         return await order_model_1.OrderModel.findOne({
             $and: [
                 { 'user.userId': userId },
-                { $or: [{ status: order_interface_1.OrderStatus.COMPLETED }, { status: order_interface_1.OrderStatus.CANCELLED }] }
+                { store: storeId },
+                {
+                    $or: [
+                        { status: order_interface_1.OrderStatus.COMPLETED },
+                        { status: order_interface_1.OrderStatus.CANCELLED },
+                        { status: order_interface_1.OrderStatus.DELIVERED }
+                    ]
+                }
             ]
         });
     }

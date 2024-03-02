@@ -55,7 +55,7 @@ class Create {
     }
 
     if (type === 'store') {
-      const hasPurchaseFromStore = await orderService.userHasFinalizedOrder(req.currentUser!.userId);
+      const hasPurchaseFromStore = await orderService.userHasFinalizedOrder(req.currentUser!.userId, storeId);
       if (!hasPurchaseFromStore) {
         throw new BadRequestError("You haven't purchased any product from this store.");
       }
