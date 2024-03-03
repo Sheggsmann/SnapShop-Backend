@@ -13,6 +13,7 @@ class ProductRoutes {
 
   public routes(): Router {
     this.router.get('/products/by-store/:storeId', getProduct.productsByStoreId);
+    this.router.get('/explore-products', getProduct.exploreProducts);
     this.router.get(
       '/product/:productId',
       authMiddleware.protect,

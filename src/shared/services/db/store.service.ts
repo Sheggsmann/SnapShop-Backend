@@ -35,7 +35,7 @@ class StoreService {
   }
 
   public async getStoreByEmail(email: string): Promise<IStoreDocument | null> {
-    return await StoreModel.findOne({ email });
+    return (await StoreModel.findOne({ email }).select('-mainBalance -escrowBalance')) as IStoreDocument;
   }
 
   public async getStoreByUserId(userId: string): Promise<IStoreDocument | null> {
@@ -44,6 +44,10 @@ class StoreService {
 
   public async getStoreByStoreId(storeId: string): Promise<IStoreDocument | null> {
     return await StoreModel.findOne({ _id: storeId });
+  }
+
+  public async getProtectedStoreByStoreid(storeId: string): Promise<Partial<IStoreDocument> | null> {
+    return await StoreModel.findOne({ _id: storeId }).select('-mainBalance -escrowBalance');
   }
 
   public async getNearbyStores(
@@ -206,24 +210,8 @@ class StoreService {
     return products as IStoreWithCategories[];
   }
 
-  public async getClosestStores(location: [number, number], limit: number): Promise<IStoreDocument[]> {
-    let closestStores: IStoreDocument[] = [];
-    // closestStores = await StoreModel.aggregate([
-    //   {
-    //     $geoNear: {
-    //       near: {
-    //         type: 'Point',
-    //         coordinates: [location[0], location[1]]
-    //       },
-    //       distanceField: 'distance',
-    //       spherical: true,
-    //       maxDistance: 100000 // Maximum distance in meter
-    //     }
-    //   },
-    //   { $limit: limit }
-    // ]);
-
-    closestStores = await StoreModel.find({
+  public async getFeaturedStores(): Promise<IStoreDocument[]> {
+    const featuredStores: IStoreDocument[] = await StoreModel.find({
       _id: {
         $in: [
           '65c38942a24acaa08606f879',
@@ -269,6 +257,25 @@ class StoreService {
         ]
       }
     });
+
+    return featuredStores;
+  }
+
+  public async getClosestStores(location: [number, number], limit: number): Promise<IStoreDocument[]> {
+    const closestStores: IStoreDocument[] = await StoreModel.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: 'Point',
+            coordinates: [location[0], location[1]]
+          },
+          distanceField: 'distance',
+          spherical: true,
+          maxDistance: 100000 // Maximum distance in meter
+        }
+      },
+      { $limit: limit }
+    ]);
 
     return closestStores;
   }

@@ -41,20 +41,31 @@ class Get {
 
     const feedData: IFeed[] = [];
 
-    const closestStores: IStoreDocument[] = await storeService.getClosestStores([long, lat], 10);
+    const newArrivals: IProductDocument[] = await productService.getNewArrivals();
+    const featuredStores: IStoreDocument[] = await storeService.getFeaturedStores();
     const frequentlyPurchasedProducts: IProductDocument[] =
       await productService.getFrequentlyPurchasedProductsNearUser([long, lat], 10);
+    // const closestStores: IStoreDocument[] = await storeService.getClosestStores([long, lat], 10);
 
     feedData.push({
-      title: 'Stores close to you',
-      subtitle: 'Based on your location',
-      content: closestStores
+      title: 'New Arrivals',
+      subtitle: 'Now In Stock: New Additions!',
+      content: newArrivals,
+      contentType: 'product'
+    });
+
+    feedData.push({
+      title: 'Features Stores',
+      subtitle: 'Top Ranking',
+      content: featuredStores,
+      contentType: 'store'
     });
 
     feedData.push({
       title: 'Frequently purchased',
-      subtitle: 'Close to you',
-      content: frequentlyPurchasedProducts
+      subtitle: 'Based on your location',
+      content: frequentlyPurchasedProducts,
+      contentType: 'product'
     });
 
     res.status(HTTP_STATUS.OK).json({ message: 'Feed', feed: feedData });
@@ -75,20 +86,31 @@ class Get {
     if (cachedData && cachedData[0]['content'].length > 0) {
       res.status(HTTP_STATUS.OK).json({ message: 'Feed', feed: cachedData });
     } else {
-      const closestStores: IStoreDocument[] = await storeService.getClosestStores([long, lat], 10);
+      const newArrivals: IProductDocument[] = await productService.getNewArrivals();
+      const featuredStores: IStoreDocument[] = await storeService.getFeaturedStores();
       const frequentlyPurchasedProducts: IProductDocument[] =
         await productService.getFrequentlyPurchasedProductsNearUser([long, lat], 10);
+      // const closestStores: IStoreDocument[] = await storeService.getClosestStores([long, lat], 10);
 
       feedData.push({
-        title: 'Trending Stores',
-        subtitle: 'Based on your location',
-        content: closestStores
+        title: 'New Arrivals',
+        subtitle: 'Now In Stock: New Additions!',
+        content: newArrivals,
+        contentType: 'product'
+      });
+
+      feedData.push({
+        title: 'Features Stores',
+        subtitle: 'Top ranking',
+        content: featuredStores,
+        contentType: 'store'
       });
 
       feedData.push({
         title: 'Frequently purchased',
-        subtitle: 'Close to you',
-        content: frequentlyPurchasedProducts
+        subtitle: 'Based on your location',
+        content: frequentlyPurchasedProducts,
+        contentType: 'product'
       });
 
       if (feedData.length) {

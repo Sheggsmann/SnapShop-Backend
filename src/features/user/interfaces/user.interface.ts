@@ -38,6 +38,8 @@ export interface IFeed {
   title: string;
   subtitle: string;
   content: IStoreDocument[] | IProductDocument[];
+  contentType: 'store' | 'product';
+  url?: string;
 }
 
 export interface IUserJob {

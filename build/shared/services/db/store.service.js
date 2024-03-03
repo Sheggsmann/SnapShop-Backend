@@ -27,13 +27,16 @@ class StoreService {
         return (await store_model_1.StoreModel.findOne({ name }).select('name image verified'));
     }
     async getStoreByEmail(email) {
-        return await store_model_1.StoreModel.findOne({ email });
+        return (await store_model_1.StoreModel.findOne({ email }).select('-mainBalance -escrowBalance'));
     }
     async getStoreByUserId(userId) {
         return await store_model_1.StoreModel.findOne({ owner: userId });
     }
     async getStoreByStoreId(storeId) {
         return await store_model_1.StoreModel.findOne({ _id: storeId });
+    }
+    async getProtectedStoreByStoreid(storeId) {
+        return await store_model_1.StoreModel.findOne({ _id: storeId }).select('-mainBalance -escrowBalance');
     }
     async getNearbyStores(searchParam, latitude, longitude, radius, anywhere = false) {
         searchParam = helpers_1.Helpers.escapeRegExp(`${searchParam}`);
@@ -184,23 +187,8 @@ class StoreService {
         ]);
         return products;
     }
-    async getClosestStores(location, limit) {
-        let closestStores = [];
-        // closestStores = await StoreModel.aggregate([
-        //   {
-        //     $geoNear: {
-        //       near: {
-        //         type: 'Point',
-        //         coordinates: [location[0], location[1]]
-        //       },
-        //       distanceField: 'distance',
-        //       spherical: true,
-        //       maxDistance: 100000 // Maximum distance in meter
-        //     }
-        //   },
-        //   { $limit: limit }
-        // ]);
-        closestStores = await store_model_1.StoreModel.find({
+    async getFeaturedStores() {
+        const featuredStores = await store_model_1.StoreModel.find({
             _id: {
                 $in: [
                     '65c38942a24acaa08606f879',
@@ -246,6 +234,23 @@ class StoreService {
                 ]
             }
         });
+        return featuredStores;
+    }
+    async getClosestStores(location, limit) {
+        const closestStores = await store_model_1.StoreModel.aggregate([
+            {
+                $geoNear: {
+                    near: {
+                        type: 'Point',
+                        coordinates: [location[0], location[1]]
+                    },
+                    distanceField: 'distance',
+                    spherical: true,
+                    maxDistance: 100000 // Maximum distance in meter
+                }
+            },
+            { $limit: limit }
+        ]);
         return closestStores;
     }
     async updateStore(storeId, updatedStore) {

@@ -1,4 +1,4 @@
-import { BadRequestError, NotAuthorizedError, NotFoundError } from '@global/helpers/error-handler';
+import { BadRequestError, NotFoundError } from '@global/helpers/error-handler';
 import { IProductDocument } from '@product/interfaces/product.interface';
 import { productService } from '@service/db/product.service';
 import { storeService } from '@service/db/store.service';
@@ -31,18 +31,14 @@ class Get {
   public storeByStoreId = async (req: Request, res: Response): Promise<void> => {
     const { storeId } = req.params;
 
-    const store = await storeService.getStoreByStoreId(storeId);
+    const store = await storeService.getProtectedStoreByStoreid(storeId);
     if (!store) {
       throw new NotFoundError('Store not found');
     }
 
-    if (!store.isOwner(req.currentUser!.userId)) {
-      throw new NotAuthorizedError('You are not the owner of this store');
-    }
-
     const categorizedProducts = await storeService.getStoreProductsByCategory(storeId);
     const queryResult = {
-      ...store.toJSON(),
+      ...store?.toJSON?.(),
       categories: [...categorizedProducts]
     };
 

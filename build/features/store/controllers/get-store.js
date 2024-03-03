@@ -29,16 +29,13 @@ class Get {
         // Accepts a store id and returns all the store products and categories
         this.storeByStoreId = async (req, res) => {
             const { storeId } = req.params;
-            const store = await store_service_1.storeService.getStoreByStoreId(storeId);
+            const store = await store_service_1.storeService.getProtectedStoreByStoreid(storeId);
             if (!store) {
                 throw new error_handler_1.NotFoundError('Store not found');
             }
-            if (!store.isOwner(req.currentUser.userId)) {
-                throw new error_handler_1.NotAuthorizedError('You are not the owner of this store');
-            }
             const categorizedProducts = await store_service_1.storeService.getStoreProductsByCategory(storeId);
             const queryResult = {
-                ...store.toJSON(),
+                ...store?.toJSON?.(),
                 categories: [...categorizedProducts]
             };
             res.status(http_status_codes_1.default.OK).json({ message: 'Store details', store: queryResult });

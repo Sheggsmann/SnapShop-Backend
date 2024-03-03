@@ -34,17 +34,27 @@ class Get {
         const lat = parseFloat(req.query.latitude);
         const long = parseFloat(req.query.longitude);
         const feedData = [];
-        const closestStores = await store_service_1.storeService.getClosestStores([long, lat], 10);
+        const newArrivals = await product_service_1.productService.getNewArrivals();
+        const featuredStores = await store_service_1.storeService.getFeaturedStores();
         const frequentlyPurchasedProducts = await product_service_1.productService.getFrequentlyPurchasedProductsNearUser([long, lat], 10);
+        // const closestStores: IStoreDocument[] = await storeService.getClosestStores([long, lat], 10);
         feedData.push({
-            title: 'Stores close to you',
-            subtitle: 'Based on your location',
-            content: closestStores
+            title: 'New Arrivals',
+            subtitle: 'Now In Stock: New Additions!',
+            content: newArrivals,
+            contentType: 'product'
+        });
+        feedData.push({
+            title: 'Features Stores',
+            subtitle: 'Top Ranking',
+            content: featuredStores,
+            contentType: 'store'
         });
         feedData.push({
             title: 'Frequently purchased',
-            subtitle: 'Close to you',
-            content: frequentlyPurchasedProducts
+            subtitle: 'Based on your location',
+            content: frequentlyPurchasedProducts,
+            contentType: 'product'
         });
         res.status(http_status_codes_1.default.OK).json({ message: 'Feed', feed: feedData });
     }
@@ -60,17 +70,27 @@ class Get {
             res.status(http_status_codes_1.default.OK).json({ message: 'Feed', feed: cachedData });
         }
         else {
-            const closestStores = await store_service_1.storeService.getClosestStores([long, lat], 10);
+            const newArrivals = await product_service_1.productService.getNewArrivals();
+            const featuredStores = await store_service_1.storeService.getFeaturedStores();
             const frequentlyPurchasedProducts = await product_service_1.productService.getFrequentlyPurchasedProductsNearUser([long, lat], 10);
+            // const closestStores: IStoreDocument[] = await storeService.getClosestStores([long, lat], 10);
             feedData.push({
-                title: 'Trending Stores',
-                subtitle: 'Based on your location',
-                content: closestStores
+                title: 'New Arrivals',
+                subtitle: 'Now In Stock: New Additions!',
+                content: newArrivals,
+                contentType: 'product'
+            });
+            feedData.push({
+                title: 'Features Stores',
+                subtitle: 'Top ranking',
+                content: featuredStores,
+                contentType: 'store'
             });
             feedData.push({
                 title: 'Frequently purchased',
-                subtitle: 'Close to you',
-                content: frequentlyPurchasedProducts
+                subtitle: 'Based on your location',
+                content: frequentlyPurchasedProducts,
+                contentType: 'product'
             });
             if (feedData.length) {
                 await feedCache.saveFeedDataToCache(req.currentUser.userId, feedData);

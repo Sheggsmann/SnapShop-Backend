@@ -2,6 +2,7 @@ import { ICartItem } from '@order/interfaces/order.interface';
 import { IProductDocument } from '@product/interfaces/product.interface';
 import { ProductModel } from '@product/models/product.model';
 import { StoreModel } from '@store/models/store.model';
+import mongoose from 'mongoose';
 
 class ProductService {
   public async addProductToDB(product: IProductDocument, storeId: string) {
@@ -75,6 +76,27 @@ class ProductService {
 
   public async getRandomProducts(): Promise<IProductDocument[]> {
     return [];
+  }
+
+  public async getExploreProducts(
+    blacklist: Partial<IProductDocument>[],
+    limit: number
+  ): Promise<IProductDocument[]> {
+    const products: IProductDocument[] = await ProductModel.aggregate([
+      {
+        $match: {
+          $expr: {
+            $not: { $in: ['$_id', blacklist.map((id) => new mongoose.Types.ObjectId(id as string))] }
+          }
+        }
+      },
+      { $sample: { size: limit } }
+    ]);
+    return products;
+  }
+
+  public async getNewArrivals(): Promise<IProductDocument[]> {
+    return await ProductModel.find({}).sort({ createdAt: -1 }).limit(15);
   }
 
   public async updateProduct(productId: string, updatedProduct: IProductDocument): Promise<void> {

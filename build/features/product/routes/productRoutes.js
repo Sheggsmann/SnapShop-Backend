@@ -15,6 +15,7 @@ class ProductRoutes {
     }
     routes() {
         this.router.get('/products/by-store/:storeId', get_product_1.getProduct.productsByStoreId);
+        this.router.get('/explore-products', get_product_1.getProduct.exploreProducts);
         this.router.get('/product/:productId', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.checkAuth, get_product_1.getProduct.productByProductId);
         this.router.post('/product', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['StoreOwner']), create_product_1.createProduct.product);
         this.router.put('/product/:productId', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.checkAuth, auth_middleware_1.authMiddleware.restrictTo(['StoreOwner', 'Admin']), update_product_1.updateProduct.product);

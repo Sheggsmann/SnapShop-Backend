@@ -1,8 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.productService = void 0;
 const product_model_1 = require("../../../features/product/models/product.model");
 const store_model_1 = require("../../../features/store/models/store.model");
+const mongoose_1 = __importDefault(require("mongoose"));
 class ProductService {
     async addProductToDB(product, storeId) {
         await product_model_1.ProductModel.create(product);
@@ -65,6 +69,22 @@ class ProductService {
     }
     async getRandomProducts() {
         return [];
+    }
+    async getExploreProducts(blacklist, limit) {
+        const products = await product_model_1.ProductModel.aggregate([
+            {
+                $match: {
+                    $expr: {
+                        $not: { $in: ['$_id', blacklist.map((id) => new mongoose_1.default.Types.ObjectId(id))] }
+                    }
+                }
+            },
+            { $sample: { size: limit } }
+        ]);
+        return products;
+    }
+    async getNewArrivals() {
+        return await product_model_1.ProductModel.find({}).sort({ createdAt: -1 }).limit(15);
     }
     async updateProduct(productId, updatedProduct) {
         await product_model_1.ProductModel.updateOne({ _id: productId }, { $set: updatedProduct });
