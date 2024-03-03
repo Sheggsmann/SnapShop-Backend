@@ -17,5 +17,17 @@ class EmailWorker {
             done(err);
         }
     }
+    async sendMailToReceiver(job, done) {
+        try {
+            const { value } = job.data;
+            await email_transport_1.emailTransport.sendMail(value.receiverEmail, value.title, value.body, value?.template);
+            job.progress(100);
+            done(null, job.data);
+        }
+        catch (err) {
+            log.error(err);
+            done(err);
+        }
+    }
 }
 exports.emailWorker = new EmailWorker();

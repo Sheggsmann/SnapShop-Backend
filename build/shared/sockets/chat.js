@@ -17,6 +17,7 @@ const analytics_queue_1 = require("../services/queues/analytics.queue");
 const email_queue_1 = require("../services/queues/email.queue");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const store_service_1 = require("../services/db/store.service");
 const log = config_1.config.createLogger('CHAT-SOCKET');
 const chatCache = new chat_cache_1.ChatCache();
 class SocketIOChatHandler {
@@ -134,12 +135,23 @@ class SocketIOChatHandler {
                         status: order_interface_1.OrderStatus.PENDING,
                         createdAt
                     });
+                    const store = await store_service_1.storeService.getStoreByStoreId(`${receiver}`);
                     email_queue_1.emailQueue.addEmailJob('sendMailToAdmins', {
                         value: {
                             title: 'New Order 🥳',
-                            body: `${(user.firstname, user.lastname)} placed an order from store ${receiver}`
+                            body: `${(user.firstname, user.lastname)} placed an order from ${store?.name}`
                         }
                     });
+                    if (store && store?.email) {
+                        email_queue_1.emailQueue.addEmailJob('sendMailToReceiver', {
+                            value: {
+                                receiverEmail: store.email,
+                                title: 'New Order 🥳',
+                                body: store.name,
+                                template: 'new-order'
+                            }
+                        });
+                    }
                 }
             }
             const messageData = {

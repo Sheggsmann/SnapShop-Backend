@@ -1,9 +1,8 @@
 import { config } from '@root/config';
 import { createTransport } from 'nodemailer';
+import { TemplateType } from './email.interface';
 
 type MsgResponse = 'error' | 'success';
-
-type TemplateType = 'default' | 'reset-password';
 
 class EmailTransport {
   private otpHtmlTemplate(otp: string) {
@@ -14,6 +13,15 @@ class EmailTransport {
           <h1 style="font-size: 40px; letter-spacing: 2px; text-align:center; ">${otp}</h1>
           </div>
           `;
+  }
+
+  private newOrderHtmlTemplate(storeName: string) {
+    return `
+    <div class="container" style="max-width: 90%; margin: auto; padding-top: 20px;">
+          <h2>New Order 🥳</h2>
+          <p style="margin-bottom: 30px;">Hi ${storeName}, you just received a new order on SnapShup</p>
+          </div>
+    `;
   }
 
   private defaultTemplate(body: string): string {
@@ -29,6 +37,8 @@ class EmailTransport {
           return this.defaultTemplate(body);
         case 'reset-password':
           return this.otpHtmlTemplate(body);
+        case 'new-order':
+          return this.newOrderHtmlTemplate(body);
         default:
           return this.defaultTemplate(body);
       }
@@ -81,7 +91,7 @@ class EmailTransport {
   }
 
   public async sendMailToAdmins(title: string, body: string) {
-    const adminEmails = ['promisesheggs@gmail.com', 'jaystance25@gmail.com'];
+    const adminEmails = ['promisesheggs@gmail.com', 'jaystance25@gmail.com', 'snapshup@gmail.com'];
     for (const email of adminEmails) {
       this.prodEmailSender(email, title, body, 'default');
     }

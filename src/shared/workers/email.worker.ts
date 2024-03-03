@@ -17,6 +17,18 @@ class EmailWorker {
       done(err as Error);
     }
   }
+
+  public async sendMailToReceiver(job: Job, done: DoneCallback): Promise<void> {
+    try {
+      const { value } = job.data;
+      await emailTransport.sendMail(value.receiverEmail, value.title, value.body, value?.template);
+      job.progress(100);
+      done(null, job.data);
+    } catch (err) {
+      log.error(err);
+      done(err as Error);
+    }
+  }
 }
 
 export const emailWorker: EmailWorker = new EmailWorker();

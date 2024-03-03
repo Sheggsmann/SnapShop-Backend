@@ -17,6 +17,7 @@ import { emailQueue } from '@service/queues/email.queue';
 import JWT from 'jsonwebtoken';
 import Logger from 'bunyan';
 import mongoose from 'mongoose';
+import { storeService } from '@service/db/store.service';
 
 const log: Logger = config.createLogger('CHAT-SOCKET');
 
@@ -194,12 +195,25 @@ export class SocketIOChatHandler {
             createdAt
           });
 
+          const store = await storeService.getStoreByStoreId(`${receiver}`);
+
           emailQueue.addEmailJob('sendMailToAdmins', {
             value: {
               title: 'New Order 🥳',
-              body: `${(user.firstname, user.lastname)} placed an order from store ${receiver}`
+              body: `${(user.firstname, user.lastname)} placed an order from ${store?.name}`
             }
           });
+
+          if (store && store?.email) {
+            emailQueue.addEmailJob('sendMailToReceiver', {
+              value: {
+                receiverEmail: store.email,
+                title: 'New Order 🥳',
+                body: store.name,
+                template: 'new-order'
+              }
+            });
+          }
         }
       }
 

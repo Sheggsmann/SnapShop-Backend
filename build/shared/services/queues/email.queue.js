@@ -7,6 +7,7 @@ class EmailQueue extends base_queue_1.BaseQueue {
     constructor() {
         super('Email');
         this.processJob('sendMailToAdmins', 5, email_worker_1.emailWorker.sendMailToAdmins);
+        this.processJob('sendMailToReceiver', 5, email_worker_1.emailWorker.sendMailToReceiver);
     }
     addEmailJob(name, data) {
         this.addJob(name, data);

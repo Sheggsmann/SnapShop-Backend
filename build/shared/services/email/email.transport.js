@@ -13,6 +13,14 @@ class EmailTransport {
           </div>
           `;
     }
+    newOrderHtmlTemplate(storeName) {
+        return `
+    <div class="container" style="max-width: 90%; margin: auto; padding-top: 20px;">
+          <h2>New Order 🥳</h2>
+          <p style="margin-bottom: 30px;">Hi ${storeName}, you just received a new order on SnapShup</p>
+          </div>
+    `;
+    }
     defaultTemplate(body) {
         return `<div>
       ${body}
@@ -25,6 +33,8 @@ class EmailTransport {
                     return this.defaultTemplate(body);
                 case 'reset-password':
                     return this.otpHtmlTemplate(body);
+                case 'new-order':
+                    return this.newOrderHtmlTemplate(body);
                 default:
                     return this.defaultTemplate(body);
             }
@@ -61,7 +71,7 @@ class EmailTransport {
         return this.prodEmailSender(receiverEmail, title, body, template);
     }
     async sendMailToAdmins(title, body) {
-        const adminEmails = ['promisesheggs@gmail.com', 'jaystance25@gmail.com'];
+        const adminEmails = ['promisesheggs@gmail.com', 'jaystance25@gmail.com', 'snapshup@gmail.com'];
         for (const email of adminEmails) {
             this.prodEmailSender(email, title, body, 'default');
         }
