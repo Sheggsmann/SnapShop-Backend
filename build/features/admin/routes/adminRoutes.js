@@ -17,6 +17,7 @@ const send_notification_1 = require("../../notification/controllers/send-notific
 const get_tags_mapping_1 = require("../controllers/get-tags-mapping");
 const create_tag_mapping_1 = require("../controllers/create-tag-mapping");
 const get_analytics_1 = require("../../analytics/controllers/get-analytics");
+const balance_withdraw_1 = require("../../balanceWithdrawal/controllers/balance-withdraw");
 class AdminRoutes {
     constructor() {
         this.router = express_1.default.Router();
@@ -44,6 +45,8 @@ class AdminRoutes {
         this.router.post('/tags-mappings', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), create_tag_mapping_1.createTagMapping.tag);
         // Analytics Routes
         this.router.get('/analytics/all/:page', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), get_analytics_1.getAnalytics.all);
+        // Balance Withdrawal Routes
+        this.router.get('/balanceWithdrawals/all/:page', auth_middleware_1.authMiddleware.protect, auth_middleware_1.authMiddleware.restrictTo([user_interface_1.Role.Admin]), balance_withdraw_1.balanceWithdraw.all);
         return this.router;
     }
 }

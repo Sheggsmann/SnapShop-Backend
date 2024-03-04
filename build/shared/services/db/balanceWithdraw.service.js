@@ -7,6 +7,15 @@ class BalanceWithdrawalService {
     async addWithdrawalRequestToDB(data) {
         await balanceWithdrawal_model_1.BalanceWithdrawalModel.create(data);
     }
+    async getBalanceWithdrawals(skip, limit) {
+        return (await balanceWithdrawal_model_1.BalanceWithdrawalModel.find({})
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit));
+    }
+    async getBalanceWithdrawalsCount() {
+        return await balanceWithdrawal_model_1.BalanceWithdrawalModel.countDocuments();
+    }
     async getPendingWithdrawalRequestsForStore(storeId) {
         return await balanceWithdrawal_model_1.BalanceWithdrawalModel.find({
             store: storeId,

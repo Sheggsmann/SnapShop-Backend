@@ -18,8 +18,20 @@ const joi_validation_decorator_1 = require("../../../shared/globals/helpers/joi-
 const balanceWithdrawal_scheme_1 = require("../schemes/balanceWithdrawal.scheme");
 const store_service_1 = require("../../../shared/services/db/store.service");
 const balanceWithdraw_service_1 = require("../../../shared/services/db/balanceWithdraw.service");
+const email_queue_1 = require("../../../shared/services/queues/email.queue");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
+const PAGE_SIZE = 50;
 class BalanceWithdraw {
+    async all(req, res) {
+        const { page } = req.params;
+        const skip = (parseInt(page) - 1) * PAGE_SIZE;
+        const limit = parseInt(page) * PAGE_SIZE;
+        const balanceWithdrawals = await balanceWithdraw_service_1.balanceWithdrawalService.getBalanceWithdrawals(skip, limit);
+        const balanceWithdrawalsCount = await balanceWithdraw_service_1.balanceWithdrawalService.getBalanceWithdrawalsCount();
+        res
+            .status(http_status_codes_1.default.OK)
+            .json({ message: 'Balance Withdrawals', balanceWithdrawals, balanceWithdrawalsCount });
+    }
     async requestWithdrawal(req, res) {
         const { amount, accountName, accountNumber, bankName } = req.body;
         const store = await store_service_1.storeService.getStoreByStoreId(`${req.currentUser.storeId}`);
@@ -40,6 +52,12 @@ class BalanceWithdraw {
             accountName,
             accountNumber,
             bankName
+        });
+        email_queue_1.emailQueue.addEmailJob('sendMailToAdmins', {
+            value: {
+                title: 'New Withdrawal Request',
+                body: `${store.name} placed a withdrawal request for N${amount}. \nBank:${bankName}\nAccount Number:${accountNumber}\nAccount Name:${accountName}`
+            }
         });
         res.status(http_status_codes_1.default.OK).json({ message: 'Withdrawal request placed successfully' });
     }

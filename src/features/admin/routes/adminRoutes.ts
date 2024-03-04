@@ -11,6 +11,7 @@ import { sendNotification } from '@root/features/notification/controllers/send-n
 import { getTagsMappings } from '@admin/controllers/get-tags-mapping';
 import { createTagMapping } from '@admin/controllers/create-tag-mapping';
 import { getAnalytics } from '@analytics/controllers/get-analytics';
+import { balanceWithdraw } from '@balanceWithdrawal/controllers/balance-withdraw';
 
 class AdminRoutes {
   private router: Router;
@@ -114,6 +115,14 @@ class AdminRoutes {
       authMiddleware.protect,
       authMiddleware.restrictTo([Role.Admin]),
       getAnalytics.all
+    );
+
+    // Balance Withdrawal Routes
+    this.router.get(
+      '/balanceWithdrawals/all/:page',
+      authMiddleware.protect,
+      authMiddleware.restrictTo([Role.Admin]),
+      balanceWithdraw.all
     );
 
     return this.router;
