@@ -71,7 +71,17 @@ class ProductService {
       }
     ]);
 
-    return frequentlyPurchasedProducts;
+    const products = [];
+
+    for (const frequentlyPurchasedProduct of frequentlyPurchasedProducts) {
+      for (const product of frequentlyPurchasedProduct.products) {
+        products.push(product);
+      }
+    }
+
+    console.log('\nFREQUENTLY PURCHASED PRODUCT:', frequentlyPurchasedProducts);
+
+    return products;
   }
 
   public async getRandomProducts(): Promise<IProductDocument[]> {
