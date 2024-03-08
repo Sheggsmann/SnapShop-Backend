@@ -75,6 +75,9 @@ class ProductService {
 
     for (const frequentlyPurchasedProduct of frequentlyPurchasedProducts) {
       for (const product of frequentlyPurchasedProduct.products) {
+        const clone = { ...frequentlyPurchasedProduct };
+        delete clone.products;
+        product.store = clone;
         products.push(product);
       }
     }
@@ -119,7 +122,10 @@ class ProductService {
   }
 
   public async getNewArrivals(): Promise<IProductDocument[]> {
-    return await ProductModel.find({}).sort({ createdAt: -1 }).limit(15);
+    return await ProductModel.find({})
+      .sort({ createdAt: -1 })
+      .limit(15)
+      .populate('store', '-mainBalance -escrowBalance');
   }
 
   public async updateProduct(productId: string, updatedProduct: IProductDocument): Promise<void> {

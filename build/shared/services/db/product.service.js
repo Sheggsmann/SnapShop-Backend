@@ -68,6 +68,9 @@ class ProductService {
         const products = [];
         for (const frequentlyPurchasedProduct of frequentlyPurchasedProducts) {
             for (const product of frequentlyPurchasedProduct.products) {
+                const clone = { ...frequentlyPurchasedProduct };
+                delete clone.products;
+                product.store = clone;
                 products.push(product);
             }
         }
@@ -105,7 +108,10 @@ class ProductService {
         return products;
     }
     async getNewArrivals() {
-        return await product_model_1.ProductModel.find({}).sort({ createdAt: -1 }).limit(15);
+        return await product_model_1.ProductModel.find({})
+            .sort({ createdAt: -1 })
+            .limit(15)
+            .populate('store', '-mainBalance -escrowBalance');
     }
     async updateProduct(productId, updatedProduct) {
         await product_model_1.ProductModel.updateOne({ _id: productId }, { $set: updatedProduct });

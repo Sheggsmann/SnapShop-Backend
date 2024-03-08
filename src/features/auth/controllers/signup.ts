@@ -17,7 +17,7 @@ export const OTP_EXPIRES_IN = 5 * 60 * 1000;
 class SignUp {
   @validator(signupSchema)
   public async create(req: Request, res: Response): Promise<void> {
-    const { mobileNumber, password, firstname, lastname, otpProvider, source, app } = req.body;
+    const { mobileNumber, password, firstname, lastname, otpProvider, source, app, lat, lng } = req.body;
 
     // If the user exists, send an otp to the user
     const userExists = await authService.getUserByPhonenumber(mobileNumber);
@@ -46,7 +46,9 @@ class SignUp {
       // verificationToken: otp,
       uId,
       mobileNumber,
-      password
+      password,
+      lat,
+      lng
     } as IAuthDocument;
 
     const userRoles = [Role.User];

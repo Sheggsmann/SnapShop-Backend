@@ -28,7 +28,7 @@ const http_status_codes_1 = __importDefault(require("http-status-codes"));
 exports.OTP_EXPIRES_IN = 5 * 60 * 1000;
 class SignUp {
     async create(req, res) {
-        const { mobileNumber, password, firstname, lastname, otpProvider, source, app } = req.body;
+        const { mobileNumber, password, firstname, lastname, otpProvider, source, app, lat, lng } = req.body;
         // If the user exists, send an otp to the user
         const userExists = await auth_service_1.authService.getUserByPhonenumber(mobileNumber);
         if (userExists) {
@@ -52,7 +52,9 @@ class SignUp {
             // verificationToken: otp,
             uId,
             mobileNumber,
-            password
+            password,
+            lat,
+            lng
         };
         const userRoles = [user_interface_1.Role.User];
         if (app === auth_interface_1.Apps.Merchant) {

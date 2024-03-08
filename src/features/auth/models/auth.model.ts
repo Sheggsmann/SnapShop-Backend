@@ -14,7 +14,9 @@ const authSchema = new Schema(
     passwordResetToken: { type: String, default: '' },
     verified: { type: Boolean, default: false },
     verificationToken: { type: String, default: '' },
-    verificationExpiersIn: Number
+    verificationExpiersIn: Number,
+    lat: Number,
+    lng: Number
   },
   {
     timestamps: true,

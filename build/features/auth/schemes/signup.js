@@ -36,7 +36,9 @@ const signupSchema = joi_1.default.object().keys({
     }),
     app: joi_1.default.string().optional().valid('merchant').messages({
         'string.base': 'app must be of type string'
-    })
+    }),
+    lat: joi_1.default.number().optional(),
+    lng: joi_1.default.number().optional()
 });
 exports.signupSchema = signupSchema;
 const verifyAccountSchema = joi_1.default.object().keys({

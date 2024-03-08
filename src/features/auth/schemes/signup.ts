@@ -31,7 +31,9 @@ const signupSchema: ObjectSchema = Joi.object().keys({
   }),
   app: Joi.string().optional().valid('merchant').messages({
     'string.base': 'app must be of type string'
-  })
+  }),
+  lat: Joi.number().optional(),
+  lng: Joi.number().optional()
 });
 
 const verifyAccountSchema: ObjectSchema = Joi.object().keys({
