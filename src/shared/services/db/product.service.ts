@@ -79,8 +79,6 @@ class ProductService {
       }
     }
 
-    console.log('\nFREQUENTLY PURCHASED PRODUCT:', frequentlyPurchasedProducts);
-
     return products;
   }
 
@@ -100,7 +98,22 @@ class ProductService {
           }
         }
       },
-      { $sample: { size: limit } }
+      { $sample: { size: limit } },
+      {
+        $lookup: {
+          from: 'Store',
+          localField: 'store',
+          foreignField: '_id',
+          as: 'store'
+        }
+      },
+      { $unwind: '$store' },
+      {
+        $project: {
+          'store.mainBalance': 0,
+          'store.escrowBalance': 0
+        }
+      }
     ]);
     return products;
   }
