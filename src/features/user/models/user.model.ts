@@ -8,7 +8,7 @@ const userSchema: Schema = new Schema(
     lastname: { type: String, trim: true },
     mobileNumber: String,
     source: String,
-    email: { type: String, unique: true, trim: true },
+    email: { type: String, unique: true, trim: true, default: '' },
     roles: { type: [], default: [Role.User] },
     savedStores: [{ type: Types.ObjectId, ref: 'Store' }],
     likedProducts: [{ type: Types.ObjectId, ref: 'Product' }],
