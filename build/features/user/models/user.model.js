@@ -9,7 +9,12 @@ const userSchema = new mongoose_1.Schema({
     lastname: { type: String, trim: true },
     mobileNumber: String,
     source: String,
-    email: { type: String, unique: true, trim: true, default: '' },
+    email: {
+        type: String,
+        trim: true,
+        index: { unique: true, partialFilterExpression: { email: { $type: 'string' } } },
+        default: null
+    },
     roles: { type: [], default: [user_interface_1.Role.User] },
     savedStores: [{ type: mongoose_1.Types.ObjectId, ref: 'Store' }],
     likedProducts: [{ type: mongoose_1.Types.ObjectId, ref: 'Product' }],
