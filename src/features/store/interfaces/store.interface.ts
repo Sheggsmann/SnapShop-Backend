@@ -21,6 +21,7 @@ export interface IStoreDocument extends Document {
   uId: string;
   name: string;
   slug: string;
+  slugUrl: string;
   bgImage: string;
   image: string;
   verified: boolean;

@@ -4,7 +4,7 @@ import { IMessageDocument } from '../interfaces/chat.interface';
 const messageSchema: Schema = new Schema(
   {
     conversationId: { type: Types.ObjectId, required: true },
-    sender: { type: Types.ObjectId, required: true, redPath: 'senderType' },
+    sender: { type: Types.ObjectId, required: true, refPath: 'senderType' },
     receiver: { type: Types.ObjectId, required: true, refPath: 'receiverType' },
     senderType: { type: String, enum: ['User', 'Store'], required: true },
     receiverType: { type: String, enum: ['User', 'Store'], required: true },

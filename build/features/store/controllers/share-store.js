@@ -41,8 +41,8 @@ class ShareStore {
         const exists = await store_service_1.storeService.getStoreBySlug(cleanedSlug);
         if (exists)
             throw new error_handler_1.BadRequestError('Slug already in use');
-        await store_service_1.storeService.saveStoreSlug(storeId, cleanedSlug);
         const storeLink = helpers_1.Helpers.formatStoreLink(cleanedSlug);
+        await store_service_1.storeService.saveStoreSlug(storeId, cleanedSlug, storeLink);
         res
             .status(http_status_codes_1.default.OK)
             .json({ message: 'Slug created successfully', slug: cleanedSlug, link: storeLink });

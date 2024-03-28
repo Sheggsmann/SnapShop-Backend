@@ -4,7 +4,7 @@ exports.MessageModel = void 0;
 const mongoose_1 = require("mongoose");
 const messageSchema = new mongoose_1.Schema({
     conversationId: { type: mongoose_1.Types.ObjectId, required: true },
-    sender: { type: mongoose_1.Types.ObjectId, required: true, redPath: 'senderType' },
+    sender: { type: mongoose_1.Types.ObjectId, required: true, refPath: 'senderType' },
     receiver: { type: mongoose_1.Types.ObjectId, required: true, refPath: 'receiverType' },
     senderType: { type: String, enum: ['User', 'Store'], required: true },
     receiverType: { type: String, enum: ['User', 'Store'], required: true },

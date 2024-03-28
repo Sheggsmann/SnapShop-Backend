@@ -8,13 +8,18 @@ import JWT from 'jsonwebtoken';
 
 export class Helpers {
   static formatStoreLink(slug: string): string {
-    return `${config.WEBSITE_URL}/stores/s/${slug}`;
+    return `${config.WEBSITE_URL}/store/${slug}`;
   }
 
   static generateUniqueSlug(input: string): string {
-    const cleanedInput = input.replace(/\s/gi, '').trim().toLowerCase();
+    const words = input.split(' ');
+    const cleanedInput = words[0]
+      .replace(/[^a-zA-Z0-9]/g, '')
+      .replace(/\s/gi, '')
+      .trim()
+      .toLowerCase();
     const uniqueId = uuidv4().split('-')[0];
-    const slug = `${cleanedInput.substring(0, 4)}-${uniqueId}`;
+    const slug = `${cleanedInput.substring(0, 20)}-${uniqueId}`;
     return slug;
   }
 

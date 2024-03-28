@@ -8,6 +8,7 @@ const storeSchema = new mongoose_1.Schema({
     escrowBalance: { type: Number, default: 0, min: 0 },
     mainBalance: { type: Number, default: 0, min: 0 },
     slug: { type: String, unique: true, trim: true },
+    slugUrl: { type: String },
     email: { type: String, unique: true, trim: true },
     mobileNumber: String,
     uId: String,

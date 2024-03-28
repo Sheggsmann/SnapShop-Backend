@@ -14,6 +14,7 @@ class SearchStoreRoutes {
     this.router.get('/nearby-stores/:center', searchStore.store);
     this.router.get('/guest/feed', getUser.guestFeed);
     this.router.get('/stores/s/:slug', getStores.storeByStoreSlug);
+    this.router.get('/store/:slug', getStores.storeByStoreSlug);
     return this.router;
   }
 }

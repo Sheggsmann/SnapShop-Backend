@@ -24,6 +24,7 @@ class Create {
     if (ownsStore) throw new BadRequestError('User already owns a store');
 
     const storeObjectId: ObjectId = new ObjectId();
+    const slug = Helpers.generateUniqueSlug(name);
 
     // Store Latitude and Longitude in reverse order because of the way
     // mongodb geospatial queries
@@ -31,6 +32,8 @@ class Create {
       _id: storeObjectId,
       name,
       description,
+      slug,
+      slugUrl: Helpers.formatStoreLink(slug),
       owner: req.currentUser!.userId,
       uId: `${Helpers.genrateRandomIntegers(12)}`,
       locations: [{ location: { type: 'Point', coordinates: [parseFloat(lng), parseFloat(lat)] }, address }],
