@@ -15,20 +15,20 @@ class StoreRoutes {
   public routes(): Router {
     this.router.get('/store/auth/me', authMiddleware.checkAuth, getStores.myStore);
     this.router.get(
-      '/store/product-categories',
+      '/stores/product-categories',
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),
       getStores.productCategories
     );
     this.router.get(
-      '/store/products',
+      '/stores/products',
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),
       getStores.products
     );
     this.router.get('/stores/:storeId', authMiddleware.checkAuth, getStores.storeByStoreId);
     this.router.get(
-      '/store/:storeId/link',
+      '/stores/:storeId/link',
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),
       shareStore.getSlugLink
@@ -36,34 +36,34 @@ class StoreRoutes {
 
     this.router.put('/stores/verify/:storeId', authMiddleware.checkAuth, updateStore.verify);
     this.router.put(
+      '/stores/product-categories',
+      authMiddleware.checkAuth,
+      authMiddleware.restrictTo(['StoreOwner']),
+      updateStore.productCategory
+    );
+    this.router.put(
       '/stores/:storeId',
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),
       updateStore.store
     );
     this.router.put('/stores/:storeId/updateLocation', authMiddleware.checkAuth, updateStore.storeLocation);
-    this.router.put(
-      '/store/product-categories',
-      authMiddleware.checkAuth,
-      authMiddleware.restrictTo(['StoreOwner']),
-      updateStore.productCategory
-    );
 
-    this.router.post('/store/signup', authMiddleware.checkAuth, createStore.store);
+    this.router.post('/stores/signup', authMiddleware.checkAuth, createStore.store);
     this.router.post(
-      '/store/:storeId/slug',
+      '/stores/:storeId/slug',
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),
       shareStore.createStoreSlug
     );
     this.router.post(
-      '/store/store-expo-push-token',
+      '/stores/store-expo-push-token',
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),
       updateStore.savePushNotificationToken
     );
     this.router.post(
-      '/store/product-categories',
+      '/stores/product-categories',
       authMiddleware.checkAuth,
       authMiddleware.restrictTo(['StoreOwner']),
       createStore.productCategory
