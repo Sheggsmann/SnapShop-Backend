@@ -81,7 +81,7 @@ class Get {
                 contentType: 'product'
             });
             feedData.push({
-                title: 'Features Stores',
+                title: 'Featured Stores',
                 subtitle: 'Top ranking',
                 content: featuredStores,
                 contentType: 'store'

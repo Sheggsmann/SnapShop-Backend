@@ -100,7 +100,7 @@ class Get {
       });
 
       feedData.push({
-        title: 'Features Stores',
+        title: 'Featured Stores',
         subtitle: 'Top ranking',
         content: featuredStores,
         contentType: 'store'
